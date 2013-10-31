@@ -228,3 +228,31 @@ Blockly.Lua['turtle_select'] = function(block) {
   var code = 'turtle.select(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_compare'] = {
+  // Block for comparing the specified block to the contents of the
+  // selected slot.
+  init: function() {
+    var DIRECTIONS =
+        [['compare front block to selected slot', 'compare'],
+         ['compare above block to selected slot', 'compareUp'],
+         ['compare below block to selected slot', 'compareDown']];
+    this.setColour(160);
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
+    this.setOutput(true, 'Boolean')
+    this.setTooltip('Check if the specified block is the same as the blocks ' +
+        'in the selected slot of the turtle\'s inventory.');
+    var thisBlock = this;
+    this.setHelpUrl(function() {
+      return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    });
+  },
+};
+
+Blockly.Lua['turtle_compare'] = function(block) {
+  // Generate Lua for comparing the specified block to the contents of the
+  // selected slot.
+  var code = 'turtle.' + block.getTitleValue('DIR') + '()';
+  return code;
+};
