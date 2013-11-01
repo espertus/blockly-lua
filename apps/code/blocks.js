@@ -44,7 +44,7 @@ BlocklyLua.HELPER_FUNCTIONS = {
   },
   customContextMenu: function(options) {
     var option = {enabled: true};
-    option.text = this.isStatement ? 'Add Left Plug' : 'Remove Left Plug';
+    option.text = this.isStatement ? 'Add Output' : 'Remove Output';
     var thisBlock = this;
     option.callback = function() {
       thisBlock.changeModes(thisBlock, !thisBlock.isStatement);
