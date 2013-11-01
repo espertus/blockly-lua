@@ -1,19 +1,20 @@
 BASE_TURTLE_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Turtle.';
-TURTLE_BLOCK_COLOR_ = 120;
+TURTLE_BLOCK_COLOUR_ = 120;
 
 Blockly.Blocks['turtle_move'] = {
   // Block for moving forward, back, up, or down.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtleForward'), 'forward'],
-         [BlocklyApps.getMsg('Code_turtleBackward'), 'back'],
-         [BlocklyApps.getMsg('Code_turtleUp'), 'up'],
-         [BlocklyApps.getMsg('Code_turtleDown'), 'down']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+        [['move forward', 'forward'],
+         ['move backward', 'back'],
+         ['move up', 'up'],
+         ['move down', 'down']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip(BlocklyApps.getMsg('Code_turtleMoveTooltip'));
+    this.setTooltip('Try to move the turtle in the specified direction, ' +
+        'returning true if successful, false if the way is blocked.');
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
@@ -37,14 +38,14 @@ Blockly.Blocks['turtle_turn'] = {
   // Block for turning left or right.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtleRight'), 'turnRight'],
-         [BlocklyApps.getMsg('Code_turtleLeft'), 'turnLeft']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+        [['turn right', 'turnRight'],
+         ['turn left', 'turnLeft']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(BlocklyApps.getMsg('code_turtleTurnTooltip'));
+    this.setTooltip('Turn 90 degrees in the specified direction.');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
@@ -61,14 +62,14 @@ Blockly.Blocks['turtle_dig'] = {
   // Block for digging in front, above, or below the turtle.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtleDigFront'), 'dig'],
-         [BlocklyApps.getMsg('Code_turtleDigUp'), 'digUp'],
-         [BlocklyApps.getMsg('Code_turtleDigDown'), 'digDown']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+        [['dig in front', 'dig'],
+         ['dig up', 'digUp'],
+         ['dig down', 'digDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
-    this.setTooltip(BlocklyApps.getMsg('Code_turtleDigTooltip'));
+    this.setTooltip('Try to dig in the specified direction, returning true if successful, false otherwise (for example, if the block is empty or bedrock is encountered).');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
@@ -91,14 +92,14 @@ Blockly.Blocks['turtle_detect'] = {
   // Block for detecting in front, above, or below the turtle.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtleDetectFront'), 'detect'],
-         [BlocklyApps.getMsg('Code_turtleDetectUp'), 'detectUp'],
-         [BlocklyApps.getMsg('Code_turtleDetectDown'), 'detectDown']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+        [['detect in front', 'detect'],
+         ['detect up', 'detectUp'],
+         ['detect down', 'detectDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
-    this.setOutput(true, 'Boolean')
-    this.setTooltip(BlocklyApps.getMsg('Code_turtleDetectTooltip'));
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Detect whether there is a block in the specified direction.  Mobs, liquids, and floating objects are not detected.  The result is true if a block was detected, false otherwise.');
     var thisBlock = this;
   }
 };
@@ -113,14 +114,14 @@ Blockly.Blocks['turtle_place'] = {
   // or below the turtle.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtlePlaceFront'), 'place'],
-         [BlocklyApps.getMsg('Code_turtlePlaceUp'), 'placeUp'],
-         [BlocklyApps.getMsg('Code_turtlePlaceDown'), 'placeDown']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+        [['place item in front', 'place'],
+         ['place item up', 'placeUp'],
+         ['place item below', 'placeDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip(BlocklyApps.getMsg('Code_turtlePlaceTooltip'));
+    this.setTooltip('Place an item from the selected slot in the specified direction.  The result is true if successful, false if no item was in the slot or it could not be placed.');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
@@ -143,17 +144,15 @@ Blockly.Blocks['turtle_place_sign'] = {
   // or below the turtle.
   init: function() {
     var DIRECTIONS =
-        [[BlocklyApps.getMsg('Code_turtlePlaceSignFront'), 'place'],
-         [BlocklyApps.getMsg('Code_turtlePlaceSignUp'), 'placeUp'],
-         [BlocklyApps.getMsg('Code_turtlePlaceSignDown'), 'placeDown']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
-    this.appendDummyInput()
+        [['place sign in front with text', 'place'],
+         ['place sign up with text', 'placeUp'],
+         ['place sign down with text', 'placeDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('TEXT')
+        .setCheck('String')
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
-    this.interpolateMsg(BlocklyApps.getMsg('Code_turtlePlaceSignText'),
-                        ['TEXT', 'String', Blockly.ALIGN_RIGHT],
-                        Blockly.ALIGN_RIGHT);
     this.setOutput(true, 'Boolean')
-    this.setTooltip(BlocklyApps.getMsg('Code_turtlePlaceTooltip'));
+    this.setTooltip('Place an item from the selected slot in the specified direction.  If it is a sign, it will have the specified text.  The result is true if an item could be placed, false if no item was in the slot or it could not be placed.');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
@@ -176,13 +175,11 @@ Blockly.Lua['turtle_place_sign'] = function(block) {
 Blockly.Blocks['turtle_craft'] = {
   // Craft an item.
   init: function() {
-    this.setColour(TURTLE_BLOCK_COLOR_);
-    this.appendDummyInput()
-        .appendTitle(BlocklyApps.getMsg('Code_craft'));
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('LIMIT')
         .setCheck('Number')
-        .appendTitle(BlocklyApps.getMsg('Code_craftLimit'));
-    this.setTooltip(BlocklyApps.getMsg('Code_craftTooltip'));
+        .appendTitle('craft with limit');
+    this.setTooltip('Craft items using ingredient in the turtle\'s inventory, putting results in the currently selected slot.  If no limit is provided, the turtle will make as many as possible.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'craft');
     this.isStatement = false;
     var thisBlock = this;
@@ -206,11 +203,11 @@ Blockly.Lua['turtle_craft'] = function(block) {
 Blockly.Blocks['turtle_select'] = {
   // Select a slot.
   init: function() {
-    this.setColour(TURTLE_BLOCK_COLOR_);
-    this.interpolateMsg(BlocklyApps.getMsg('Code_select'),
-                        ['VALUE', 'Number', Blockly.ALIGN_RIGHT],
-                        Blockly.ALIGN_RIGHT);
-    this.setTooltip(BlocklyApps.getMsg('Code_selectTooltip'));
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle('select slot #');
+    this.setTooltip('Select the slot to use (1-16) for subsequent craft, drop, etc., commands.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'select');
     this.isStatement = false;
     var thisBlock = this;
@@ -238,7 +235,7 @@ Blockly.Blocks['turtle_compare'] = {
         [['compare front block to selected slot', 'compare'],
          ['compare above block to selected slot', 'compareUp'],
          ['compare below block to selected slot', 'compareDown']];
-    this.setColour(TURTLE_BLOCK_COLOR_);
+    this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')

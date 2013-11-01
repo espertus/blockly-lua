@@ -1,13 +1,12 @@
 var BASE_OS_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Os.';
-OS_BLOCK_COLOR_ = 30;
+OS_BLOCK_COLOUR_ = 30;
 
 Blockly.Blocks['os_terminate'] = {
   // Terminate program with error message.
   init: function() {
-    this.setColour(OS_BLOCK_COLOR_);
-    this.interpolateMsg('terminate',
-                        ['MSG', null, Blockly.ALIGN_RIGHT],
-                        Blockly.ALIGN_RIGHT);
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendValueInput('MSG')
+        .appendTitle('terminate with error ');
     this.setTooltip('End the program with the provided error message.  ' +
         'This should not be used for normal termination.');
     // This has a previous, but not a following, statement.
@@ -26,10 +25,12 @@ Blockly.Lua['os_terminate'] = function(block) {
 Blockly.Blocks['os_sleep'] = {
   // Sleep for the specified number of seconds.
   init: function() {
-    this.setColour(OS_BLOCK_COLOR_);
-    this.interpolateMsg('sleep %1 seconds',
-                        ['VALUE', 'Number', Blockly.ALIGN_RIGHT],
-                        Blockly.ALIGN_RIGHT);
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('sleep');
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle('seconds');
     this.setTooltip('Sleep for the specified number of seconds.')
     this.setPreviousStatement(true);
     this.setNextStatement(true);
