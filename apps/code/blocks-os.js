@@ -5,10 +5,11 @@ Blockly.Blocks['os_terminate'] = {
   // Terminate program with error message.
   init: function() {
     this.setColour(OS_BLOCK_COLOR_);
-    this.interpolateMsg(BlocklyApps.getMsg('Code_terminate'),
+    this.interpolateMsg('terminate',
                         ['MSG', null, Blockly.ALIGN_RIGHT],
                         Blockly.ALIGN_RIGHT);
-    this.setTooltip(BlocklyApps.getMsg('Code_terminateTooltip'));
+    this.setTooltip('End the program with the provided error message.  ' +
+        'This should not be used for normal termination.');
     // This has a previous, but not a following, statement.
     this.setPreviousStatement(true);
   }
