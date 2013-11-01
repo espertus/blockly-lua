@@ -39,5 +39,5 @@ Blockly.Lua['os_sleep'] = function(block) {
   // Generate Lua for sleeping the specified number of seconds.
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE',
       Blockly.Lua.ORDER_NONE) || '1';
-  return 'sleep(' + message + ')\n';
+  return 'sleep(' + argument0 + ')\n';
 };
