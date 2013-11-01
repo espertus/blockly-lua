@@ -1,0 +1,36 @@
+application: blockly-lua
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: no
+
+handlers:
+# Storage API.
+- url: /storage
+  script: storage.py
+- url: /storage\.js
+  static_files: storage.js
+  upload: storage\.js
+
+# Blockly files.
+- url: /static
+  static_dir: static
+
+# Closure library for uncompiled Blockly.
+- url: /closure-library-read-only
+  static_dir: closure-library-read-only
+
+# Redirect for root directory.
+- url: /
+  script: index_redirect.py
+
+# Favicon.
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+
+# robot.txt
+- url: /robots\.txt
+  static_files: robots.txt
+  upload: robots\.txt
+
