@@ -143,6 +143,7 @@ Blockly.Lua.finish = function(code) {
     definitions.push(Blockly.Lua.definitions_[name]);
   }
   var prefix = definitions.join('\n\n');
+/*
   if (Blockly.Lua.SENSOR_REGEXP_.test(code) ||
       Blockly.Lua.SENSOR_REGEXP_.test(prefix)) {
     prefix += '\n\n' +
@@ -160,6 +161,7 @@ Blockly.Lua.finish = function(code) {
         '  error("Sensor not found")\n' +
         'end\n';
   }
+*/
   return prefix.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + code;
 };
 
