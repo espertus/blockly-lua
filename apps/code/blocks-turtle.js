@@ -254,5 +254,5 @@ Blockly.Lua['turtle_compare'] = function(block) {
   // Generate Lua for comparing the specified block to the contents of the
   // selected slot.
   var code = 'turtle.' + block.getTitleValue('DIR') + '()';
-  return code;
+  return [code, Blockly.Lua.ORDER_HIGH];
 };
