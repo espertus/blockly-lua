@@ -1,9 +1,10 @@
 var BASE_OS_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Os.';
+OS_BLOCK_COLOR_ = 30;
 
 Blockly.Blocks['os_terminate'] = {
   // Terminate program with error message.
   init: function() {
-    this.setColour(160);
+    this.setColour(OS_BLOCK_COLOUR_);
     this.interpolateMsg(BlocklyApps.getMsg('Code_terminate'),
                         ['MSG', null, Blockly.ALIGN_RIGHT],
                         Blockly.ALIGN_RIGHT);
@@ -24,7 +25,7 @@ Blockly.Lua['os_terminate'] = function(block) {
 Blockly.Blocks['os_sleep'] = {
   // Sleep for the specified number of seconds.
   init: function() {
-    this.setColour(160);
+    this.setColour(OS_BLOCK_COLOUR_);
     this.interpolateMsg('sleep %1 seconds',
                         ['VALUE', 'Number', Blockly.ALIGN_RIGHT],
                         Blockly.ALIGN_RIGHT);

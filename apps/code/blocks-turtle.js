@@ -1,4 +1,5 @@
 BASE_TURTLE_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Turtle.';
+TURTLE_BLOCK_COLOR_ = 120;
 
 Blockly.Blocks['turtle_move'] = {
   // Block for moving forward, back, up, or down.
@@ -8,7 +9,7 @@ Blockly.Blocks['turtle_move'] = {
          [BlocklyApps.getMsg('Code_turtleBackward'), 'back'],
          [BlocklyApps.getMsg('Code_turtleUp'), 'up'],
          [BlocklyApps.getMsg('Code_turtleDown'), 'down']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
@@ -38,7 +39,7 @@ Blockly.Blocks['turtle_turn'] = {
     var DIRECTIONS =
         [[BlocklyApps.getMsg('Code_turtleRight'), 'turnRight'],
          [BlocklyApps.getMsg('Code_turtleLeft'), 'turnLeft']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setPreviousStatement(true);
@@ -63,7 +64,7 @@ Blockly.Blocks['turtle_dig'] = {
         [[BlocklyApps.getMsg('Code_turtleDigFront'), 'dig'],
          [BlocklyApps.getMsg('Code_turtleDigUp'), 'digUp'],
          [BlocklyApps.getMsg('Code_turtleDigDown'), 'digDown']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
@@ -93,7 +94,7 @@ Blockly.Blocks['turtle_detect'] = {
         [[BlocklyApps.getMsg('Code_turtleDetectFront'), 'detect'],
          [BlocklyApps.getMsg('Code_turtleDetectUp'), 'detectUp'],
          [BlocklyApps.getMsg('Code_turtleDetectDown'), 'detectDown']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
@@ -115,7 +116,7 @@ Blockly.Blocks['turtle_place'] = {
         [[BlocklyApps.getMsg('Code_turtlePlaceFront'), 'place'],
          [BlocklyApps.getMsg('Code_turtlePlaceUp'), 'placeUp'],
          [BlocklyApps.getMsg('Code_turtlePlaceDown'), 'placeDown']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
@@ -145,7 +146,7 @@ Blockly.Blocks['turtle_place_sign'] = {
         [[BlocklyApps.getMsg('Code_turtlePlaceSignFront'), 'place'],
          [BlocklyApps.getMsg('Code_turtlePlaceSignUp'), 'placeUp'],
          [BlocklyApps.getMsg('Code_turtlePlaceSignDown'), 'placeDown']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.interpolateMsg(BlocklyApps.getMsg('Code_turtlePlaceSignText'),
@@ -175,7 +176,7 @@ Blockly.Lua['turtle_place_sign'] = function(block) {
 Blockly.Blocks['turtle_craft'] = {
   // Craft an item.
   init: function() {
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(BlocklyApps.getMsg('Code_craft'));
     this.appendValueInput('LIMIT')
@@ -205,7 +206,7 @@ Blockly.Lua['turtle_craft'] = function(block) {
 Blockly.Blocks['turtle_select'] = {
   // Select a slot.
   init: function() {
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.interpolateMsg(BlocklyApps.getMsg('Code_select'),
                         ['VALUE', 'Number', Blockly.ALIGN_RIGHT],
                         Blockly.ALIGN_RIGHT);
@@ -237,7 +238,7 @@ Blockly.Blocks['turtle_compare'] = {
         [['compare front block to selected slot', 'compare'],
          ['compare above block to selected slot', 'compareUp'],
          ['compare below block to selected slot', 'compareDown']];
-    this.setColour(160);
+    this.setColour(TURTLE_BLOCK_COLOR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
