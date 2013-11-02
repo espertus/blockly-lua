@@ -49,7 +49,8 @@ Code.tabClick = function(id) {
       xmlDom = Blockly.Xml.textToDom(xmlText);
     } catch (e) {
       var q =
-          window.confirm(BlocklyApps.getMsg('Code_badXml').replace('%1', e));
+          window.confirm(
+              "Error parsing XML:\n%1\n\nSelect 'OK' to abandon your changes or 'Cancel' to further edit the XML.".replace('%1', e));
       if (!q) {
         // Leave the user on the XML tab.
         return;
@@ -164,7 +165,7 @@ if (window.location.pathname.match(/readonly.html$/)) {
 Code.discard = function() {
   var count = Blockly.mainWorkspace.getAllBlocks().length;
   if (count < 2 ||
-      window.confirm(BlocklyApps.getMsg('Code_discard').replace('%1', count))) {
+      window.confirm("Error parsing XML:\n%1\n\nSelect 'OK' to abandon your changes or 'Cancel' to further edit the XML.".replace('%1', count))) {
     Blockly.mainWorkspace.clear();
     window.location.hash = '';
   }
