@@ -21,6 +21,9 @@ Blockly.Lua['os_terminate'] = function(block) {
   return 'error(' + message + ')\n';
 };
 
+// Added in order to continue to support programs with the old block name.
+Blockly.Blocks['terminate'] = Blockly.Blocks['os_terminate'];
+Blockly.Lua['terminate'] = Blockly.Lua['os_terminate'];
 
 Blockly.Blocks['os_sleep'] = {
   // Sleep for the specified number of seconds.
