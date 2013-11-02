@@ -595,25 +595,3 @@ BlocklyApps.bindClick = function(id, func) {
   el.addEventListener('click', func, true);
   el.addEventListener('touchend', func, true);
 };
-
-/**
- * Load the Prettify CSS and JavaScript.
- */
-BlocklyApps.importPrettify = function() {
-  //<link rel="stylesheet" type="text/css" href="../prettify.css">
-  //<script type="text/javascript" src="../prettify.js"></script>
-  var link = document.createElement('link');
-  link.setAttribute('rel', 'stylesheet');
-  link.setAttribute('type', 'text/css');
-  link.setAttribute('href', '../prettify.css');
-  document.head.appendChild(link);
-  var script = document.createElement('script');
-  script.setAttribute('type', 'text/javascript');
-  script.setAttribute('src', '../prettify.js');
-  document.head.appendChild(script);
-  //<script type="text/javascript" src="../prettify.js"></script>
-  script = document.createElement('script');
-  script.setAttribute('type', 'text/javascript');
-  script.setAttribute('src', '../lang-lua.js');
-  document.head.appendChild(script);
-};

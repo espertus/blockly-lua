@@ -148,9 +148,6 @@ Code.init = function() {
 
   BlocklyApps.bindClick('trashButton',
       function() {Code.discard(); Code.renderContent();});
-
-  // Lazy-load the syntax-highlighting.
-  window.setTimeout(BlocklyApps.importPrettify, 1);
 };
 
 if (window.location.pathname.match(/readonly.html$/)) {
