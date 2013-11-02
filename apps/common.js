@@ -69,11 +69,11 @@ BlocklyApps.init = function() {
   // Disable the link button if page isn't backed by App Engine storage.
   var linkButton = document.getElementById('linkButton');
   if ('BlocklyStorage' in window) {
-    BlocklyStorage['HTTPREQUEST_ERROR'] =
-        BlocklyApps.getMsg('httpRequestError');
-    BlocklyStorage['LINK_ALERT'] = BlocklyApps.getMsg('linkAlert');
-    BlocklyStorage['HASH_ERROR'] = BlocklyApps.getMsg('hashError');
-    BlocklyStorage['XML_ERROR'] = BlocklyApps.getMsg('xmlError');
+    BlocklyStorage['HTTPREQUEST_ERROR'] = 'There was a problem with the request.';
+    BlocklyStorage['LINK_ALERT'] = 'Share your blocks with this link:\n\n%1';
+    BlocklyStorage['HASH_ERROR'] = 'Sorry, "%1" doesn\'t correspond with any saved program.';
+    BlocklyStorage['XML_ERROR'] =
+        'Could not load your saved file.  Perhaps it was created with a different version of Blockly?';
     // Swap out the BlocklyStorage's alert() for a nicer dialog.
     BlocklyStorage.alert = BlocklyApps.storageAlert;
     BlocklyApps.bindClick('linkButton', BlocklyStorage.link);
