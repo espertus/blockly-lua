@@ -88,6 +88,36 @@ Blockly.Lua['turtle_dig'] = function(block) {
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 };
 
+Blockly.Blocks['turtle_attack'] = {
+  // Block for attacking in front, above, or below the turtle.
+  init: function() {
+    var DIRECTIONS =
+        [['attack in front', 'attack'],
+         ['attack up', 'attackUp'],
+         ['attack down', 'attackDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Try to attack in the specified direction, returning true if successful, false otherwise.');
+    var thisBlock = this;
+    this.setHelpUrl(function() {
+      return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    })
+  },
+  // Enable block to change between statement and expression.
+  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+};
+
+Blockly.Lua['turtle_attack'] = function(block) {
+  // Generate Lua for attacking forward, up, or down.
+  var code = 'turtle.' + block.getTitleValue('DIR') + '()';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+};
+
 Blockly.Blocks['turtle_detect'] = {
   // Block for detecting in front, above, or below the turtle.
   init: function() {
