@@ -286,13 +286,14 @@ Blockly.Lua['turtle_compare'] = function(block) {
 };
 
 Blockly.Blocks['turtle_get_item_count'] = {
+  // Block for returning the amount of items in the supplied slot
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('item count in slot');
     this.setOutput(true, 'Number');
-    this.setTooltip('Get the count of items in the supplied slot number');
+    this.setTooltip('Get the count of items in the supplied slot number.');
     var thisBlock = this;
   }
 };
@@ -305,13 +306,14 @@ Blockly.Lua['turtle_get_item_count'] = function(block) {
 }
 
 Blockly.Blocks['turtle_get_item_space'] = {
+  // Block for getting the number of items that can be put in the supplied slot number
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('free space in slot');
     this.setOutput(true, 'Number');
-    this.setTooltip('Get the count of items in the supplied slot number');
+    this.setTooltip('Get the count of items in the supplied slot number.');
     var thisBlock = this;
   }
 };
@@ -324,13 +326,14 @@ Blockly.Lua['turtle_get_item_space'] = function(block) {
 }
 
 Blockly.Blocks['turtle_compare_to'] = {
+  // Block for comparing items in the current slot and the supplied one
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('compare item in current slot to slot');
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Compares the currently selected slot and the supplied slot returning true if they\'re the same, false if not');
+    this.setTooltip('Compares the currently selected slot and the supplied slot returning true if they\'re the same, false if not.');
     var thisBlock = this;
   }
 };
@@ -354,7 +357,7 @@ Blockly.Blocks['turtle_drop'] = {
         .setCheck('Number')
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip('Drops the supplied amount of items in the selected slot.  If no amount is supplied it will drop all items.  If an inventory such as a chest is on that side of the turtle it will try to place into the inventory, returning false if the inventory is full');
+    this.setTooltip('Drops the supplied amount of items in the selected slot.  If no amount is supplied it will drop all items.  If an inventory such as a chest is on that side of the turtle it will try to place into the inventory, returning false if the inventory is full.');
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
@@ -376,6 +379,7 @@ Blockly.Lua['turtle_drop'] = function(block) {
 };
 
 Blockly.Blocks['turtle_suck'] = {
+  // Block for getting the turtle to pickup or take items from the ground or an inventory, respectively
   init: function() {
     var DIRECTIONS =
         [['suck in front', 'suck'],
@@ -400,45 +404,51 @@ Blockly.Blocks['turtle_suck'] = {
 };
 
 Blockly.Lua['turtle_suck'] = function(block) {
+  // Generate Lua for getting the turtle to pickup or take items from the ground or an inventory, respectively
   var code = 'turtle.' + block.getTitleValue('DIR') + '()';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 };
 
 Blockly.Blocks['turtle_refuel'] = {
+  // Block for refuelling the turtle
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('refuel');
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Refuels the turtle using a fuel item in the selected slot returning if it was successful.  If a quantity is specified, it will refuel only with that many items, otherwise it will consume all the items in the slot.  If a quantity of 0 is supplied no items will be consumed but will still return boolean whether the item can be used as a fuel.');
+    this.setTooltip('Refuels the turtle using a fuel item in the selected slot returning whether it was successful.  If a quantity is specified, it will refuel only with that many items, otherwise it will consume all the items in the slot.  If a quantity of 0 is supplied no items will be consumed but will still return boolean whether the item can be used as a fuel.');
     var thisBlock = this;
   }
 };
 
 Blockly.Lua['turtle_refuel'] = function(block) {
+  // Generate Lua for refuelling the turtle
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.refuel(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
 
 Blockly.Blocks['turtle_get_fuel_level'] = {
+  // Block for getting the turtle's fuel level
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle('fuel level');
     this.setOutput(true, 'Number');
-    this.setTooltip('Returns the current fuel level of the turtle, this is the number of blocks the turtle can move.  If fuel is turned off in the ComputerCraft config this will return "unlimited"');
+    this.setTooltip('Returns the current fuel level of the turtle, this is the number of blocks the turtle can move.  If fuel is turned off in the ComputerCraft config this will return "unlimited".');
     var thisBlock = this;
   }
 };
 
 Blockly.Lua['turtle_get_fuel_level'] = function(block) {
+  // Generate Lua for getting the fuel level
   var code = 'turtle.getFuelLevel()';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
 
 Blockly.Blocks['turtle_transfer_to'] = {
+  // Block for transfering an item from the currently selected slot to the specified slot
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('QUANTITY')
@@ -449,7 +459,7 @@ Blockly.Blocks['turtle_transfer_to'] = {
         .appendTitle('items from current slot to slot');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Transfers all items from the currently selected slot to the supplied slot returning if it was successful.  If a quantity is supplied it will attempt to transfer that amount from the selected slot');
+    this.setTooltip('Transfers all items from the currently selected slot to the supplied slot returning if it was successful.  If a quantity is supplied it will attempt to transfer that amount from the selected slot.');
     var thisBlock = this;
   }
 };
