@@ -322,3 +322,22 @@ Blockly.Lua['turtle_get_item_space'] = function(block) {
   var code = 'turtle.getItemSpace(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_compare_to'] = {
+  init: function() {
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle('compare item in current slot to slot');
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Compares the currently selected slot and the supplied slot returning true if they\'re the same, false if not');
+    var thisBlock = this;
+  }
+};
+
+Blockly.Lua['turtle_compare_to'] = function(block) {
+  // Generate Lua for getting the number of items in the supplied slot number
+  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'turtle.compareTo(' + argument0 + ')';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
