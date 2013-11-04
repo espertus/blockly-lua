@@ -404,3 +404,36 @@ Blockly.Lua['turtle_suck'] = function(block) {
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 };
 
+Blockly.Blocks['turtle_refuel'] = {
+  init: function() {
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle('refuel');
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Refuels the turtle using a fuel item in the selected slot returning if it was successful.  If a quantity is specified, it will refuel only with that many items, otherwise it will consume all the items in the slot.  If a quantity of 0 is supplied no items will be consumed but will still return boolean whether the item can be used as a fuel.');
+    var thisBlock = this;
+  }
+};
+
+Blockly.Lua['turtle_refuel'] = function(block) {
+  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'turtle.refuel(' + argument0 + ')';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
+
+Blockly.Blocks['turtle_get_fuel_level'] = {
+  init: function() {
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('fuel level');
+    this.setOutput(true, 'Number');
+    this.setTooltip('Returns the current fuel level of the turtle, this is the number of blocks the turtle can move.  If fuel is turned off in the ComputerCraft config this will return "unlimited"');
+    var thisBlock = this;
+  }
+};
+
+Blockly.Lua['turtle_get_fuel_level'] = function(block) {
+  var code = 'turtle.getFuelLevel()';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
