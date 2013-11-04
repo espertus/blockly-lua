@@ -317,7 +317,7 @@ Blockly.Blocks['turtle_get_item_space'] = {
 };
 
 Blockly.Lua['turtle_get_item_space'] = function(block) {
-  // Generate Lua for getting the number of items in the supplied slot number
+  // Generate Lua for getting the number of items that can be put in the supplied slot number
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.getItemSpace(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
@@ -336,14 +336,14 @@ Blockly.Blocks['turtle_compare_to'] = {
 };
 
 Blockly.Lua['turtle_compare_to'] = function(block) {
-  // Generate Lua for getting the number of items in the supplied slot number
+  // Generate Lua for comparing items in the current slot and the supplied one
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.compareTo(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
 
 Blockly.Blocks['turtle_drop'] = {
-  // Block for moving forward, back, up, or down.
+  // Block for dropping items
   init: function() {
     var DIRECTIONS =
         [['drop in front', 'drop'],
@@ -374,3 +374,33 @@ Blockly.Lua['turtle_drop'] = function(block) {
   var code = 'turtle.' + block.getTitleValue('DIR') + '(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 };
+
+Blockly.Blocks['turtle_suck'] = {
+  init: function() {
+    var DIRECTIONS =
+        [['suck in front', 'suck'],
+         ['suck up', 'suckUp'],
+         ['suck down', 'suckDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
+    this.setOutput(true, 'Boolean')
+    this.setTooltip('Picks up an item stack of any size from the ground or an inventory (such as a chest) on that side and places in the selected slot.  Returns false if the turtle cannot pick up the item.');
+    this.setHelpUrl(function() {
+      return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    });
+    this.isStatement = false;
+    var thisBlock = this;
+  },
+  // Enable block to change between statement and expression.
+  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+};
+
+Blockly.Lua['turtle_suck'] = function(block) {
+  var code = 'turtle.' + block.getTitleValue('DIR') + '()';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+};
+
