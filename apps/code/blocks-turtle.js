@@ -209,7 +209,8 @@ Blockly.Blocks['turtle_craft'] = {
     this.appendValueInput('LIMIT')
         .setCheck('Number')
         .appendTitle('craft with limit');
-    this.setTooltip('Craft items using ingredient in the turtle\'s inventory, putting results in the currently selected slot.  If no limit is provided, the turtle will make as many as possible.');
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern.  Returns true when items have been crafted.  The result is placed in the currently selected slot.  If no limit is provided, the turtle will make as many as possible (maximum 64).  If a limit of 0 is supplied no items will be consumed but will still return boolean for validity of recipe.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'craft');
     this.isStatement = false;
     var thisBlock = this;
