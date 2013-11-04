@@ -341,3 +341,36 @@ Blockly.Lua['turtle_compare_to'] = function(block) {
   var code = 'turtle.compareTo(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_drop'] = {
+  // Block for moving forward, back, up, or down.
+  init: function() {
+    var DIRECTIONS =
+        [['drop in front', 'drop'],
+         ['drop up', 'dropUp'],
+         ['drop down', 'dropDown']];
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
+    this.setOutput(true, 'Boolean')
+    this.setTooltip('Drops the supplied amount of items in the selected slot.  If no amount is supplied it will drop all items.  If an inventory such as a chest is on that side of the turtle it will try to place into the inventory, returning false if the inventory is full');
+    this.setHelpUrl(function() {
+      return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    });
+    this.isStatement = false;
+    var thisBlock = this;
+  },
+  // Enable block to change between statement and expression.
+  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+};
+
+Blockly.Lua['turtle_drop'] = function(block) {
+  // Generate Lua for dropping items
+  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'turtle.' + block.getTitleValue('DIR') + '(' + argument0 + ')';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+};
