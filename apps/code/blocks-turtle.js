@@ -99,7 +99,7 @@ Blockly.Blocks['turtle_attack'] = {
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Attack in the specified direction, returning true if successful, false otherwise.');
+    this.setTooltip('Attack in the specified direction, returning true if something was hit, false otherwise.');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
