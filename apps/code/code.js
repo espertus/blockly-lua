@@ -162,7 +162,7 @@ if (window.location.pathname.match(/readonly.html$/)) {
 Code.discard = function() {
   var count = Blockly.mainWorkspace.getAllBlocks().length;
   if (count < 2 ||
-      window.confirm("Error parsing XML:\n%1\n\nSelect 'OK' to abandon your changes or 'Cancel' to further edit the XML.".replace('%1', count))) {
+      window.confirm("Delete all %1 blocks?".replace('%1', count))) {
     Blockly.mainWorkspace.clear();
     window.location.hash = '';
   }
