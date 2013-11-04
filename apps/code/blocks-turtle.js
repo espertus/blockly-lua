@@ -286,19 +286,19 @@ Blockly.Lua['turtle_compare'] = function(block) {
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 
-Blockly.Blockly['turtle_get_item_count'] = {
+Blockly.Blocks['turtle_get_item_count'] = {
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendTitle('slot number');
+        .appendTitle('item count in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the count of items in the supplied slot number');
     var thisBlock = this;
   }
 };
 
-Blockly.Lua9'turtle_get_item_count'] = function(block) {
+Blockly.Lua['turtle_get_item_count'] = function(block) {
   // Generate Lua for getting the number of items in the supplied slot number
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.getItemCount(' + argument0 + ')';
