@@ -270,8 +270,7 @@ Blockly.Blocks['turtle_compare'] = {
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip('Check if the specified block is the same as the blocks ' +
-        'in the selected slot of the turtle\'s inventory.');
+    this.setTooltip('Check if the block in the world is the same as the block in the selected slot of the turtle\'s inventory.');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
