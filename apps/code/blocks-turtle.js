@@ -304,3 +304,22 @@ Blockly.Lua['turtle_get_item_count'] = function(block) {
   var code = 'turtle.getItemCount(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_get_item_space'] = {
+  init: function() {
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('VALUE')
+        .setCheck('Number')
+        .appendTitle('free space in slot');
+    this.setOutput(true, 'Number');
+    this.setTooltip('Get the count of items in the supplied slot number');
+    var thisBlock = this;
+  }
+};
+
+Blockly.Lua['turtle_get_item_space'] = function(block) {
+  // Generate Lua for getting the number of items in the supplied slot number
+  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'turtle.getItemSpace(' + argument0 + ')';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
