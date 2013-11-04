@@ -437,3 +437,27 @@ Blockly.Lua['turtle_get_fuel_level'] = function(block) {
   var code = 'turtle.getFuelLevel()';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_transfer_to'] = {
+  init: function() {
+    this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendValueInput('QUANTITY')
+        .setCheck('Number')
+        .appendTitle('move');
+    this.appendValueInput('SLOT')
+        .setCheck('Number')
+        .appendTitle('items from current slot to slot');
+    this.setInputsInline(true);
+    this.setOutput(true, 'Boolean');
+    this.setTooltip('Transfers all items from the currently selected slot to the supplied slot returning if it was successful.  If a quantity is supplied it will attempt to transfer that amount from the selected slot');
+    var thisBlock = this;
+  }
+};
+
+Blockly.Lua['turtle_transfer_to'] = function(block) {
+  // Generate Lua for comparing items in the current slot and the supplied one
+  var argument0 = Blockly.Lua.valueToCode(block, 'SLOT', Blockly.Lua.ORDER_NONE) || '';
+  var argument1 = Blockly.Lua.valueToCode(block, 'QUANTITY', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'turtle.transferTo(' + argument0 + (argument1 != '' ? ', ' + argument1 : '') + ')';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
