@@ -49,7 +49,7 @@ Blockly.Lua['os_sleep'] = function(block) {
 };
 
 Blockly.Blocks['os_get_computer_id'] = {
-  // Block to print text to the screen
+  // Block for getting the id of this computer
   init: function() {
     this.setColour(OS_BLOCK_COLOUR_);
     this.appendDummyInput()
@@ -61,5 +61,23 @@ Blockly.Blocks['os_get_computer_id'] = {
 }
 
 Blockly.Lua['os_get_computer_id'] = function(block) {
+  // Generate Lua for getting the id of this computer
   return 'os.getComputerID()\n';
+}
+
+Blockly.Blocks['os_get_computer_label'] = {
+  // Block for getting the label of this computer
+  init: function() {
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('computer label');
+    this.setOutput(true, 'Number');
+    this.setTooltip('Returns the unique ID of this computer.');
+    this.setHelpUrl(BASE_OS_HELP_URL_ + 'getComputerLabel');
+  }
+}
+
+Blockly.Lua['os_get_computer_label'] = function(block) {
+  // Generate Lua for getting the label of this computer
+  return 'os.getComputerLabel()\n';
 }
