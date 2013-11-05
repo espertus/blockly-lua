@@ -18,7 +18,7 @@ Blockly.Lua['os_terminate'] = function(block) {
   // Generate Lua for terminating program with error message.
   var message = Blockly.Lua.valueToCode(block, 'MSG',
       Blockly.Lua.ORDER_NONE) || '"error"';
-  return 'error(' + message + ')\n';
+  return 'error(' + message + ', 0)\n';
 };
 
 // Added in order to continue to support programs with the old block name.
