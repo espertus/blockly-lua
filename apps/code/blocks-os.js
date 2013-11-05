@@ -47,3 +47,19 @@ Blockly.Lua['os_sleep'] = function(block) {
       Blockly.Lua.ORDER_NONE) || '1';
   return 'sleep(' + argument0 + ')\n';
 };
+
+Blockly.Blocks['os_get_computer_id'] = {
+  // Block to print text to the screen
+  init: function() {
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('computer ID');
+    this.setOutput(true, 'Number');
+    this.setTooltip('Returns the unique ID of this computer.');
+    this.setHelpUrl(BASE_OS_HELP_URL_ + 'getComputerID');
+  }
+}
+
+Blockly.Lua['os_get_computer_id'] = function(block) {
+  return 'os.getComputerID()\n';
+}
