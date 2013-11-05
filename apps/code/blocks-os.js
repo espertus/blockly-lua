@@ -97,3 +97,19 @@ Blockly.Lua['os_reboot'] = function(block) {
   // Generate Lua for rebooting the computer
   return 'os.reboot()\n';
 }
+
+Blockly.Blocks['os_shutdown'] = {
+  // Block for shutting down the computer
+  init: function() {
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('turn off computer');
+    this.setTooltip('Turns off the computer.');
+    this.setHelpUrl(BASE_OS_HELP_URL_ + 'shutdown');
+  }
+}
+
+Blockly.Lua['os_shutdown'] = function(block) {
+  // Generate Lua for shutting down the computer
+  return 'os.shutdown()\n';
+}
