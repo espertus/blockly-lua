@@ -24,7 +24,7 @@
   <script type="text/javascript" src="blocks-turtle.js"></script>
   <script type="text/javascript" src="blocks-os.js"></script>
 
-  <!-- Page.  -->
+  <!-- Render the page.  -->
   <table width="100%" height="100%">
     <tr>
       <td>
@@ -53,6 +53,19 @@
               <button id="linkButton" class="notext" title="Save and link to blocks.">
                 <img src='../../media/1x1.gif' class="link icon21">
               </button>&nbsp;
+              <button id="pastebinButton" title="Save Lua code to Pastebin.">
+                PASTEBIN
+              </button>&nbsp;
+
+            </td>
+          </tr>
+          <tr>
+            <td width=300></td>
+            <td>
+              <!-- From apps.dialog.  -->
+              <div id="dialogShadow" class="dialogAnimate"></div>
+              <div id="dialogBorder"></div>
+              <div id="dialog"></div>
             </td>
           </tr>
         </table>
@@ -254,14 +267,10 @@
       </td>
     </tr>
   </table>
+
   <div id="content_blocks" class="content"></div>
   <pre id="content_lua" class="content"></pre>
   <textarea id="content_xml" class="content" wrap="off"></textarea>
-
-  <!-- From apps.dialog.  -->
-  <div id="dialogShadow" class="dialogAnimate"></div>
-  <div id="dialogBorder"></div>
-  <div id="dialog"></div>
 
   <!-- From apps.storageDialog.  -->
   <div id="dialogStorage" class="dialogHiddenContent">
@@ -270,6 +279,59 @@
     <div class="farSide" style="padding: 1ex 3ex 0">
       <button class="secondary" onclick="BlocklyApps.hideDialog(true)">OK</button>
     </div>
+  </div>
+
+  <!-- This is opened when the user clicks the Pastebin button. -->
+  <div id="pastebinDiv" class="dialogHiddenContent">
+    <form id="pastebinForm"
+          action='http://pastebin.com/api/api_post.php'
+          target='resultFrame' method='post'>
+      <input type='hidden' name='api_option' value='paste'>
+      <input type='hidden' name='api_paste_private' value='1'>
+      <input type='hidden' name='api_paste_format', value='Lua'>
+      <input type='hidden' name='api_dev_key', value='2daf0cdd6664fea4fef9a54dc9a17514'>
+      <input type='hidden' name='api_paste_code' id='luaCode'>
+
+      <table>
+        <tr>
+          <td>
+            Name: <input type='text' name='api_paste_name' value='Blockly-Lua program'>
+          </td><td>
+            Expiration time:
+            <select name='api_paste_expire_date'>
+              <option value="1D">1 day</option>
+              <option value="1W" selected>1 week</option>
+              <option value="2W">2 weeks</option>
+              <option value="1M">1 month</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=2>Warning: You can only do ten saves to Pastebin in a 24-hour period.</td>
+        </tr>
+        <tr>
+          <td>
+            <button id='pastebinSaveButton'
+            onclick="this.setAttribute('class', 'hiddenButton');
+                     document.getElementById('luaCode').value = encodeURIComponent(Blockly.Lua.workspaceToCode());
+                     var iframe = document.getElementById('resultFrame');
+                     iframe.setAttribute('class', 'visibleIframe');
+                     iframe.contentWindow.document.open();
+                     iframe.contentWindow.document.write('Pasting...');
+                     iframe.contentWindow.document.close();
+                     document.getElementById('pastebinForm').submit();">Save program to Pastebin</button>
+          </td>
+          <td>
+            <button id='doneButton' onclick="BlocklyApps.hideDialog();">Return to program</button>
+          </td>
+        </tr>
+        <tr>
+          <td colspan=2>
+            <iframe name='resultFrame' id='resultFrame' class="hiddenIframe"></iframe>
+          </td>
+        </tr>
+      </table>
+    </form>
   </div>
 </body>
 </html>

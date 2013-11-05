@@ -148,6 +148,17 @@ Code.init = function() {
 
   BlocklyApps.bindClick('trashButton',
       function() {Code.discard(); Code.renderContent();});
+
+  BlocklyApps.bindClick('pastebinButton',
+      function() {
+        if (Blockly.mainWorkspace.getTopBlocks(false).length == 0) {
+          window.alert('You should write a program before saving it to Pastebin.');
+        } else {
+          BlocklyApps.showDialog(document.getElementById('pastebinDiv'),
+                                 this, true, true, {}, BlocklyApps.stopDialogKeyDown);
+          BlocklyApps.startDialogKeyDown();
+        }
+      });
 };
 
 if (window.location.pathname.match(/readonly.html$/)) {

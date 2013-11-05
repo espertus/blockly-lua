@@ -87,7 +87,25 @@ button {
   padding: 1px 10px;
   margin: 1px 5px;
 }
-
+#pastebinButton {
+  position:relative;
+  height: 28px;
+  top:-3px;
+  //background-color:darkblue;
+  //color:white;
+}
+.hiddenIframe {
+  display: none;
+}
+.visibleIframe {
+  height: 35px;
+  width: 100%;
+  display: block;
+  border: 0;
+}
+.hiddenButton {
+  display: none;
+}
 /* Sprited icons. */
 .icon21 {
   height: 21px;
