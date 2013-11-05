@@ -81,3 +81,19 @@ Blockly.Lua['os_get_computer_label'] = function(block) {
   // Generate Lua for getting the label of this computer
   return 'os.getComputerLabel()\n';
 }
+
+Blockly.Blocks['os_reboot'] = {
+  // Block for rebooting the computer
+  init: function() {
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('restart computer');
+    this.setTooltip('Restarts the computer.');
+    this.setHelpUrl(BASE_OS_HELP_URL_ + 'reboot');
+  }
+}
+
+Blockly.Lua['os_reboot'] = function(block) {
+  // Generate Lua for rebooting the computer
+  return 'os.reboot()\n';
+}
