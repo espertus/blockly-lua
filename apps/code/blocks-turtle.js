@@ -18,7 +18,6 @@ Blockly.Blocks['turtle_move'] = {
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    this.isStatement = false;
     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -130,7 +129,6 @@ Blockly.Blocks['turtle_detect'] = {
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
     this.setTooltip('Detect whether there is a block in the specified direction.\nMobs, liquids, and floating objects are not detected.\nThe result is true if a block was detected, false otherwise.');
-    var thisBlock = this;
   }
 };
 
@@ -157,6 +155,7 @@ Blockly.Blocks['turtle_place'] = {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   },
+  // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
   mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
@@ -210,9 +209,8 @@ Blockly.Blocks['turtle_craft'] = {
         .setCheck('Number')
         .appendTitle('craft with limit');
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern,\nplacing the result in the currently selected slot.  Returns true if items are crafted.\nIf no limit is provided, the turtle will make as many as possible (maximum 64).');
+    this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern,\nplacing the result in the currently selected slot.  Returns true if items are crafted.\nIf no limit is provided, the turtle will make as many as possible (maximum 64).\nIf a limit of 0 is supplied, no items will be consumed,\nbut the return value will indicate whether a valid recipe is present.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'craft');
-    this.isStatement = false;
     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -226,7 +224,6 @@ Blockly.Lua['turtle_craft'] = function(block) {
   // Generate Lua for crafting an item.  A limit argument is optional.
   var argument0 = Blockly.Lua.valueToCode(block, 'LIMIT',
                                           Blockly.Lua.ORDER_NONE) || '';
-
   var code = 'turtle.craft(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
@@ -240,7 +237,6 @@ Blockly.Blocks['turtle_select'] = {
         .appendTitle('select slot #');
     this.setTooltip('Select the slot to use (1-16) for subsequent craft, drop, etc., commands.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'select');
-    this.isStatement = false;
     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -286,7 +282,7 @@ Blockly.Lua['turtle_compare'] = function(block) {
 };
 
 Blockly.Blocks['turtle_get_item_count'] = {
-  // Block for returning the amount of items in the supplied slot
+  // Block for returning the number of items in the supplied slot.
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
@@ -294,7 +290,6 @@ Blockly.Blocks['turtle_get_item_count'] = {
         .appendTitle('item count in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the count of items in the supplied slot number.');
-    var thisBlock = this;
   }
 };
 
@@ -316,7 +311,6 @@ Blockly.Blocks['turtle_get_item_space'] = {
         .appendTitle('free space in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the number of items that can be placed in the numbered slot.');
-    var thisBlock = this;
   }
 };
 
@@ -330,7 +324,7 @@ Blockly.Lua['turtle_get_item_space'] = function(block) {
 }
 
 Blockly.Blocks['turtle_compare_to'] = {
-  // Block for comparing items in the current slot and the supplied one
+  // Block for comparing items in the selected slot and the supplied one.
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
@@ -338,19 +332,19 @@ Blockly.Blocks['turtle_compare_to'] = {
         .appendTitle('compare item in current slot to slot');
     this.setOutput(true, 'Boolean');
     this.setTooltip('Compares the currently selected slot and the specified slot,\nreturning true if they\'re the same, false if not.');
-    var thisBlock = this;
   }
 };
 
 Blockly.Lua['turtle_compare_to'] = function(block) {
-  // Generate Lua for comparing items in the current slot and the supplied one
-  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  // Generate Lua for comparing items in the selected slot and the supplied one.
+  var argument0 = Blockly.Lua.valueToCode(block, 'VALUE',
+					  Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.compareTo(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
 
 Blockly.Blocks['turtle_drop'] = {
-  // Block for dropping items
+  // Block for dropping items.
   init: function() {
     var DIRECTIONS =
         [['drop in front', 'drop'],
@@ -365,7 +359,6 @@ Blockly.Blocks['turtle_drop'] = {
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    this.isStatement = false;
     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -398,7 +391,6 @@ Blockly.Blocks['turtle_suck'] = {
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    this.isStatement = false;
     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -425,7 +417,12 @@ Blockly.Blocks['turtle_refuel'] = {
     this.setOutput(true, 'Boolean');
     this.setTooltip('Refuels the turtle using a fuel item in the selected slot, returning whether it was successful.\nIf a quantity is specified, it will refuel only with that many items;\notherwise it will consume all the items in the slot.\nIf a quantity of 0 is supplied, no items will be consumed,\nbut a boolean will be returned indicating whether the item can be used as a fuel.');
     var thisBlock = this;
-  }
+  },
+  // Enable block to change between statement and expression.
+  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
 };
 
 Blockly.Lua['turtle_refuel'] = function(block) {
@@ -443,7 +440,6 @@ Blockly.Blocks['turtle_get_fuel_level'] = {
         .appendTitle('fuel level');
     this.setOutput(true, 'Number');
     this.setTooltip('Returns the current fuel level of the turtle, which is the number of blocks the turtle can move.\nIf fuel is turned off in the ComputerCraft config this will return "unlimited".');
-    var thisBlock = this;
   }
 };
 
@@ -467,13 +463,18 @@ Blockly.Blocks['turtle_transfer_to'] = {
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setTooltip('Transfers items from the currently selected slot to the supplied slot, returning whether it was successful.\nIf a quantity is supplied, the turtle will attempt to transfer that amount from the selected slot;\notherwise, it will try to transfer all..');
-    var thisBlock = this;
-  }
+     var thisBlock = this;
+  },
+  // Enable block to change between statement and expression.
+  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
 };
 
 Blockly.Lua['turtle_transfer_to'] = function(block) {
   // Generate Lua for transferring items from the current slot to the
-  // supplied one.
+  // specified one.
   var argument0 = Blockly.Lua.valueToCode(
     block, 'SLOT', Blockly.Lua.ORDER_NONE) || '';
   var argument1 = Blockly.Lua.valueToCode(
