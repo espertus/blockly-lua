@@ -72,7 +72,7 @@ Blockly.Blocks['os_get_computer_label'] = {
     this.appendDummyInput()
         .appendTitle('get computer label');
     this.setOutput(true, 'Number');
-    this.setTooltip('Returns the unique ID of this computer.');
+    this.setTooltip('Returns the label of this computer.');
     this.setHelpUrl(BASE_OS_HELP_URL_ + 'getComputerLabel');
   }
 }
@@ -80,6 +80,24 @@ Blockly.Blocks['os_get_computer_label'] = {
 Blockly.Lua['os_get_computer_label'] = function(block) {
   // Generate Lua for getting the label of this computer
   return 'os.getComputerLabel()\n';
+}
+
+Blockly.Blocks['os_set_computer_label'] = {
+  // Block for setting the label of this computer
+  init: function() {
+    this.setColour(OS_BLOCK_COLOUR_);
+    this.setValueInput('LABEL')
+        .setCheck('String')
+        .appendTitle('set computer label');
+    this.setTooltip('Sets the label of this computer.');
+    this.setHelpUrl(BASE_OS_HELP_URL_ + 'setComputerLabel');
+  }
+}
+
+Blockly.Lua['os_set_computer_label'] = function(block) {
+  // Generate Lua for setting the label of this computer
+  var argument0 = Blockly.Lua.valueToCode(block, 'LABEL', Blockly.Lua.ORDER_NONE) || '';
+  return 'os.setComputerLabel(' + argument0 + ')\n';
 }
 
 Blockly.Blocks['os_reboot'] = {
