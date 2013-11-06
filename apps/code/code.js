@@ -155,8 +155,7 @@ Code.init = function() {
           window.alert('You should write a program before saving it to Pastebin.');
         } else {
           BlocklyApps.showDialog(document.getElementById('pastebinDiv'),
-                                 this, true, true, {}, BlocklyApps.stopDialogKeyDown);
-          BlocklyApps.startDialogKeyDown();
+                                 this, true, true, {}, null);
         }
       });
 };
