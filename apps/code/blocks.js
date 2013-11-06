@@ -27,6 +27,36 @@ var BlocklyLua = {}
 
 BlocklyLua.BASE_HELP_URL = 'http://computercraft.info/wiki/';
 
+/**
+ These functions help make a block so that it can convert between
+ expression and statement form (in case the programmer wants to
+ ignore the return value).  To use them, the following line must
+ be included in the block's init() method:
+
+     var thisBlock = this;
+
+ The block will begin in expression mode, unless the following line
+ is included in the block's init() method:
+
+     thisBlock.isStatement = true;
+
+ The following definitions must appear in the block definition:
+
+     // Enable block to change between statement and expression.
+     changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
+     customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
+     mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
+     domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+
+ The code generator should first generate the code for an expression
+ and then call generatedCode(block, code), as shown:
+
+     return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+
+ Note: The conventional leading asterisks are omitted for ease of
+ copying the above code.
+ */
+
 BlocklyLua.HELPER_FUNCTIONS = {
   changeModes: function(thisBlock, shouldBeStatement) {
     thisBlock.unplug(true, true);
