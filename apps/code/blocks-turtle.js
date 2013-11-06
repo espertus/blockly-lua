@@ -329,7 +329,7 @@ Blockly.Blocks['turtle_compare_to'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendTitle('compare item in current slot to slot');
+        .appendTitle('compare item in selected slot to slot');
     this.setOutput(true, 'Boolean');
     this.setTooltip('Compares the currently selected slot and the specified slot,\nreturning true if they\'re the same, false if not.');
   }
@@ -459,7 +459,7 @@ Blockly.Blocks['turtle_transfer_to'] = {
         .appendTitle('move');
     this.appendValueInput('SLOT')
         .setCheck('Number')
-        .appendTitle('items from current slot to slot');
+        .appendTitle('items from selected slot to slot');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setTooltip('Transfers items from the currently selected slot to the supplied slot, returning whether it was successful.\nIf a quantity is supplied, the turtle will attempt to transfer that amount from the selected slot;\notherwise, it will try to transfer all..');
@@ -473,7 +473,7 @@ Blockly.Blocks['turtle_transfer_to'] = {
 };
 
 Blockly.Lua['turtle_transfer_to'] = function(block) {
-  // Generate Lua for transferring items from the current slot to the
+  // Generate Lua for transferring items from the selected slot to the
   // specified one.
   var argument0 = Blockly.Lua.valueToCode(
     block, 'SLOT', Blockly.Lua.ORDER_NONE) || '';
