@@ -321,7 +321,7 @@
           <td>
             <button id='pastebinSaveButton'
             onclick="this.setAttribute('class', 'hiddenButton');
-                     document.getElementById('luaCode').value = encodeURIComponent(Blockly.Lua.workspaceToCode());
+                     document.getElementById('luaCode').value = Blockly.Lua.workspaceToCode();
                      var iframe = document.getElementById('resultFrame');
                      iframe.setAttribute('class', 'visibleIframe');
                      iframe.contentWindow.document.open();
