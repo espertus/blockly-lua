@@ -70,7 +70,7 @@ Blockly.Blocks['os_get_computer_label'] = {
   init: function() {
     this.setColour(OS_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle('computer label');
+        .appendTitle('get computer label');
     this.setOutput(true, 'Number');
     this.setTooltip('Returns the unique ID of this computer.');
     this.setHelpUrl(BASE_OS_HELP_URL_ + 'getComputerLabel');
