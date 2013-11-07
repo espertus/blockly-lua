@@ -338,7 +338,7 @@ Blockly.Blocks['turtle_compare_to'] = {
 Blockly.Lua['turtle_compare_to'] = function(block) {
   // Generate Lua for comparing items in the selected slot and the supplied one.
   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE',
-					  Blockly.Lua.ORDER_NONE) || '';
+                                          Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.compareTo(' + argument0 + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
@@ -347,15 +347,20 @@ Blockly.Blocks['turtle_drop'] = {
   // Block for dropping items.
   init: function() {
     var DIRECTIONS =
-        [['drop in front', 'drop'],
-         ['drop up', 'dropUp'],
-         ['drop down', 'dropDown']];
+        [['in front', 'drop'],
+         ['up', 'dropUp'],
+         ['down', 'dropDown']];
     this.setColour(TURTLE_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('drop');
     this.appendValueInput('VALUE')
         .setCheck('Number')
+        .permitsAll = true;
+    this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip('Drops the supplied amount of items in the selected slot.\nIf no amount is supplied it will drop all items.\nIf an inventory such as a chest is on that side of the turtle,\nit will try to place into the inventory, returning false if the inventory is full.');
+    this.setInputsInline(true);
+    this.setTooltip('Drops the supplied amount of items in the selected slot.\nIf an inventory such as a chest is on that side of the turtle,\nit will try to place into the inventory, returning false if the inventory is full.');
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
@@ -388,10 +393,10 @@ Blockly.Blocks['turtle_suck'] = {
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
     this.setTooltip('Picks up an item stack of any size from the ground\nor an inventory (such as a chest) on that side\nand places in the selected slot.\nReturns true if the turtle can pick up an item.');
+    var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -413,10 +418,13 @@ Blockly.Blocks['turtle_refuel'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendTitle('refuel');
+        .appendTitle('refuel')
+        .permitsAll = true;
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Refuels the turtle using a fuel item in the selected slot, returning whether it was successful.\nIf a quantity is specified, it will refuel only with that many items;\notherwise it will consume all the items in the slot.\nIf a quantity of 0 is supplied, no items will be consumed,\nbut a boolean will be returned indicating whether the item can be used as a fuel.');
-    var thisBlock = this;
+    this.setTooltip('Refuels the turtle using a fuel item in the selected slot,\n returning whether it was successful.\nIf an input of 0 is supplied, no items will be consumed,\nbut the return value will indicate if the item can be used as fuel.');
+    this.setHelpUrl(function() {
+      return BASE_TURTLE_HELP_URL_ + 'refuel';
+    });
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -456,13 +464,14 @@ Blockly.Blocks['turtle_transfer_to'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('QUANTITY')
         .setCheck('Number')
-        .appendTitle('move');
+        .appendTitle('move')
+        .permitsAll = true;
     this.appendValueInput('SLOT')
         .setCheck('Number')
         .appendTitle('items from selected slot to slot');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Transfers items from the currently selected slot to the supplied slot, returning whether it was successful.\nIf a quantity is supplied, the turtle will attempt to transfer that amount from the selected slot;\notherwise, it will try to transfer all..');
+    this.setTooltip('Transfers items from the currently selected slot to the specified, returning whether it was successful.');
      var thisBlock = this;
   },
   // Enable block to change between statement and expression.
@@ -483,3 +492,52 @@ Blockly.Lua['turtle_transfer_to'] = function(block) {
       (argument1 != '' ? ', ' + argument1 : '') + ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 }
+
+Blockly.Blocks['turtle_all'] =  {
+  // Block to indicate that an operation should be applied to as many items as
+  // possible.  The Turtle library omits the argument in this case.
+  init: function() {
+    this.setColour(230);   // math color
+    this.appendDummyInput()
+        .appendTitle('all');
+    this.setOutput(true, 'Number');  // This is a white lie.
+    this.setTooltip(
+        'Indicates that certain operations should be done to all items.');
+    // No help URL.
+  },
+  onchange: function() {
+    if (!this.workspace) {
+      // Block has been deleted.
+      return;
+    }
+    // Determine whether the input to which this is connected permitsAll.
+    if (this.outputConnection && this.outputConnection.targetConnection) {
+      var sourceBlock = this.outputConnection.targetConnection.sourceBlock_;
+      for (var i = 0; i < sourceBlock.inputList.length; i++) {
+        var input = sourceBlock.inputList[i];
+        // Check whether this input is connected to anything.
+        if (input.connection.targetConnection) {
+          var sb = input.connection.targetConnection.sourceBlock_;
+          // If the input is connected to the "all" block, see if the input
+          // permits it.
+          if (sb == this) {
+            if (input.permitsAll) {
+              this.setWarningText(null);
+            } else {
+              this.setWarningText('This slot cannot accept "all" as an input.');
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+Blockly.Lua['turtle_all'] = function(block) {
+  // Generate code for block to indicate that an operation should be applied to
+  // as many items as possible.  Specifically, this generates the empty string
+  // because the absence of a parameter is how "all" is specified for the Turtle
+  // API.  Note: turtle.transferTo() is a special case, since the optional
+  // quantity argument is second.
+  return ['', Blockly.Lua.ORDER_NONE];
+};
