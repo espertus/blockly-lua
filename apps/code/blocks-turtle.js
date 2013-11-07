@@ -207,7 +207,8 @@ Blockly.Blocks['turtle_craft'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('LIMIT')
         .setCheck('Number')
-        .appendTitle('craft with limit');
+        .appendTitle('craft')
+	.permitsAll = true;
     this.setOutput(true, 'Boolean');
     this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern,\nplacing the result in the currently selected slot.  Returns true if items are crafted.\nIf no limit is provided, the turtle will make as many as possible (maximum 64).\nIf a limit of 0 is supplied, no items will be consumed,\nbut the return value will indicate whether a valid recipe is present.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'craft');
@@ -221,7 +222,7 @@ Blockly.Blocks['turtle_craft'] = {
 };
 
 Blockly.Lua['turtle_craft'] = function(block) {
-  // Generate Lua for crafting an item.  A limit argument is optional.
+  // Generate Lua for crafting an item.
   var argument0 = Blockly.Lua.valueToCode(block, 'LIMIT',
                                           Blockly.Lua.ORDER_NONE) || '';
   var code = 'turtle.craft(' + argument0 + ')';
