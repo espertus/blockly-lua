@@ -68,7 +68,7 @@ Blockly.Blocks['turtle_dig'] = {
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
-    this.setTooltip('Try to dig in the specified direction, returning trueif successful,\nfalse otherwise (for example, if the block is empty\nor bedrock is encountered).');
+    this.setTooltip('Try to dig in the specified direction, returning true if successful,\nfalse otherwise (for example, if the block is empty\nor bedrock is encountered).');
     var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
