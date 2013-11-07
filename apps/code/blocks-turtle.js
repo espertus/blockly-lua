@@ -517,7 +517,7 @@ Blockly.Blocks['turtle_all'] =  {
       for (var i = 0; i < sourceBlock.inputList.length; i++) {
         var input = sourceBlock.inputList[i];
         // Check whether this input is connected to anything.
-        if (input.connection.targetConnection) {
+        if (input.connection && input.connection.targetConnection) {
           var sb = input.connection.targetConnection.sourceBlock_;
           // If the input is connected to the "all" block, see if the input
           // permits it.
