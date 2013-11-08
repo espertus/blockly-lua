@@ -15,10 +15,10 @@ Blockly.Blocks['turtle_move'] = {
     this.setOutput(true, 'Boolean')
     this.setTooltip('Try to move the turtle in the specified direction,\n' +
         'returning true if successful, false if the way is blocked.');
+    var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -208,11 +208,10 @@ Blockly.Blocks['turtle_craft'] = {
     this.appendValueInput('LIMIT')
         .setCheck('Number')
         .appendTitle('craft')
-	.permitsAll = true;
+        .permitsAll = true;
     this.setOutput(true, 'Boolean');
     this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern,\nplacing the result in the currently selected slot.  Returns true if items are crafted.\nIf no limit is provided, the turtle will make as many as possible (maximum 64).\nIf a limit of 0 is supplied, no items will be consumed,\nbut the return value will indicate whether a valid recipe is present.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'craft');
-    var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -238,7 +237,6 @@ Blockly.Blocks['turtle_select'] = {
         .appendTitle('select slot #');
     this.setTooltip('Select the slot to use (1-16) for subsequent craft, drop, etc., commands.');
     this.setHelpUrl(BASE_TURTLE_HELP_URL_ + 'select');
-    var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -362,10 +360,10 @@ Blockly.Blocks['turtle_drop'] = {
     this.setOutput(true, 'Boolean')
     this.setInputsInline(true);
     this.setTooltip('Drops the supplied amount of items in the selected slot.\nIf an inventory such as a chest is on that side of the turtle,\nit will try to place into the inventory, returning false if the inventory is full.');
+    var thisBlock = this;
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
-    var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
@@ -473,7 +471,6 @@ Blockly.Blocks['turtle_transfer_to'] = {
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
     this.setTooltip('Transfers items from the currently selected slot to the specified, returning whether it was successful.');
-     var thisBlock = this;
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
