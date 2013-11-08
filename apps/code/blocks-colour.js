@@ -76,3 +76,21 @@ Blockly.FieldColour.COLOURS = COLOURS_.map(function(c) {return c.rgb;});
  * (via blockly_[un]compressed.js).
  */
 Blockly.FieldColour.COLUMNS = 4;
+
+/**
+ * Return the current colour as a ComputerCraft value.
+ * See "http://computercraft.info/wiki/Colors_%28API%29".
+ * This overrides an existing method in core/field_colour.js.
+ *
+ * @return {string} Current colour as ComputerCraft value.
+ */
+Blockly.FieldColour.prototype.getValue = function() {
+  for (int i = 0; i < COLOURS_.length; i++) {
+    var entry = COLOURS_[i];
+    if (entry.rgb == this.colour_) {
+      return entry.value;
+    }
+  }
+  // This line shouldn't be reached.  Return the first colour if it is.
+  return COLOURS_[0].value;
+};
