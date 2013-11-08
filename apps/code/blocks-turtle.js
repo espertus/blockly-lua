@@ -308,7 +308,7 @@ Blockly.Blocks['turtle_get_item_count'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendTitle('item count in slot');
+        .appendTitle('get item count in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the count of items in the supplied slot number.');
   }
@@ -329,7 +329,7 @@ Blockly.Blocks['turtle_get_item_space'] = {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
-        .appendTitle('free space in slot');
+        .appendTitle('get free space in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the number of items that can be placed in the numbered slot.');
   }
@@ -466,7 +466,7 @@ Blockly.Blocks['turtle_get_fuel_level'] = {
   init: function() {
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle('fuel level');
+        .appendTitle('get fuel level');
     this.setOutput(true, 'Number');
     this.setTooltip('Returns the current fuel level of the turtle, which is the number of blocks the turtle can move.\nIf fuel is turned off in the ComputerCraft config this will return "unlimited".');
   }
