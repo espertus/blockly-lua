@@ -141,63 +141,85 @@ Blockly.Blocks['turtle_place'] = {
   // Block for placing an item from the selected slot in front of, above,
   // or below the turtle.
   init: function() {
+    var TYPES =
+        [['item', 'item'],
+         ['sign', 'sign']];
     var DIRECTIONS =
-        [['place item in front', 'place'],
-         ['place item up', 'placeUp'],
-         ['place item below', 'placeDown']];
+        [['in front', 'place'],
+         ['up', 'placeUp'],
+         ['below', 'placeDown']];
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
+        .appendTitle('place');
+    var thisBlock = this;
+    this.appendDummyInput('TYPE')
+        .appendTitle(
+          new Blockly.FieldDropdown(
+            TYPES,
+            function(value) {
+              if (value == 'item') {
+                thisBlock.enterItemMode();
+              } else {
+                thisBlock.enterSignMode();
+              }
+            }),
+          'TYPE');
+    this.appendDummyInput('DIRECTION')
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
-    this.setTooltip('Place an item from the selected slot in the specified direction.\nThe result is true if successful, false if no item\nwas in the slot or it could not be placed.');
-    var thisBlock = this;
+    this.setInputsInline(true);
+    this.setTooltip(function() {
+      if (block.getTitleValue('TYPE') == 'item') {
+	return 'Place a block or item from the selected slot.\nThe result is true if successful, false otherwise.';
+      } else {
+	return 'Place a block or item from the selected slot.\nIf it is a sign, it will have the specified text.\nThe result is true if an item could be placed, false otherwise.';
+      }});
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
+  },
+  enterSignMode: function() {
+    this.appendValueInput('TEXT')
+        .setCheck('String')
+        .appendTitle('with text');
+    this.moveInputBefore('TEXT', 'DIRECTION');
+  },
+  enterItemMode: function() {
+    this.removeInput('TEXT', true);
   },
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
-  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
-  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+  mutationToDom: [
+    function(block) {
+      (BlocklyLua.HELPER_FUNCTIONS['mutationToDom'].bind(block))()
+    },
+    function(block) {
+      var container = document.createElement('mutation');
+      container.setAttribute('mode', block.getTitleValue('TYPE'));
+      return container;
+    }.bind(this)],
+  domToMutation: [
+    function(block) {
+      return BlocklyLua.HELPER_FUNCTIONS['domToMutation'].bind(block);
+    },
+    // This function is just for turtle_place.  Do not copy it elsewhere.
+    function(block) {
+      return function(xmlElement) {
+        if (xmlElement.getAttribute('mode') == 'sign') {
+          block.enterSignMode();
+        } else {
+          block.enterItemMode();
+        }
+      }
+    }]
 };
 
 Blockly.Lua['turtle_place'] = function(block) {
   // Generate Lua for placing forward, up, or down.
-  var code = 'turtle.' + block.getTitleValue('DIR') + '()';
-  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-};
-
-Blockly.Blocks['turtle_place_sign'] = {
-  // Block for placing a sign from the selected slot in front of, above,
-  // or below the turtle.
-  init: function() {
-    var DIRECTIONS =
-        [['place sign in front with text', 'place'],
-         ['place sign up with text', 'placeUp'],
-         ['place sign down with text', 'placeDown']];
-    this.setColour(TURTLE_BLOCK_COLOUR_);
-    this.appendValueInput('TEXT')
-        .setCheck('String')
-        .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
-    this.setOutput(true, 'Boolean')
-    this.setTooltip('Place an item from the selected slot.\nIf it is a sign, it will have the specified text.\nThe result is true if an item could be placed,\nfalse if no item was in the slot or it could not be placed.');
-    var thisBlock = this;
-    this.setHelpUrl(function() {
-      return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
-    });
-  },
-  changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
-  customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
-  mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
-  domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
-};
-
-Blockly.Lua['turtle_place_sign'] = function(block) {
-  // Generate Lua for placing forward, up, or down.
-  var text = Blockly.Lua.valueToCode(block, 'TEXT',
-      Blockly.Lua.ORDER_NONE) || '0';
-  var code = 'turtle.' + block.getTitleValue('DIR') + '(' + text +')'
+  var code = 'turtle.' + block.getTitleValue('DIR') + '(' +
+      (Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) || '') +
+      ')';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
 };
 
