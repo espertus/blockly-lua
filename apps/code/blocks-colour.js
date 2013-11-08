@@ -77,20 +77,27 @@ Blockly.FieldColour.COLOURS = COLOURS_.map(function(c) {return c.rgb;});
  */
 Blockly.FieldColour.COLUMNS = 4;
 
-/**
- * Return the current colour as a ComputerCraft value.
- * See "http://computercraft.info/wiki/Colors_%28API%29".
- * This overrides an existing method in core/field_colour.js.
- *
- * @return {string} Current colour as ComputerCraft value.
- */
-Blockly.FieldColour.prototype.getValue = function() {
-  for (int i = 0; i < COLOURS_.length; i++) {
+Blockly.Blocks['colour_picker'] = {
+  // Colour picker.
+  init: function() {
+    this.setHelpUrl('http://computercraft.info/wiki/Colors_%28API%29');
+    this.setColour(20);
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldColour('#cc4c4c'), 'COLOUR');
+    this.setOutput(true, 'Colour');
+    this.setTooltip('Choose among colours (from left to right, top to bottom):\nwhite, orange, magenta, light blue,\nyellow, lime, pink, grey,\nlight gray, cyan purple, blue,\nbrown, green, red, black.');
+  }
+};
+
+Blockly.Lua['colour_picker'] = function(block) {
+  // Generate Lua code for the selected ComputerCraft colour.
+  var colour = block.inputList[0].titleRow[0].colour_;
+  for (var i = 0; i < COLOURS_.length; i++) {
     var entry = COLOURS_[i];
-    if (entry.rgb == this.colour_) {
-      return entry.value;
+    if (entry.rgb == colour) {
+      return [entry.value, Blockly.Lua.ORDER_NONE];
     }
   }
-  // This line shouldn't be reached.  Return the first colour if it is.
-  return COLOURS_[0].value;
+  // This line shouldn't be reached.
+  window.alert('Error from colour_picker.');
 };
