@@ -29,16 +29,11 @@ BlocklyLua.BASE_HELP_URL = 'http://computercraft.info/wiki/';
 
 /**
  These functions help make a block so that it can convert between
- expression and statement form (in case the programmer wants to
- ignore the return value).  To use them, the following line must
- be included in the block's init() method:
+ expression and statement form (in case the programmer wants to ignore the
+ return value).  The block will begin in expression mode, unless the following
+ line is included in the block's init() method:
 
-     var thisBlock = this;
-
- The block will begin in expression mode, unless the following line
- is included in the block's init() method:
-
-     thisBlock.isStatement = true;
+     this.isStatement = true;
 
  The following definitions must appear in the block definition:
 
@@ -84,7 +79,7 @@ BlocklyLua.HELPER_FUNCTIONS = {
   mutationToDom: function() {
     // Save whether it is a statement.
     var container = document.createElement('mutation');
-    container.setAttribute('is_statement', this.isStatement);
+    container.setAttribute('is_statement', this['isStatement'] || false);
     return container;
   },
   domToMutation: function(xmlElement) {
