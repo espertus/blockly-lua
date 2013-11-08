@@ -280,9 +280,9 @@ Blockly.Blocks['turtle_compare'] = {
   // selected slot.
   init: function() {
     var DIRECTIONS =
-        [['compare front block to selected slot', 'compare'],
-         ['compare above block to selected slot', 'compareUp'],
-         ['compare below block to selected slot', 'compareDown']];
+        [['compare front item to selected slot', 'compare'],
+         ['compare above item to selected slot', 'compareUp'],
+         ['compare below item to selected slot', 'compareDown']];
     this.setColour(TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
