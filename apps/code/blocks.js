@@ -33,7 +33,7 @@ BlocklyLua.BASE_HELP_URL = 'http://computercraft.info/wiki/';
  return value).  The block will begin in expression mode, unless the following
  line is included in the block's init() method:
 
-     thisBlock.isStatement = true;
+     this.isStatement = true;
 
  The following definitions must appear in the block definition:
 
