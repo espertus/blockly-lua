@@ -169,10 +169,10 @@ Blockly.Blocks['turtle_place'] = {
     this.setOutput(true, 'Boolean')
     this.setInputsInline(true);
     this.setTooltip(function() {
-      if (block.getTitleValue('TYPE') == 'item') {
-	return 'Place a block or item from the selected slot.\nThe result is true if successful, false otherwise.';
+      if (this.getTitleValue('TYPE') == 'item') {
+        return 'Place a block or item from the selected slot.\nThe result is true if successful, false otherwise.';
       } else {
-	return 'Place a block or item from the selected slot.\nIf it is a sign, it will have the specified text.\nThe result is true if an item could be placed, false otherwise.';
+        return 'Place a block or item from the selected slot.\nIf it is a sign, it will have the specified text.\nThe result is true if an item could be placed, false otherwise.';
       }});
     this.setHelpUrl(function() {
       return BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
