@@ -327,47 +327,39 @@ Blockly.Lua['turtle_compare'] = function(block) {
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 
-Blockly.Blocks['turtle_get_item_count'] = {
-  // Block for returning the number of items in the supplied slot.
+Blockly.Blocks['turtle_get_slot_info'] = {
+  // Block for returning the number of items OR the available space in the
+  // selected slot.  This replaces the deprecated turtle_get_item_count and
+  // turtle_get_item_space blocks.
   init: function() {
-    this.setColour(TURTLE_BLOCK_COLOUR_);
-    this.appendValueInput('VALUE')
-        .setCheck('Number')
-        .appendTitle('get item count in slot');
+    var CHOICES = [['get item count in slot', 'Count'],
+                   ['get free space in slot', 'Space']];
+    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldDropdown(CHOICES), 'CHOICE');
+    this.appendValueInput('SLOT')
+        .setCheck('Number');
+    this.setInputsInline(true);
     this.setOutput(true, 'Number');
-    this.setTooltip('Get the count of items in the supplied slot number.');
+    var thisBlock = this;
+    this.setTooltip(function() {
+      if (thisBlock.getTitleValue('CHOICE') == 'Count') {
+        return 'Get the count of items in the numbered slot.';
+      } else {
+        return 'Get the number of items that can be placed in the numbered slot.';
+      }
+    });
   }
 };
 
-Blockly.Lua['turtle_get_item_count'] = function(block) {
+Blockly.Lua['turtle_get_slot_info'] = function(block) {
   // Generate Lua for getting the number of items in the supplied slot number
-  var argument0 = Blockly.Lua.valueToCode(
-    block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
-  var code = 'turtle.getItemCount(' + argument0 + ')';
-  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-}
-
-Blockly.Blocks['turtle_get_item_space'] = {
-  // Block for getting the number of items that can be put in the numbered
-  // slot.
-  init: function() {
-    this.setColour(TURTLE_BLOCK_COLOUR_);
-    this.appendValueInput('VALUE')
-        .setCheck('Number')
-        .appendTitle('get free space in slot');
-    this.setOutput(true, 'Number');
-    this.setTooltip('Get the number of items that can be placed in the numbered slot.');
-  }
+  var slot = Blockly.Lua.valueToCode(block, 'SLOT', Blockly.Lua.ORDER_NONE)
+      || '1';  // Alternative value temporary until we enforce parameters.
+  var code = 'turtle.getItem' + block.getTitleValue('CHOICE') +
+      '(' + slot + ')';
+  return [code, Blockly.Lua.ORDER_NONE];
 };
-
-Blockly.Lua['turtle_get_item_space'] = function(block) {
-  // Generate Lua for getting the number of items that can be put in the
-  // numbered slot.
-  var argument0 = Blockly.Lua.valueToCode(
-    block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
-  var code = 'turtle.getItemSpace(' + argument0 + ')';
-  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-}
 
 Blockly.Blocks['turtle_compare_to'] = {
   // Block for comparing items in the selected slot and the supplied one.
