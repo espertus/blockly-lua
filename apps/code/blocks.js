@@ -84,7 +84,7 @@ BlocklyLua.HELPER_FUNCTIONS = {
   mutationToDom: function() {
     // Save whether it is a statement.
     var container = document.createElement('mutation');
-    container.setAttribute('is_statement', this.isStatement);
+    container.setAttribute('is_statement', this['isStatement'] || false);
     return container;
   },
   domToMutation: function(xmlElement) {
