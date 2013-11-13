@@ -35,6 +35,22 @@ Code.TABS_ = ['blocks', 'lua', 'xml'];
 
 Code.selected = 'blocks';
 
+Code.hideTab = function(name) {
+  document.getElementById('tab_' + name).className = 'taboff';
+  document.getElementById('content_' + name).style.visibility = 'hidden';
+};
+
+Code.displayTab = function(id) {
+  // Select the active tab.
+  Code.selected = id.replace('tab_', '');
+  document.getElementById(id).className = 'tabon';
+  // Show the selected pane.
+  document.getElementById('content_' + Code.selected).style.visibility =
+      'visible';
+  Code.renderContent();
+  Blockly.fireUiEvent(window, 'resize');
+}
+
 /**
  * Switch the visible pane when a tab is clicked.
  * @param {string} id ID of tab clicked.
@@ -64,19 +80,40 @@ Code.tabClick = function(id) {
 
   // Deselect all tabs and hide all panes.
   for (var x in Code.TABS_) {
-    var name = Code.TABS_[x];
-    document.getElementById('tab_' + name).className = 'taboff';
-    document.getElementById('content_' + name).style.visibility = 'hidden';
+    Code.hideTab(Code.TABS_[x]);
   }
 
-  // Select the active tab.
-  Code.selected = id.replace('tab_', '');
-  document.getElementById(id).className = 'tabon';
-  // Show the selected pane.
-  document.getElementById('content_' + Code.selected).style.visibility =
-      'visible';
-  Code.renderContent();
-  Blockly.fireUiEvent(window, 'resize');
+  // If the Lua pane was selected, validate blocks before switching.
+  if (id == 'tab_lua') {
+    var badBlock = Blockly.Lua.getUnconnectedBlock();
+    if (badBlock) {
+      // Go to blocks pane.
+      Code.displayTab('tab_blocks');
+      var style = {
+        width: '25%',
+        left: '25%',
+        top: '5em'
+      };
+      BlocklyApps.showDialog(document.getElementById('badBlockDiv'), null,
+                             false, true, style, BlocklyApps.stopDialogKeyDown);
+      BlocklyApps.startDialogKeyDown();
+      var blink = function() {
+        badBlock.select();
+        if (BlocklyApps.isDialogVisible_) {
+          window.setTimeout(function() {badBlock.unselect();}, 150);
+          window.setTimeout(blink, 300);
+        }
+      };
+      blink();
+      return;
+    }
+  }
+
+  // Hack: To skip the bad block checking, id = "tab_lua!".
+  if (id == 'tab_lua!') {
+    id = 'tab_lua';
+  }
+  Code.displayTab(id);
 };
 
 /**

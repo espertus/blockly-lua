@@ -331,6 +331,35 @@
     </div>
   </div>
 
+  <!-- This is opened if the user tries generating Lua but has -->
+  <!-- a disconnected block.  -->
+  <div id="badBlockDiv" class="dialogHiddenContent">
+    <table>
+      <tbody>
+        <tr>
+          <td colspan=2>This block is not properly connected to other blocks.</td>
+        </tr>
+        <tr>
+          <td colspan=2>The resulting program would probably not be correct.</td>
+        </tr>
+        <tr>
+          <td>
+            <button id='badBlockDoneButton' onclick="BlocklyApps.hideDialog();">
+              OK
+            </button>
+          </td>
+          <td>
+            <button id='badBlockCodeButton' style='float:right'
+                    onclick="BlocklyApps.hideDialog();Code.tabClick('tab_lua!');">
+              Generate Lua anyway
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
   <!-- This is opened when the user clicks the Pastebin button. -->
   <div id="pastebinDiv" class="dialogHiddenContent">
     <form id="pastebinForm"
