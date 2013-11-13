@@ -89,8 +89,11 @@ Code.tabClick = function(id) {
     if (badBlock) {
       // Go to blocks pane.
       Code.displayTab('tab_blocks');
+      // Pop up warning dialog, making an offending block blink.
+      // If they close the dialog with "OK", they remain in the blocks pane.
+      // If they choose the other option ("generate Lua anyway"), the fake
+      // tab "tab_lua!" is selected, and this validation will get skipped.
       var style = {
-        width: '25%',
         left: '25%',
         top: '5em'
       };
