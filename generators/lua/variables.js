@@ -50,8 +50,9 @@ Blockly.Lua['variables_set'] = function(block) {
 
 Blockly.Lua['variables_set_two'] = function(block) {
   // Set two variables to a function's return value.
-  // If the input is not a procedure returning multiple values, the user will
-  // have been warned when connecting the connection.
+  // If the input is not a procedure returning mulltiple values, the
+  // user will have been warned both when the connection was made and when
+  // changing to the Lua tab.
   var value = Blockly.Lua.valueToCode(block, 'VALUE',
       Blockly.Lua.ORDER_NONE) || 'nil, nil';
   var varName1 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR1'),
@@ -59,4 +60,20 @@ Blockly.Lua['variables_set_two'] = function(block) {
   var varName2 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR2'),
       Blockly.Variables.NAME_TYPE);
   return varName1 + ', ' + varName2 + ' = ' + value + '\n';
+};
+
+Blockly.Lua['variables_set_three'] = function(block) {
+  // Set three variables to a function's return value.
+  // If the input is not a procedure returning at least three values, the
+  // user will have been warned both when the connection was made and when
+  // changing to the Lua tab.
+  var value = Blockly.Lua.valueToCode(block, 'VALUE',
+      Blockly.Lua.ORDER_NONE) || 'nil, nil, nil';
+  var varName1 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR1'),
+      Blockly.Variables.NAME_TYPE);
+  var varName2 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR2'),
+      Blockly.Variables.NAME_TYPE);
+  var varName3 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR3'),
+      Blockly.Variables.NAME_TYPE);
+  return varName1 + ', ' + varName2 + ', ' + varName3 + ' = ' + value + '\n';
 };
