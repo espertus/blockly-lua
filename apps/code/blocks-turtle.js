@@ -520,13 +520,14 @@ Blockly.Blocks['turtle_transfer_to'] = {
     this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('QUANTITY')
         .setCheck('Number')
-        .appendTitle('move')
+        .appendTitle('transfer')
         .permitsAll = true;
     this.appendValueInput('SLOT')
         .setCheck('Number')
         .appendTitle('items from selected slot to slot');
     this.setInputsInline(true);
     this.setOutput(true, 'Boolean');
+    this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'transferTo');
     this.setTooltip('Transfers items from the currently selected slot to the specified, returning whether it was successful.');
   },
   // This block has two outputs.
