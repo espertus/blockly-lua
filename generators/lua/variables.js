@@ -47,3 +47,16 @@ Blockly.Lua['variables_set'] = function(block) {
       Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + '\n';
 };
+
+Blockly.Lua['variables_set_two'] = function(block) {
+  // Set two variables to a function's return value.
+  // If the input is not a procedure returning multiple values, the user will
+  // have been warned when connecting the connection.
+  var value = Blockly.Lua.valueToCode(block, 'VALUE',
+      Blockly.Lua.ORDER_NONE) || 'nil, nil';
+  var varName1 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR1'),
+      Blockly.Variables.NAME_TYPE);
+  var varName2 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR2'),
+      Blockly.Variables.NAME_TYPE);
+  return varName1 + ', ' + varName2 + ' = ' + value + '\n';
+};

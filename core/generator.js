@@ -45,26 +45,6 @@ Blockly.Generator = function(name) {
 Blockly.Generator.NAME_TYPE = 'generated_function';
 
 /**
- * Check whether any block is not fully connected.
- * @return {?block} an unconnected block, if one exists; otherwise, null.
- */
-Blockly.Generator.prototype.getUnconnectedBlock = function() {
-  var blocks = Blockly.mainWorkspace.getAllBlocks();
-  for (var i = 0, block; block = blocks[i]; i++) {
-    var connections = block.getConnections_(true);
-    for (var j = 0, conn; conn = connections[j]; j++) {
-      if (!conn.sourceBlock_ ||
-          (conn.type == Blockly.INPUT_VALUE ||
-           conn.type == Blockly.OUTPUT_VALUE) && !conn.targetConnection) {
-        return block;
-      }
-    }
-  }
-  return null;
-};
-
-
-/**
  * Generate code for all blocks in the workspace to the specified language.
  * @return {string} Generated code.
  */
@@ -236,4 +216,38 @@ Blockly.Generator.prototype.statementToCode = function(block, name) {
  */
 Blockly.Generator.prototype.addReservedWords = function(words) {
   this.RESERVED_WORDS_ += words + ',';
+};
+
+
+/**
+ * Check whether any block is not fully connected.
+ * @return {?block} An unconnected block, if one exists; otherwise, null.
+ */
+Blockly.Generator.prototype.getUnconnectedBlock = function() {
+  var blocks = Blockly.mainWorkspace.getAllBlocks();
+  for (var i = 0, block; block = blocks[i]; i++) {
+    var connections = block.getConnections_(true);
+    for (var j = 0, conn; conn = connections[j]; j++) {
+      if (!conn.sourceBlock_ ||
+          (conn.type == Blockly.INPUT_VALUE ||
+           conn.type == Blockly.OUTPUT_VALUE) && !conn.targetConnection) {
+        return block;
+      }
+    }
+  }
+  return null;
+};
+
+/**
+ * Check whether any block has a warning.
+ * @return {?block} A block with a warning, or null if none exist.
+ */
+Blockly.Generator.prototype.getBlockWithWarning = function() {
+  var blocks = Blockly.mainWorkspace.getAllBlocks();
+  for (var i = 0, block; block = blocks[i]; i++) {
+    if (block.warning) {
+      return block;
+    }
+  }
+  return null;
 };

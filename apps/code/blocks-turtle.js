@@ -45,6 +45,8 @@ Blockly.Blocks['turtle_move'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -99,6 +101,8 @@ Blockly.Blocks['turtle_dig'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     })
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -129,6 +133,8 @@ Blockly.Blocks['turtle_attack'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     })
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -212,6 +218,8 @@ Blockly.Blocks['turtle_place'] = {
   enterItemMode: function() {
     this.removeInput('TEXT', true);
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -260,6 +268,8 @@ Blockly.Blocks['turtle_craft'] = {
     this.setTooltip('Craft items using ingredients in the turtle\'s inventory when they\'re in a valid recipe pattern,\nplacing the result in the currently selected slot.  Returns true if items are crafted.\nIf no limit is provided, the turtle will make as many as possible (maximum 64).\nIf a limit of 0 is supplied, no items will be consumed,\nbut the return value will indicate whether a valid recipe is present.');
     this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'craft');
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -285,6 +295,8 @@ Blockly.Blocks['turtle_select'] = {
     this.setTooltip('Select the slot to use (1-16) for subsequent craft, drop, etc., commands.');
     this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'select');
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -404,6 +416,8 @@ Blockly.Blocks['turtle_drop'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -436,6 +450,8 @@ Blockly.Blocks['turtle_suck'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -464,6 +480,8 @@ Blockly.Blocks['turtle_refuel'] = {
       return BlocklyLua.BASE_TURTLE_HELP_URL_ + 'refuel';
     });
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
@@ -511,6 +529,8 @@ Blockly.Blocks['turtle_transfer_to'] = {
     this.setOutput(true, 'Boolean');
     this.setTooltip('Transfers items from the currently selected slot to the specified, returning whether it was successful.');
   },
+  // This block has two outputs.
+  multipleOutputs: 2,
   // Enable block to change between statement and expression.
   changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
   customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],

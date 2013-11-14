@@ -34,35 +34,14 @@ goog.require('Blockly.Variables');
  * Class for a variable's dropdown field.
  * @param {!string} varname The default name for the variable.  If null,
  *     a unique variable name will be generated.
- * @param {Function} opt_changeHandler A function that is executed when a new
- *     option is selected.
  * @extends {Blockly.FieldDropdown}
  * @constructor
  */
 Blockly.FieldVariable = function(varname, opt_changeHandler) {
-  var changeHandler;
-  if (opt_changeHandler) {
-    // Wrap the user's change handler together with the variable rename handler.
-    var thisObj = this;
-    changeHandler = function(value) {
-      var retVal = Blockly.FieldVariable.dropdownChange.call(thisObj, value);
-      var newVal;
-      if (retVal === undefined) {
-        newVal = value;  // Existing variable selected.
-      } else if (retVal === null) {
-        newVal = thisObj.getValue();  // Abort, no change.
-      } else {
-        newVal = retVal;  // Variable name entered.
-      }
-      opt_changeHandler.call(thisObj, newVal);
-      return retVal;
-    };
-  } else {
-    changeHandler = Blockly.FieldVariable.dropdownChange;
-  }
-
-  Blockly.FieldVariable.superClass_.constructor.call(this,
-      Blockly.FieldVariable.dropdownCreate, changeHandler);
+  Blockly.FieldVariable.superClass_.constructor.call(
+    this,
+    Blockly.FieldVariable.dropdownCreate,
+    Blockly.FieldVariable.dropdownChange);
 
   if (varname) {
     this.setValue(varname);
@@ -120,10 +99,14 @@ Blockly.FieldVariable.dropdownCreate = function() {
  * Event handler for a change in variable name.
  * Special case the 'New variable...' and 'Rename variable...' options.
  * In both of these special cases, prompt the user for a new name.
+ * The entered name is stripped of leading and trailing whitespace.
+ * All resulting names are acceptable except for '_' and the empty string.
  * @param {string} text The selected dropdown menu option.
- * @return {null|undefined|string} An acceptable new variable name, or null if
- *     change is to be either aborted (cancel button) or has been already
- *     handled (rename), or undefined if an existing variable was chosen.
+ * @return {null|undefined|_string} One of:
+ *     - null if change is to be either aborted (cancel button or entered
+ *       illegal value) or has been already handled (rename).
+ *     - undefined if an existing variable was chosen.
+ *     - an acceptable variable name.
  * @this {!Blockly.FieldVariable}
  */
 Blockly.FieldVariable.dropdownChange = function(text) {
@@ -131,8 +114,15 @@ Blockly.FieldVariable.dropdownChange = function(text) {
     Blockly.hideChaff();
     var newVar = window.prompt(promptText, defaultText);
     // Merge runs of whitespace.  Strip leading and trailing whitespace.
-    // Beyond this, all names are legal.
-    return newVar && newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+    if (newVar) {
+      newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+      // Any characters are legal except for a single underscore, which has
+      // a special meaning (sink) in Lua.
+      if (newVar == '_' || !newVar) {
+        return null;
+      }
+    }
+    return newVar;
   }
   if (text == Blockly.Msg.RENAME_VARIABLE) {
     var oldVar = this.getText();

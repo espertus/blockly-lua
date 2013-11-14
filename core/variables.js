@@ -129,6 +129,12 @@ Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
       gaps.push(margin * 2);
     }
   }
+  // Provide multiple block setter, if defined.
+  if (Blockly.Blocks['variables_set_two']) {
+    var block = new Blockly.Block(workspace, 'variables_set_two');
+    block.initSvg();
+    blocks.push(block);
+  }
 };
 
 /**

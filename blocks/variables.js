@@ -90,3 +90,51 @@ Blockly.Blocks['variables_set'] = {
   },
   customContextMenu: Blockly.Blocks['variables_get'].customContextMenu
 };
+
+Blockly.Blocks['variables_set_two'] = {
+  // Set two variables to the return values of a procedure call.
+  init: function() {
+    this.setColour(330);
+    this.appendDummyInput()
+        .appendTitle('set variables');
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldVariable('x'), 'VAR1');
+    this.appendDummyInput()
+        .appendTitle(new Blockly.FieldVariable('y'), 'VAR2');
+    this.appendValueInput('VALUE');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setInputsInline(true);
+    this.setTooltip('Set variables to the two values returned by a procedure.');
+  },
+  renameVar: function(oldName, newName) {
+    var var1 = this.getTitleValue('VAR1');
+    var var2 = this.getTitleValue('VAR2');
+    if ((var1 == oldName || var1 == newName) &&
+	(var2 == oldName || var2 == newName)) {
+      window.alert('Two variables in a set block may not have the same name.');
+      return;
+    }
+    if (Blockly.Names.equals(oldName, var1)) {
+      this.setTitleValue(newName, 'VAR1');
+    }
+    if (Blockly.Names.equals(oldName, var2)) {
+      this.setTitleValue(newName, 'VAR2');
+    }
+  },
+  onchange: function() {
+    if (!this.workspace) {
+      // Block has been deleted.
+      return;
+    }
+    // If the value input socket is populated, make sure that block produces
+    // at least two values.
+    var source = this.getInputTargetBlock('VALUE');
+    if (source && !source.multipleOutputs) {
+      this.setWarningText('The attached block only produces one value, ' +
+			  'but this block requires two.');
+    } else {
+      this.setWarningText(null);
+    }
+  }
+};
