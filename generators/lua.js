@@ -43,6 +43,8 @@ Blockly.Lua = new Blockly.Generator('Lua');
  * @private
  */
 Blockly.Lua.addReservedWords(
+    // Special character
+    '_',
     // Keywords (http://www.lua.org/pil/1.3.html).
     'and,break,do,else,elseif,end,false,for,function,if,in,local,nil,not,or,' +
     'repeat,return,then,true,until,while,' +

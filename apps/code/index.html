@@ -331,13 +331,13 @@
     </div>
   </div>
 
-  <!-- This is opened if the user tries generating Lua but has -->
-  <!-- a disconnected block.  -->
+  <!-- This is opened if the user tries generating Lua but has a disallowed -->
+  <!-- construct, such as a disconnected input/output.  -->
   <div id="badBlockDiv" class="dialogHiddenContent">
     <table>
       <tbody>
         <tr>
-          <td colspan=2>This block is not properly connected to other blocks.</td>
+          <td id="badBlockMsg" colspan=2></td>
         </tr>
         <tr>
           <td colspan=2>The resulting program would probably not be correct.</td>

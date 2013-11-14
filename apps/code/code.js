@@ -85,7 +85,18 @@ Code.tabClick = function(id) {
 
   // If the Lua pane was selected, validate blocks before switching.
   if (id == 'tab_lua') {
+    // Check for bad block configurations that make it unlikely that
+    // the resulting code is correct.
     var badBlock = Blockly.Lua.getUnconnectedBlock();
+    if (badBlock) {
+      warningText = 'This block is not propertly connected to other blocks.';
+    } else {
+      badBlock = Blockly.Lua.getBlockWithWarning();
+      if (badBlock) {
+        warningText = 'Please fix the warning on this block.';
+      }
+    }
+
     if (badBlock) {
       // Go to blocks pane.
       Code.displayTab('tab_blocks');
@@ -97,6 +108,7 @@ Code.tabClick = function(id) {
         left: '25%',
         top: '5em'
       };
+      document.getElementById('badBlockMsg').innerHTML = warningText;
       BlocklyApps.showDialog(document.getElementById('badBlockDiv'), null,
                              false, true, style, BlocklyApps.stopDialogKeyDown);
       BlocklyApps.startDialogKeyDown();
