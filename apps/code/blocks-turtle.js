@@ -1,7 +1,7 @@
 /**
- * Blockly Apps: Blocklycraft
+ * Blockly Apps: Blockly Lua
  *
- * Copyright 2012 Google Inc.
+ * Copyright 2013 Google Inc.
  * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
