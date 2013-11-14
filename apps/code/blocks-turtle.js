@@ -37,7 +37,7 @@ Blockly.Blocks['turtle_move'] = {
     this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
-    this.setOutput(true, 'Boolean')
+    this.setOutput(true, 'Boolean');
     this.setTooltip('Try to move the turtle in the specified direction,\n' +
         'returning true if successful, false if the way is blocked.');
     var thisBlock = this;
