@@ -44,7 +44,7 @@ BlocklyLua.SIDES_ = [['in front', 'front'],
 
 BlockWithSide.prototype.addSideInput = function() {
   var thisBlock = this;
-  this.appendDummyInput()
+  this.appendDummyInput('SIDE')
       .appendTitle(
         new Blockly.FieldDropdown(
           BlocklyLua.SIDES_,
@@ -82,14 +82,14 @@ BlockWithSide.prototype.enterCableMode = function() {
   var textBlock = new Blockly.Block(this.workspace, 'text');
   textBlock.initSvg();
   textBlock.render();
-  this.appendValueInput('TEXT')
+  this.appendValueInput('CABLE')
       .setCheck('String')
       .connection.connect(textBlock.outputConnection);
   this.cableMode = true;
 };
 
 BlockWithSide.prototype.leaveCableMode = function() {
-    this.removeInput('TEXT', true);
+    this.removeInput('CABLE', true);
     this.cableMode = false;
   };
 
@@ -102,16 +102,16 @@ BlockWithSide.prototype.mutationToDom = function() {
 BlockWithSide.prototype.domToMutation = function(xmlElement) {
   this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
   if (this.cableMode) {
-    this.appendValueInput('TEXT')
+    this.appendValueInput('CABLE')
         .setCheck('String');
   }
 };
 
 BlockWithSide.prototype.generateLua = function(block) {
   var side = block.cableMode ?
-      (Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) || '')
+      (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
       :  block.getTitleValue('SIDES');
-  var code = 'peripheral.' + block.funcName + '(' + side + ')';
+  var code = 'peripheral.' + block.funcName + '(\'' + side + '\')';
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 
@@ -164,4 +164,201 @@ Blockly.Lua['peripheral_get_names'] = function(block) {
   // Generate Lua for getting the names of connected peripherals.
   var code = 'peripheral.getNames()';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+};
+
+// The rest of this file is devoted to the block 'peripheral_call',
+// which calls a method on an attached peripheral with an arbitrary
+// number of named (method) arguments.  The arguments to this block are:
+// First argument: side (as above)
+// Second argument: method name
+// Any number of subsequent arguments to be passed to method.
+// This will override (and explicitly call) most of the prototype's methods.
+Blockly.Blocks['peripheral_call'] = new BlockWithSide(
+  'peripheral_call',
+  'call method',
+  null,
+  'Calls a method on a connected peripheral. \n' +
+      'Click on the star to add parameters.',
+  'call');
+
+Blockly.Blocks['peripheral_call'].init = function() {
+  // Call prototype's init method to set up basics, including side.
+  BlockWithSide.prototype.init.call(this);
+  // Add mutator.
+  this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+  this.arguments_ = [];
+  // Add additional inputs.
+  this.appendValueInput('METHOD')
+      .setCheck('String');
+  this.appendDummyInput('ON')
+      .appendTitle('on peripheral');
+  this.moveInputBefore('METHOD', 'SIDE')
+  this.moveInputBefore('ON', 'SIDE')
+  this.appendDummyInput()
+      .appendTitle('', 'PARAMS');
+  // Override default code generator.
+  Blockly.Lua['peripheral_call'] = function(block) {
+    // Generate Lua for calling a method on an attached peripheral.
+    var side = block.cableMode ?
+        (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
+        :  block.getTitleValue('SIDES');
+    var method = Blockly.Lua.valueToCode(
+      block, 'METHOD', Blockly.Lua.ORDER_NONE) || '';
+    var code = 'peripheral.call(\'' + side + '\', ' + method;
+    for (var x = 1; this.getInput('PARAM' + x); x++) {
+      code += ', ' +
+          Blockly.Lua.valueToCode(block, 'PARAM' + x, Blockly.Lua.ORDER_NONE);
+    }
+    code += ')';
+    return [code, Blockly.Lua.ORDER_HIGH];
+  };
+};
+
+Blockly.Blocks['peripheral_call'].enterCableMode = function() {
+  BlockWithSide.prototype.enterCableMode.call(this);
+  if (this.getInput('PARAM1')) {
+    this.moveInputBefore('CABLE', 'PARAM1');
+  }
+};
+
+// Allow the user to add named inputs for the run-time method call.
+Blockly.Blocks['peripheral_call'].decompose = function(workspace) {
+  var containerBlock = new Blockly.Block(workspace,
+      'procedures_mutatorcontainer');
+  containerBlock.initSvg();
+  var connection = containerBlock.getInput('STACK').connection;
+  for (var x = 0; x < this.arguments_.length; x++) {
+    var paramBlock = new Blockly.Block(workspace, 'procedures_mutatorarg');
+    paramBlock.initSvg();
+    paramBlock.setTitleValue(this.arguments_[x], 'NAME');
+    // Store the old location.
+    paramBlock.oldLocation = x;
+    connection.connect(paramBlock.previousConnection);
+    connection = paramBlock.nextConnection;
+  }
+  // Initialize procedure's callers with blank IDs.
+  Blockly.Procedures.mutateCallers(this.getTitleValue('NAME'),
+                                   this.workspace, this.arguments_, null);
+  return containerBlock;
+};
+
+Blockly.Blocks['procedures_mutatorcontainer'] = {
+  // Procedure container (for mutator dialog).
+  init: function() {
+    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle(Blockly.Msg.PROCEDURES_MUTATORCONTAINER_TITLE);
+    this.appendStatementInput('STACK');
+    this.setTooltip('');
+    this.contextMenu = false;
+  }
+};
+
+Blockly.Blocks['procedures_mutatorarg'] = {
+  // Procedure argument (for mutator dialog).
+  init: function() {
+    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle(Blockly.Msg.PROCEDURES_MUTATORARG_TITLE)
+        .appendTitle(new Blockly.FieldTextInput('x', this.validator), 'NAME');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip('');
+    this.contextMenu = false;
+  },
+  validator: function(newVar) {
+    // Merge runs of whitespace.  Strip leading and trailing whitespace.
+    // Beyond this, all names are legal.
+    newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+    return newVar || null;
+  }
+};
+
+// This checks for duplicate parameter names (giving a warning),
+// updates the inputs in this block.  If clauseBlock is provided,
+// the inputs are connected to their prior children; it is not
+// provided (or needed) when restoring the block from the DOM.
+Blockly.Blocks['peripheral_call'].updateParams_ = function(clauseBlock) {
+  // Check for duplicated arguments.
+  var badArg = false;
+  var hash = {};
+  for (var x = 0; x < this.arguments_.length; x++) {
+    if (hash['arg_' + this.arguments_[x].toLowerCase()]) {
+      badArg = true;
+      break;
+    }
+    hash['arg_' + this.arguments_[x].toLowerCase()] = true;
+  }
+  if (badArg) {
+    this.setWarningText(
+      'Warning: This call has duplicate input (argument) names.');
+  } else {
+    this.setWarningText(null);
+  }
+  // Remove any existing parameter inputs from this block.
+  var x = 1;
+  while (this.getInput('PARAM' + x)) {
+    this.removeInput('PARAM' + x);
+    x++;
+  }
+  // Add the parameter inputs to this block.
+  for (var x = 1; x <= this.arguments_.length; x++) {
+    var input = this.appendValueInput('PARAM' + x)
+        .appendTitle(this.arguments_[x - 1]);
+    // Restore any child nodes.
+    if (clauseBlock && clauseBlock.valueConnection_) {
+      input.connection.connect(clauseBlock.valueConnection_);
+      clauseBlock = clauseBlock.nextConnection &&
+          clauseBlock.nextConnection.targetBlock();
+    }
+  }
+};
+
+Blockly.Blocks['peripheral_call'].compose = function(containerBlock) {
+  this.arguments_ = [];
+  var paramBlock = containerBlock.getInputTargetBlock('STACK');
+  while (paramBlock) {
+    this.arguments_.push(paramBlock.getTitleValue('NAME'));
+    paramBlock = paramBlock.nextConnection &&
+        paramBlock.nextConnection.targetBlock();
+  }
+  this.updateParams_(containerBlock.getInputTargetBlock('STACK'));
+};
+
+Blockly.Blocks['peripheral_call'].saveConnections = function(containerBlock) {
+  // Store a pointer to any connected child blocks.
+  var clauseBlock = containerBlock.getInputTargetBlock('STACK');
+  var x = 1;
+  while (clauseBlock) {
+    var input = this.getInput('PARAM' + x);
+    clauseBlock.valueConnection_ = input && input.connection.targetConnection;
+    clauseBlock = clauseBlock.nextConnection &&
+        clauseBlock.nextConnection.targetBlock();
+    x++;
+  }
+};
+
+Blockly.Blocks['peripheral_call'].mutationToDom = function() {
+  // Save cable state.
+  var container = BlockWithSide.prototype.mutationToDom.call(this);
+  // Save argument names.
+  for (var x = 0; x < this.arguments_.length; x++) {
+    var parameter = document.createElement('arg');
+    parameter.setAttribute('name', this.arguments_[x]);
+    container.appendChild(parameter);
+  }
+  return container;
+};
+
+Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
+  // Restore cable state.
+  BlockWithSide.prototype.domToMutation.call(this, xmlElement);
+  // Restore argument inputs.
+  this.arguments_ = [];
+  for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
+    if (childNode.nodeName.toLowerCase() == 'arg') {
+      this.arguments_.push(childNode.getAttribute('name'));
+    }
+  }
+  this.updateParams_(null);
 };
