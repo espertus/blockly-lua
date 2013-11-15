@@ -42,11 +42,8 @@ BlocklyLua.SIDES_ = [['in front', 'front'],
                      ['below', 'bottom'],
                      ['through cable...', 'cable']];
 
-BlockWithSide.prototype.init = function() {
-  this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+BlockWithSide.prototype.addSideInput = function() {
   var thisBlock = this;
-  this.appendDummyInput()
-      .appendTitle(this.title);
   this.appendDummyInput()
       .appendTitle(
         new Blockly.FieldDropdown(
@@ -62,10 +59,17 @@ BlockWithSide.prototype.init = function() {
               }
             }
           }),
-
         'SIDES');
-  this.setOutput(true, this.outputType);
   this.cableMode = false;
+};
+
+BlockWithSide.prototype.init = function() {
+  this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+  var thisBlock = this;
+  this.appendDummyInput()
+      .appendTitle(this.title);
+  this.addSideInput();
+  this.setOutput(true, this.outputType);
   this.setInputsInline(true);
   this.setTooltip(this.tooltip);
   this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
@@ -141,6 +145,8 @@ Blockly.Blocks['peripheral_wrap'] = new BlockWithSide(
       'or nil if no peripheral is connected.',
   'wrap');
 
+// The next block is unlike the rest in this file because it doesn't
+// have a "side" argument.
 Blockly.Blocks['peripheral_get_names'] = {
   // Block for getting the names of connected peripherals.
   init: function() {
@@ -148,6 +154,7 @@ Blockly.Blocks['peripheral_get_names'] = {
     this.appendDummyInput()
         .appendTitle('get names of connected peripherals');
     this.setOutput(true, 'List');
+    this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + 'getNames');
     this.setTooltip('Returns the names of any peripherals connected \n' +
                     'directly or through a wired modem.');
   }
@@ -157,4 +164,4 @@ Blockly.Lua['peripheral_get_names'] = function(block) {
   // Generate Lua for getting the names of connected peripherals.
   var code = 'peripheral.getNames()';
   return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-}
+};
