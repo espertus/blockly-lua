@@ -26,7 +26,8 @@
 BlocklyLua.BASE_PERIPHERAL_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Peripheral.';
 BlocklyLua.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
-function BlockWithSide(title, outputType, tooltip, funcName) {
+function BlockWithSide(blockName, title, outputType, tooltip, funcName) {
+  this.blockName = blockName;
   this.title = title;
   this.outputType = outputType;
   this.tooltip = tooltip;
@@ -45,7 +46,7 @@ BlockWithSide.prototype.init = function() {
   this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
   var thisBlock = this;
   this.appendDummyInput()
-      .appendTitle('is peripheral present');
+      .appendTitle(this.title);
   this.appendDummyInput()
       .appendTitle(
         new Blockly.FieldDropdown(
@@ -61,12 +62,15 @@ BlockWithSide.prototype.init = function() {
               }
             }
           }),
+
         'SIDES');
   this.setOutput(true, this.outputType);
   this.cableMode = false;
   this.setInputsInline(true);
   this.setTooltip(this.tooltip);
   this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
+  Blockly.Lua[this.blockName] = BlockWithSide.prototype.generateLua;
+
 };
 
 BlockWithSide.prototype.enterCableMode = function() {
@@ -99,8 +103,58 @@ BlockWithSide.prototype.domToMutation = function(xmlElement) {
   }
 };
 
+BlockWithSide.prototype.generateLua = function(block) {
+  var side = block.cableMode ?
+      (Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) || '')
+      :  block.getTitleValue('SIDES');
+  var code = 'peripheral.' + block.funcName + '(' + side + ')';
+  return [code, Blockly.Lua.ORDER_HIGH];
+};
+
 Blockly.Blocks['peripheral_is_present'] = new BlockWithSide(
+  'peripheral_is_present',
   'is peripheral present',
   'Boolean',
   'Return true if a peripheral is connected on the specified side.',
   'isPresent');
+
+Blockly.Blocks['peripheral_get_type'] = new BlockWithSide(
+  'peripheral_get_type',
+  'get type of peripheral',
+  'String',
+  'Return the type of the connected peripheral or nil if none present',
+  'getType');
+
+Blockly.Blocks['peripheral_get_methods'] = new BlockWithSide(
+  'peripheral_get_methods',
+  'get method names of peripheral',
+  'List',
+  'Return a list of the names of the connected peripheral\'s methods,\n' +
+      'or nil if no peripheral is connected.',
+  'getMethods');
+
+Blockly.Blocks['peripheral_wrap'] = new BlockWithSide(
+  'peripheral_wrap',
+  'wrap peripheral',
+  'List',
+  'Return the connected peripheral\'s methods so they can be called,\n' +
+      'or nil if no peripheral is connected.',
+  'wrap');
+
+Blockly.Blocks['peripheral_get_names'] = {
+  // Block for getting the names of connected peripherals.
+  init: function() {
+    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+    this.appendDummyInput()
+        .appendTitle('get names of connected peripherals');
+    this.setOutput(true, 'List');
+    this.setTooltip('Returns the names of any peripherals connected \n' +
+                    'directly or through a wired modem.');
+  }
+};
+
+Blockly.Lua['peripheral_get_names'] = function(block) {
+  // Generate Lua for getting the names of connected peripherals.
+  var code = 'peripheral.getNames()';
+  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+}
