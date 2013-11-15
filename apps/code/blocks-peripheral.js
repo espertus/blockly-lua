@@ -26,8 +26,10 @@
 BlocklyLua.BASE_PERIPHERAL_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Peripheral.';
 BlocklyLua.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
-function BlockWithSide(title, funcName) {
+function BlockWithSide(title, outputType, tooltip, funcName) {
   this.title = title;
+  this.outputType = outputType;
+  this.tooltip = tooltip;
   this.funcName = funcName;
 };
 
@@ -40,42 +42,42 @@ BlocklyLua.SIDES_ = [['in front', 'front'],
                      ['through cable...', 'cable']];
 
 BlockWithSide.prototype.init = function() {
-    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
-    var thisBlock = this;
-    this.appendDummyInput()
-        .appendTitle('is peripheral present');
-    this.appendDummyInput()
-        .appendTitle(
-          new Blockly.FieldDropdown(
-            BlocklyLua.SIDES_,
-            function(value) {
-              if (value == 'cable') {
-                if (!thisBlock.cableMode) {
-                  thisBlock.enterCableMode();
-                }
-              } else {
-                if (thisBlock.cableMode) {
-                  thisBlock.leaveCableMode();
-                }
+  this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+  var thisBlock = this;
+  this.appendDummyInput()
+      .appendTitle('is peripheral present');
+  this.appendDummyInput()
+      .appendTitle(
+        new Blockly.FieldDropdown(
+          BlocklyLua.SIDES_,
+          function(value) {
+            if (value == 'cable') {
+              if (!thisBlock.cableMode) {
+                thisBlock.enterCableMode();
               }
-            }),
-          'SIDES');
-    this.setOutput(true, 'Boolean');
-    this.cableMode = false;
-    this.setInputsInline(true);
-    this.setTooltip(
-      'Return true if a peripheral is connected on the specified side.');
-    this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + 'isPresent');
+            } else {
+              if (thisBlock.cableMode) {
+                thisBlock.leaveCableMode();
+              }
+            }
+          }),
+        'SIDES');
+  this.setOutput(true, this.outputType);
+  this.cableMode = false;
+  this.setInputsInline(true);
+  this.setTooltip(this.tooltip);
+  this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
 };
 
 BlockWithSide.prototype.enterCableMode = function() {
-    var textBlock = new Blockly.Block(this.workspace, 'text');
-    textBlock.initSvg();
-    textBlock.render();
-    this.appendValueInput('TEXT')
-        .setCheck('String')
-        .connection.connect(textBlock.outputConnection);
-    this.cableMode = true;
+  // Create child text block.  Perhaps this should only be done once per block?
+  var textBlock = new Blockly.Block(this.workspace, 'text');
+  textBlock.initSvg();
+  textBlock.render();
+  this.appendValueInput('TEXT')
+      .setCheck('String')
+      .connection.connect(textBlock.outputConnection);
+  this.cableMode = true;
 };
 
 BlockWithSide.prototype.leaveCableMode = function() {
@@ -84,10 +86,10 @@ BlockWithSide.prototype.leaveCableMode = function() {
   };
 
 BlockWithSide.prototype.mutationToDom = function() {
-    var container = document.createElement('mutation');
-    container.setAttribute('cable_mode', this.cableMode);
-    return container;
-  };
+  var container = document.createElement('mutation');
+  container.setAttribute('cable_mode', this.cableMode);
+  return container;
+};
 
 BlockWithSide.prototype.domToMutation = function(xmlElement) {
   this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
@@ -97,5 +99,8 @@ BlockWithSide.prototype.domToMutation = function(xmlElement) {
   }
 };
 
-Blockly.Blocks['peripheral_is_present'] =
-    new BlockWithSide('is peripheral present', 'isPresent');
+Blockly.Blocks['peripheral_is_present'] = new BlockWithSide(
+  'is peripheral present',
+  'Boolean',
+  'Return true if a peripheral is connected on the specified side.',
+  'isPresent');
