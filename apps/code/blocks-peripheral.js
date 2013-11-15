@@ -26,6 +26,11 @@
 BlocklyLua.BASE_PERIPHERAL_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Peripheral.';
 BlocklyLua.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
+function BlockWithSide(title, funcName) {
+  this.title = title;
+  this.funcName = funcName;
+};
+
 BlocklyLua.SIDES_ = [['in front', 'front'],
                      ['in back', 'back'],
                      ['to the left', 'left'],
@@ -34,9 +39,7 @@ BlocklyLua.SIDES_ = [['in front', 'front'],
                      ['below', 'bottom'],
                      ['through cable...', 'cable']];
 
-Blockly.Blocks['peripheral_is_present'] = {
-  // Block for testing whether a peripheral is present on the given side.
-  init: function() {
+BlockWithSide.prototype.init = function() {
     this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
     var thisBlock = this;
     this.appendDummyInput()
@@ -63,8 +66,9 @@ Blockly.Blocks['peripheral_is_present'] = {
     this.setTooltip(
       'Return true if a peripheral is connected on the specified side.');
     this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + 'isPresent');
-  },
-  enterCableMode: function() {
+};
+
+BlockWithSide.prototype.enterCableMode = function() {
     var textBlock = new Blockly.Block(this.workspace, 'text');
     textBlock.initSvg();
     textBlock.render();
@@ -72,21 +76,26 @@ Blockly.Blocks['peripheral_is_present'] = {
         .setCheck('String')
         .connection.connect(textBlock.outputConnection);
     this.cableMode = true;
-  },
-  leaveCableMode: function() {
+};
+
+BlockWithSide.prototype.leaveCableMode = function() {
     this.removeInput('TEXT', true);
     this.cableMode = false;
-  },
-  mutationToDom: function() {
+  };
+
+BlockWithSide.prototype.mutationToDom = function() {
     var container = document.createElement('mutation');
     container.setAttribute('cable_mode', this.cableMode);
     return container;
-  },
-  domToMutation: function(xmlElement) {
-    this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
-    if (this.cableMode) {
-      this.appendValueInput('TEXT')
-          .setCheck('String');
-    }
+  };
+
+BlockWithSide.prototype.domToMutation = function(xmlElement) {
+  this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
+  if (this.cableMode) {
+    this.appendValueInput('TEXT')
+        .setCheck('String');
   }
 };
+
+Blockly.Blocks['peripheral_is_present'] =
+    new BlockWithSide('is peripheral present', 'isPresent');
