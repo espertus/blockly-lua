@@ -185,7 +185,7 @@ Blockly.Blocks['peripheral_call'].init = function() {
   // Call prototype's init method to set up basics, including side.
   BlockWithSide.prototype.init.call(this);
   // Add mutator.
-  this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
+  this.setMutator(new Blockly.Mutator(['peripheral_mutatorarg']));
   this.arguments_ = [];
   // Add additional inputs.
   this.appendValueInput('METHOD')
@@ -224,11 +224,11 @@ Blockly.Blocks['peripheral_call'].enterCableMode = function() {
 // Allow the user to add named inputs for the run-time method call.
 Blockly.Blocks['peripheral_call'].decompose = function(workspace) {
   var containerBlock = new Blockly.Block(workspace,
-      'procedures_mutatorcontainer');
+      'peripheral_mutatorcontainer');
   containerBlock.initSvg();
   var connection = containerBlock.getInput('STACK').connection;
   for (var x = 0; x < this.arguments_.length; x++) {
-    var paramBlock = new Blockly.Block(workspace, 'procedures_mutatorarg');
+    var paramBlock = new Blockly.Block(workspace, 'peripheral_mutatorarg');
     paramBlock.initSvg();
     paramBlock.setTitleValue(this.arguments_[x], 'NAME');
     // Store the old location.
@@ -236,30 +236,27 @@ Blockly.Blocks['peripheral_call'].decompose = function(workspace) {
     connection.connect(paramBlock.previousConnection);
     connection = paramBlock.nextConnection;
   }
-  // Initialize procedure's callers with blank IDs.
-  Blockly.Procedures.mutateCallers(this.getTitleValue('NAME'),
-                                   this.workspace, this.arguments_, null);
   return containerBlock;
 };
 
-Blockly.Blocks['procedures_mutatorcontainer'] = {
-  // Procedure container (for mutator dialog).
+Blockly.Blocks['peripheral_mutatorcontainer'] = {
+  // Peripheral input container (for mutator dialog).
   init: function() {
     this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle(Blockly.Msg.PROCEDURES_MUTATORCONTAINER_TITLE);
+        .appendTitle(Blockly.Msg.PERIPHERAL_MUTATORCONTAINER_TITLE);
     this.appendStatementInput('STACK');
     this.setTooltip('');
     this.contextMenu = false;
   }
 };
 
-Blockly.Blocks['procedures_mutatorarg'] = {
-  // Procedure argument (for mutator dialog).
+Blockly.Blocks['peripheral_mutatorarg'] = {
+  // Peripheral input (for mutator dialog).
   init: function() {
     this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle(Blockly.Msg.PROCEDURES_MUTATORARG_TITLE)
+        .appendTitle('input')
         .appendTitle(new Blockly.FieldTextInput('x', this.validator), 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
