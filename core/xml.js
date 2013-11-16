@@ -59,22 +59,9 @@ Blockly.Xml.blockToDom_ = function(block) {
   element.setAttribute('type', block.type);
   if (block.mutationToDom) {
     // Custom data for an advanced block.
-    if (block.mutationToDom instanceof Array) {
-      // If more than one method needs to be called, pass an array of
-      // functions of one argument (block), which they should reference
-      // instead of "this".  See Blockly.Blocks.['turtle_place'] for an example.
-      for (var i = 0; i < block.mutationToDom.length; i++) {
-        var f = block.mutationToDom[i];
-        var mutation = f(block);
-        if (mutation) {
-          element.appendChild(mutation);
-        }
-      }
-    } else {
-      var mutation = block.mutationToDom();
-      if (mutation) {
-        element.appendChild(mutation);
-      }
+    var mutation = block.mutationToDom();
+    if (mutation) {
+      element.appendChild(mutation);
     }
   }
   function titleToDom(title) {
@@ -295,18 +282,7 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
       case 'mutation':
         // Custom data for an advanced block.
         if (block.domToMutation) {
-          // If more than one method needs to be called, pass an array of
-          // functions of one argument (block), which they should reference
-          // instead of "this".  This function should return a function that
-          // takes a single element: xmlChild.
-          // See Blockly.Blocks.['turtle_place'] for an example.
-          if (block.domToMutation instanceof Array) {
-            for (var i = 0; i < block.domToMutation.length; i++) {
-              block.domToMutation[i](block)(xmlChild);
-            }
-          } else {
-            block.domToMutation(xmlChild);
-          }
+          block.domToMutation(xmlChild);
         }
         break;
       case 'comment':

@@ -23,73 +23,52 @@
  */
 'use strict';
 
-var BlocklyLua = {}
+var BlocklyLua = {};
 
 BlocklyLua.BASE_HELP_URL = 'http://computercraft.info/wiki/';
 
-/**
- These functions help make a block so that it can convert between
- expression and statement form (in case the programmer wants to ignore the
- return value).  The block will begin in expression mode, unless the following
- line is included in the block's init() method:
+BlocklyLua.ExpStmtBlock = function() {};
 
-     this.isStatement = true;
+BlocklyLua.ExpStmtBlock.prototype.changeModes = function(shouldBeStatement) {
+  this.unplug(true, true);
+  if (shouldBeStatement) {
+    this.setOutput(false);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.isStatement = true;
+  } else {
+    this.setPreviousStatement(false);
+    this.setNextStatement(false);
+    this.setOutput(true);
+    this.isStatement = false;
+  }
+};
 
- The following definitions must appear in the block definition:
+BlocklyLua.ExpStmtBlock.prototype.customContextMenu = function(options) {
+  var option = {enabled: true};
+  option.text = this.isStatement ? 'Add Output' : 'Remove Output';
+  var thisBlock = this;
+  option.callback = function() {
+    thisBlock.changeModes(!thisBlock.isStatement);
+  };
+  options.push(option);
+};
 
-     // Enable block to change between statement and expression.
-     changeModes: BlocklyLua.HELPER_FUNCTIONS['changeModes'],
-     customContextMenu: BlocklyLua.HELPER_FUNCTIONS['customContextMenu'],
-     mutationToDom: BlocklyLua.HELPER_FUNCTIONS['mutationToDom'],
-     domToMutation: BlocklyLua.HELPER_FUNCTIONS['domToMutation']
+BlocklyLua.ExpStmtBlock.prototype.mutationToDom = function() {
+  // Save whether it is a statement.
+  var container = document.createElement('mutation');
+  container.setAttribute('is_statement', this['isStatement'] || false);
+  return container;
+};
 
- The code generator should first generate the code for an expression
- and then call generatedCode(block, code), as shown:
+BlocklyLua.ExpStmtBlock.prototype.domToMutation = function(xmlElement) {
+  this.changeModes(xmlElement.getAttribute('is_statement') == 'true');
+};
 
-     return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-
- Note: The conventional leading asterisks are omitted for ease of
- copying the above code.
- */
-
-BlocklyLua.HELPER_FUNCTIONS = {
-  changeModes: function(thisBlock, shouldBeStatement) {
-    thisBlock.unplug(true, true);
-    if (shouldBeStatement) {
-      thisBlock.setOutput(false);
-      thisBlock.setPreviousStatement(true);
-      thisBlock.setNextStatement(true);
-      thisBlock.isStatement = true;
-    } else {
-      thisBlock.setPreviousStatement(false);
-      thisBlock.setNextStatement(false);
-      thisBlock.setOutput(true);
-      thisBlock.isStatement = false;
-    }
-  },
-  customContextMenu: function(options) {
-    var option = {enabled: true};
-    option.text = this.isStatement ? 'Add Output' : 'Remove Output';
-    var thisBlock = this;
-    option.callback = function() {
-      thisBlock.changeModes(thisBlock, !thisBlock.isStatement);
-    };
-    options.push(option);
-  },
-  mutationToDom: function() {
-    // Save whether it is a statement.
-    var container = document.createElement('mutation');
-    container.setAttribute('is_statement', this['isStatement'] || false);
-    return container;
-  },
-  domToMutation: function(xmlElement) {
-    this.changeModes(this, xmlElement.getAttribute('is_statement') == 'true');
-  },
-  generatedCode: function(block, code) {
-    if (block.isStatement) {
-      return code + '\n';
-    } else {
-      return [code, Blockly.Lua.ORDER_HIGH];
-    }
+BlocklyLua.ExpStmtBlock.prototype.adjustCode = function(code) {
+  if (this.isStatement) {
+    return code + '\n';
+  } else {
+    return [code, Blockly.Lua.ORDER_HIGH];
   }
 };
