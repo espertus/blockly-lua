@@ -24,7 +24,7 @@
 'use strict';
 
 BlocklyLua.BASE_FS_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'fs.';
-BlocklyLua.TURTLE_BLOCK_COLOUR_ = 410;
+BlocklyLua.FS_BLOCK_COLOUR_ = 410;
 
 BlocklyLua.FS_FUNCS_ = [
   {name: 'list',
@@ -116,25 +116,6 @@ BlocklyLua.FS_FUNCS_ = [
 ];
 
 for (var i = 0; i < BlocklyLua.FS_FUNCS_.length; i++) {
-  var func = BlocklyLua.FS_FUNCS_[i];
-  var interpArgs = []
-  interpArgs.push(func.text);
-  for (var j = 0; j < func.args.length; j++) {
-    var arg = [];
-    arg.push(func.args[j][0]);  // name
-    arg.push(func.args[j][1]);  // type
-    arg.push(Blockly.ALIGN_RIGHT);
-    interpArgs.push(arg);
-  }
-  interpArgs.push(Blockly.ALIGN_RIGHT);
   BlocklyLua.buildValueBlock(
-    'fs_' + func.name,  // block name
-    BlocklyLua.TURTLE_BLOCK_COLOUR_,
-    true,  // inline inputs
-    BlocklyLua.BASE_FS_HELP_URL + func.name,  // url
-    func.tooltip,
-    func.stmtConns ? func.stmtConns : BlocklyLua.StmtConns.NONE,
-    func.output ? func.output : null,
-    interpArgs,
-    'fs.' + func.name);
+    'fs', BlocklyLua.FS_BLOCK_COLOUR_, BlocklyLua.FS_FUNCS_[i]);
 };

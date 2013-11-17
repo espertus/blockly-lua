@@ -79,35 +79,73 @@ BlocklyLua.StmtConns = {
   NEXT: 2
 };
 
-BlocklyLua.buildValueBlock = function(
-  blockName, colour, inline, helpUrl, tooltip, statements, output,
-  interpArgs, funcName) {
+/**
+ * Create a block, including Lua code generation.  The block's inputs, if any,
+ * must all be value inputs (no dropdown menus, etc.).
+ *
+ * This creates Blockly.Blocks[NAME] and Blockly.Lua[NAME], where
+ * NAME is func.prefix + '_' + func.name, as described below.
+ *
+ * @param {!string} prefix A lower-case prefix corresponding to a ComputerCraft
+ *     API, such as "os".
+ * @param {number} colour The block's colour.
+ * @param {!Object} func An object with the following fields:
+ *     - {string} name The name of the ComputerCraft function to be called,
+ *         not including the prefix.
+ *     - {number} stmtConns The types of statement connections, if any.
+ *         This should be the disjunction of BlocklyLua.StmtConns values
+ *         and may be omitted if there are no statement connections.
+ *     - {string} output The type of the output, if any.  Legal values are
+ *         {'Boolean', 'Number', 'String', 'Table'}.  This should be omitted
+ *         if the block does not have an output.
+ *     - {Array.<Array.<string>>} args An array of two-element arrays, where
+ *         the first element of each sub-array is an input name, and the second
+ *         element is its type, from the set above.
+ *     - {string} tooltip The text for the tooltip.
+ */
+BlocklyLua.buildValueBlock = function(prefix, colour, func) {
+  var blockName = prefix + '_' + func.name;
   Blockly.Blocks[blockName] = {
     init: function() {
       this.setColour(colour);
-      this.setInputsInline(inline);
-      this.setHelpUrl(helpUrl);
-      this.setTooltip(tooltip);
-      this.setPreviousStatement(statements & BlocklyLua.StmtConns.PREVIOUS);
-      this.setNextStatement(statements & BlocklyLua.StmtConns.NEXT);
-      if (output) {
-        this.setOutput(true, output);
+      this.setInputsInline(true);
+      this.setHelpUrl(
+        BlocklyLua.BASE_HELP_URL_ + prefix.charAt(0).toUpperCase() +
+            prefix.slice(1) + '.' + func.name);
+      this.setTooltip(func.tooltip);
+      if (func.stmtConns) {
+        this.setPreviousStatement(
+          func.stmtConns & BlocklyLua.StmtConns.PREVIOUS);
+        this.setPreviousStatement(
+          func.stmtConns & BlocklyLua.StmtConns.NEXT);
       }
-      this.setInputsInline(inline);
+      if (func.output) {
+        this.setOutput(true, func.output);
+      }
+      // Build up arguments to the format expected by interpolateMsg.
+      var interpArgs = []
+      interpArgs.push(func.text);
+      for (var j = 0; j < func.args.length; j++) {
+        var arg = [];
+        arg.push(func.args[j][0]);  // name
+        arg.push(func.args[j][1]);  // type
+        arg.push(Blockly.ALIGN_RIGHT);
+        interpArgs.push(arg);
+      }
+      interpArgs.push(Blockly.ALIGN_RIGHT);
       Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
     }
   };
   Blockly.Lua[blockName] = function(block) {
-    return BlocklyLua.generateValueCode(block, funcName, interpArgs);
+    return BlocklyLua.generateValueCode(
+      block,
+      prefix + '.' + func.name,
+      func.args.map(function(pair) {return pair[0];}));
   };
 };
 
-BlocklyLua.generateValueCode = function(block, funcName, interpArgs) {
-  var inputNames = [];
-  for (var i = 1; i < interpArgs.length - 1; i++) {
-    inputNames.push(interpArgs[i][0]);
-  }
-  var args = inputNames.map(function(name) {
+BlocklyLua.generateValueCode = function(block, funcName, argNames) {
+  var args = argNames.map(function(name) {
     return Blockly.Lua.valueToCode(block, name, Blockly.Lua.ORDER_NONE);
   });
   var code = funcName + '(' + args.join(', ') + ')';
