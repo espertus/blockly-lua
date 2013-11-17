@@ -98,6 +98,8 @@ BlocklyLua.StmtConns = {
  *     - {string} output The type of the output, if any.  Legal values are
  *         {'Boolean', 'Number', 'String', 'Table'}.  This should be omitted
  *         if the block does not have an output.
+ *     - {string} text The block text, with %1 for the first value input,
+ *         %2 for the second, etc.
  *     - {Array.<Array.<string>>} args An array of two-element arrays, where
  *         the first element of each sub-array is an input name, and the second
  *         element is its type, from the set above.
