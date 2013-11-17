@@ -23,7 +23,6 @@
  */
 'use strict';
 
-BlocklyLua.BASE_FS_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'fs.';
 BlocklyLua.FS_BLOCK_COLOUR_ = 410;
 
 BlocklyLua.FS_FUNCS_ = [
