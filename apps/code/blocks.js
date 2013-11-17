@@ -72,3 +72,44 @@ BlocklyLua.ExpStmtBlock.prototype.adjustCode = function(code) {
     return [code, Blockly.Lua.ORDER_HIGH];
   }
 };
+
+BlocklyLua.StmtConns = {
+  NONE: 0,
+  PREVIOUS: 1,
+  NEXT: 2
+};
+
+BlocklyLua.buildValueBlock = function(
+  blockName, colour, inline, helpUrl, tooltip, statements, output,
+  interpArgs, funcName) {
+  Blockly.Blocks[blockName] = {
+    init: function() {
+      this.setColour(colour);
+      this.setInputsInline(inline);
+      this.setHelpUrl(helpUrl);
+      this.setTooltip(tooltip);
+      this.setPreviousStatement(statements & BlocklyLua.StmtConns.PREVIOUS);
+      this.setNextStatement(statements & BlocklyLua.StmtConns.NEXT);
+      if (output) {
+        this.setOutput(true, output);
+      }
+      this.setInputsInline(inline);
+      Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
+    }
+  };
+  Blockly.Lua[blockName] = function(block) {
+    return BlocklyLua.generateValueCode(block, funcName, interpArgs);
+  };
+};
+
+BlocklyLua.generateValueCode = function(block, funcName, interpArgs) {
+  var inputNames = [];
+  for (var i = 1; i < interpArgs.length - 1; i++) {
+    inputNames.push(interpArgs[i][0]);
+  }
+  var args = inputNames.map(function(name) {
+    return Blockly.Lua.valueToCode(block, name, Blockly.Lua.ORDER_NONE);
+  });
+  var code = funcName + '(' + args.join(', ') + ')';
+  return [code, Blockly.Lua.ORDER_HIGH];
+};

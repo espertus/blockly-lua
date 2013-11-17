@@ -16,7 +16,7 @@
   <!-- Ensure that lang-lua.js is loaded after prettify.js.  -->
   <script type="text/javascript" src="../lang-lua.js"></script>
   <!-- Files to include.  -->
-  <script type="text/javascript" src="../../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../blockly_uncompressed.js"></script>
   <script type="text/javascript" src="../../blocks_compressed.js"></script>
   <script type="text/javascript" src="../../lua_compressed.js"></script>
   <script type="text/javascript" src="../../msg/js/en.js"></script>
@@ -25,6 +25,7 @@
   <script type="text/javascript" src="blocks-os.js"></script>
   <script type="text/javascript" src="blocks-colour.js"></script>
   <script type="text/javascript" src="blocks-peripheral.js"></script>
+  <script type="text/javascript" src="blocks-fs.js"></script>
   <script type="text/javascript" src="blocks-old.js"></script>
 
   <!-- Render the page.  -->
@@ -151,6 +152,77 @@
             </category>
             <category name="Colour">
               <block type="colour_picker"></block>
+            </category>
+            <category name="File System">
+              <block type="fs_list">
+                <value name="DIR">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_exists">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_isReadOnly">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_getName">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_getDrive">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_getSize">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_getFreeSpace">
+                <value name="DIR">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_makeDir">
+                <value name="DIR">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_move">
+                <value name="PATH1">
+                  <block type="text"></block>
+                </value>
+                <value name="PATH2">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_copy">
+                <value name="PATH1">
+                  <block type="text"></block>
+                </value>
+                <value name="PATH2">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_delete">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="fs_combine">
+                <value name="PATH1">
+                  <block type="text"></block>
+                </value>
+                <value name="PATH2">
+                  <block type="text"></block>
+                </value>
+              </block>
             </category>
             <category name="Peripheral">
               <block type="peripheral_get_names"></block>
