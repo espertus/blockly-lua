@@ -145,27 +145,6 @@ Blockly.Blocks['peripheral_wrap'] = new BlockWithSide(
       'or nil if no peripheral is connected.',
   'wrap');
 
-// The next block is unlike the rest in this file because it doesn't
-// have a "side" argument.
-Blockly.Blocks['peripheral_get_names'] = {
-  // Block for getting the names of connected peripherals.
-  init: function() {
-    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
-    this.appendDummyInput()
-        .appendTitle('get names of connected peripherals');
-    this.setOutput(true, 'List');
-    this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + 'getNames');
-    this.setTooltip('Returns the names of any peripherals connected \n' +
-                    'directly or through a wired modem.');
-  }
-};
-
-Blockly.Lua['peripheral_get_names'] = function(block) {
-  // Generate Lua for getting the names of connected peripherals.
-  var code = 'peripheral.getNames()';
-  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
-};
-
 // The rest of this file is devoted to the block 'peripheral_call',
 // which calls a method on an attached peripheral with an arbitrary
 // number of named (method) arguments.  The arguments to this block are:
@@ -359,3 +338,15 @@ Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
   }
   this.updateParams_(null);
 };
+
+// The next block is unlike the rest in this file because it doesn't
+// have a "side" argument.  Declare it as a simple value block.
+BlocklyLua.buildValueBlock(
+  'peripheral', BlocklyLua.PERIPHERAL_BLOCK_COLOUR_,
+  {name: 'get_names',
+   output: 'List',
+   text: 'get names of connected peripherals',
+   args: [],
+   tooltip:
+   'Returns the names of any peripherals connected\n' +
+   'directly or through a wired modem.'});
