@@ -95,18 +95,20 @@ Blockly.ComputerCraft.StmtConns = {
  * @param {!Object} func An object with the following fields:
  *     - {string} name The name of the ComputerCraft function to be called,
  *         not including the prefix.
- *     - {number} stmtConns The types of statement connections, if any.
+ *     - {?number} stmtConns The types of statement connections, if any.
  *         This should be the disjunction of Blockly.ComputerCraft.StmtConns
  *         values and may be omitted if there are no statement connections.
- *     - {string} output The type of the output, if any.  Legal values are
+ *     - {?string} output The type of the output, if any.  Legal values are
  *         {'Boolean', 'Number', 'String', 'Table'}.  This should be omitted
  *         if the block does not have an output.
+ *     - {?number} multipleOutputs The number of outputs, if greater than 1.
  *     - {string} text The block text, with %1 for the first value input,
  *         %2 for the second, etc.
- *     - {Array.<Array.<string>>} args An array of two-element arrays, where
+ *     - {?Array.<Array.<string>>} args An array of two-element arrays, where
  *         the first element of each sub-array is an input name, and the second
- *         element is its type, from the set above.
- *     - {string} tooltip The text for the tooltip.
+ *         element is its type, from the set above.  This may be omitted or the
+ *         empty list if there are no inputs.
+ *     - {?string} tooltip The text for the tooltip.
  */
 Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
   var blockName = prefix + '_' + func.name;
@@ -117,7 +119,9 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
       this.setHelpUrl(
         Blockly.ComputerCraft.BASE_HELP_URL_ + prefix.charAt(0).toUpperCase() +
             prefix.slice(1) + '.' + func.name);
-      this.setTooltip(func.tooltip);
+      if (func.tooltip) {
+        this.setTooltip(func.tooltip);
+      }
       if (func.stmtConns) {
         this.setPreviousStatement(
           func.stmtConns & Blockly.ComputerCraft.StmtConns.PREVIOUS);
@@ -127,15 +131,21 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
       if (func.output) {
         this.setOutput(true, func.output);
       }
+      if (func.multipleOutputs) {
+        this.multipleOutputs = func.multipleOutputs;
+        this.setOutput(true);  // We don't specify types for multiple outputs.
+      }
       // Build up arguments to the format expected by interpolateMsg.
       var interpArgs = []
       interpArgs.push(func.text);
-      for (var j = 0; j < func.args.length; j++) {
-        var arg = [];
-        arg.push(func.args[j][0]);  // name
-        arg.push(func.args[j][1]);  // type
-        arg.push(Blockly.ALIGN_RIGHT);
-        interpArgs.push(arg);
+      if (func.args) {
+        for (var j = 0; j < func.args.length; j++) {
+          var arg = [];
+          arg.push(func.args[j][0]);  // name
+          arg.push(func.args[j][1]);  // type
+          arg.push(Blockly.ALIGN_RIGHT);
+          interpArgs.push(arg);
+        }
       }
       interpArgs.push(Blockly.ALIGN_RIGHT);
       Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
@@ -145,7 +155,7 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
     return Blockly.ComputerCraft.generateValueCode(
       block,
       prefix + '.' + func.name,
-      func.args.map(function(pair) {return pair[0];}));
+      func.args ? func.args.map(function(pair) {return pair[0];}) : []);
   };
 };
 
