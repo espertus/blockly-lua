@@ -23,12 +23,12 @@
  */
 'use strict';
 
-BlocklyLua.BASE_TURTLE_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Turtle.';
-BlocklyLua.TURTLE_BLOCK_COLOUR_ = 120;
+Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ = Blockly.ComputerCraft.BASE_HELP_URL + 'Turtle.';
+Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_ = 120;
 
 
 // Block for moving forward, back, up, or down.
-Blockly.Blocks['turtle_move'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_move'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_move'].init = function() {
   var DIRECTIONS =
@@ -36,7 +36,7 @@ Blockly.Blocks['turtle_move'].init = function() {
        ['move backward', 'back'],
        ['move up', 'up'],
        ['move down', 'down']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
   this.setOutput(true, 'Boolean');
@@ -45,7 +45,7 @@ Blockly.Blocks['turtle_move'].init = function() {
         'returning true if successful, false if the way is blocked.');
   var thisBlock = this;
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   });
 },
 Blockly.Blocks['turtle_move'].multipleOutputs = 2;
@@ -62,7 +62,7 @@ Blockly.Blocks['turtle_turn'] = {
     var DIRECTIONS =
         [['turn right', 'turnRight'],
          ['turn left', 'turnLeft']];
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setPreviousStatement(true);
@@ -70,7 +70,7 @@ Blockly.Blocks['turtle_turn'] = {
     this.setTooltip('Turn 90 degrees in the specified direction.');
     var thisBlock = this;
     this.setHelpUrl(function() {
-      return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+      return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   }
 };
@@ -81,14 +81,14 @@ Blockly.Lua['turtle_turn'] = function(block) {
 
 
 // Block for digging in front, above, or below the turtle.
-Blockly.Blocks['turtle_dig'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_dig'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_dig'].init = function() {
   var DIRECTIONS =
       [['dig in front', 'dig'],
        ['dig up', 'digUp'],
        ['dig down', 'digDown']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
   this.setOutput(true, 'Boolean');
@@ -98,7 +98,7 @@ Blockly.Blocks['turtle_dig'].init = function() {
         'or bedrock is encountered).');
   var thisBlock = this;
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   })
 };
 
@@ -111,14 +111,14 @@ Blockly.Lua['turtle_dig'] = function(block) {
 
 
 // Block for attacking in front, above, or below the turtle.
-Blockly.Blocks['turtle_attack'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_attack'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_attack'].init = function() {
   var DIRECTIONS =
       [['attack in front', 'attack'],
        ['attack up', 'attackUp'],
        ['attack down', 'attackDown']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
   this.setOutput(true, 'Boolean');
@@ -127,7 +127,7 @@ Blockly.Blocks['turtle_attack'].init = function() {
         'if something was hit, false otherwise.');
   var thisBlock = this;
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   })
 };
 
@@ -146,7 +146,7 @@ Blockly.Blocks['turtle_detect'] = {
         [['detect in front', 'detect'],
          ['detect up', 'detectUp'],
          ['detect down', 'detectDown']];
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean');
@@ -165,7 +165,7 @@ Blockly.Lua['turtle_detect'] = function(block) {
 
 // Block for placing an item from the selected slot in front of, above,
 // or below the turtle.
-Blockly.Blocks['turtle_place'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_place'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_place'].init = function() {
   var TYPES =
@@ -175,7 +175,7 @@ Blockly.Blocks['turtle_place'].init = function() {
       [['in front', 'place'],
        ['up', 'placeUp'],
        ['below', 'placeDown']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle('place');
   var thisBlock = this;
@@ -202,7 +202,7 @@ Blockly.Blocks['turtle_place'].init = function() {
       return 'Place a block or item from the selected slot.\nIf it is a sign, it will have the specified text.\nThe result is true if an item could be placed, false otherwise.';
     }});
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   });
 };
 
@@ -220,13 +220,13 @@ Blockly.Blocks['turtle_place'].enterItemMode = function() {
 Blockly.Blocks['turtle_place'].multipleOutputs = 2;
 
 Blockly.Blocks['turtle_place'].mutationToDom = function() {
-  var container = BlocklyLua.ExpStmtBlock.prototype.mutationToDom.call(this);
+  var container = Blockly.ComputerCraft.ExpStmtBlock.prototype.mutationToDom.call(this);
   container.setAttribute('mode', this.getTitleValue('TYPE'));
   return container;
 };
 
 Blockly.Blocks['turtle_place'].domToMutation = function(xmlElement) {
-  BlocklyLua.ExpStmtBlock.prototype.domToMutation.call(this, xmlElement);
+  Blockly.ComputerCraft.ExpStmtBlock.prototype.domToMutation.call(this, xmlElement);
   if (xmlElement.getAttribute('mode') == 'sign') {
     this.enterSignMode();
   } else {
@@ -242,10 +242,10 @@ Blockly.Lua['turtle_place'] = function(block) {
 };
 
 // Block for crafting an item.
-Blockly.Blocks['turtle_craft'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_craft'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_craft'].init = function() {
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendValueInput('LIMIT')
       .setCheck('Number')
       .appendTitle('craft')
@@ -261,7 +261,7 @@ Blockly.Blocks['turtle_craft'].init = function() {
         'If a limit of 0 is supplied, no items will be consumed,\n' +
         'but the return value will indicate whether a valid recipe is present.'
   );
-  this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'craft');
+  this.setHelpUrl(Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + 'craft');
 };
 
 Blockly.Blocks['turtle_craft'].multipleOutputs = 2;
@@ -275,16 +275,16 @@ Blockly.Lua['turtle_craft'] = function(block) {
 
 
 // Block for selecting a slot.
-Blockly.Blocks['turtle_select'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_select'] = new Blockly.ComputerCraft.ExpStmtBlock();
 Blockly.Blocks['turtle_select'].init = function() {
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendValueInput('VALUE')
       .setCheck('Number')
       .appendTitle('select slot #');
   this.setTooltip(
     'Select the slot to use (1-16) for subsequent craft, drop, etc., commands.'
   );
-  this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'select');
+  this.setHelpUrl(Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + 'select');
 };
 
 Blockly.Blocks['turtle_select'].multipleOutputs = 2;
@@ -305,7 +305,7 @@ Blockly.Blocks['turtle_compare'] = {
         [['compare front item to selected slot', 'compare'],
          ['compare above item to selected slot', 'compareUp'],
          ['compare below item to selected slot', 'compareDown']];
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
     this.setOutput(true, 'Boolean')
@@ -314,7 +314,7 @@ Blockly.Blocks['turtle_compare'] = {
           'in the selected slot of the turtle\'s inventory.');
     var thisBlock = this;
     this.setHelpUrl(function() {
-      return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+      return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
     });
   },
 };
@@ -332,7 +332,7 @@ Blockly.Blocks['turtle_get_slot_info'] = {
   init: function() {
     var CHOICES = [['get item count in slot', 'Count'],
                    ['get free space in slot', 'Space']];
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldDropdown(CHOICES), 'CHOICE');
     this.appendValueInput('SLOT')
@@ -361,10 +361,10 @@ Blockly.Lua['turtle_get_slot_info'] = function(block) {
 
 
 // Block for comparing items in the selected slot and the supplied one.
-Blockly.Blocks['turtle_compare_to'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_compare_to'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_compare_to'].init = function() {
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendValueInput('VALUE')
       .setCheck('Number')
       .appendTitle('compare item in selected slot to slot');
@@ -383,14 +383,14 @@ Blockly.Lua['turtle_compare_to'] = function(block) {
 
 
 // Block for dropping items.
-Blockly.Blocks['turtle_drop'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_drop'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_drop'].init = function() {
   var DIRECTIONS =
       [['in front', 'drop'],
        ['up', 'dropUp'],
        ['down', 'dropDown']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle('drop');
   this.appendValueInput('VALUE')
@@ -407,7 +407,7 @@ Blockly.Blocks['turtle_drop'].init = function() {
         'returning false if the inventory is full.');
   var thisBlock = this;
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   });
 };
 
@@ -423,14 +423,14 @@ Blockly.Lua['turtle_drop'] = function(block) {
 
 // Block for getting the turtle to pick up or take items from the ground or
 // an inventory, respectively.
-Blockly.Blocks['turtle_suck'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_suck'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_suck'].init = function() {
   var DIRECTIONS =
       [['suck in front', 'suck'],
        ['suck up', 'suckUp'],
        ['suck down', 'suckDown']];
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendDummyInput()
       .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
   this.setOutput(true, 'Boolean')
@@ -441,7 +441,7 @@ Blockly.Blocks['turtle_suck'].init = function() {
         'Returns true if the turtle can pick up an item.');
   var thisBlock = this;
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + thisBlock.getTitleValue('DIR');
   });
 };
 
@@ -454,9 +454,9 @@ Blockly.Lua['turtle_suck'] = function(block) {
 
 
 // Block for refuelling the turtle.
-Blockly.Blocks['turtle_refuel'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_refuel'] = new Blockly.ComputerCraft.ExpStmtBlock();
 Blockly.Blocks['turtle_refuel'].init = function() {
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendValueInput('VALUE')
       .setCheck('Number')
       .appendTitle('refuel')
@@ -468,7 +468,7 @@ Blockly.Blocks['turtle_refuel'].init = function() {
         'If an input of 0 is supplied, no items will be consumed,\n' +
         'but the return value will indicate if the item can be used as fuel.');
   this.setHelpUrl(function() {
-    return BlocklyLua.BASE_TURTLE_HELP_URL_ + 'refuel';
+    return Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + 'refuel';
   });
 };
 
@@ -485,7 +485,7 @@ Blockly.Lua['turtle_refuel'] = function(block) {
 // Block for getting the turtle's fuel level
 Blockly.Blocks['turtle_get_fuel_level'] = {
   init: function() {
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle('get fuel level');
     this.setOutput(true, 'Number');
@@ -499,16 +499,16 @@ Blockly.Blocks['turtle_get_fuel_level'] = {
 
 Blockly.Lua['turtle_get_fuel_level'] = function(block) {
   var code = 'turtle.getFuelLevel()';
-  return BlocklyLua.HELPER_FUNCTIONS.generatedCode(block, code);
+  return Blockly.ComputerCraft.HELPER_FUNCTIONS.generatedCode(block, code);
 }
 
 
 // Block for transferring an item from the currently selected slot to the
 // specified slot.
-Blockly.Blocks['turtle_transfer_to'] = new BlocklyLua.ExpStmtBlock();
+Blockly.Blocks['turtle_transfer_to'] = new Blockly.ComputerCraft.ExpStmtBlock();
 
 Blockly.Blocks['turtle_transfer_to'].init = function() {
-  this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
   this.appendValueInput('QUANTITY')
       .setCheck('Number')
       .appendTitle('transfer')
@@ -518,7 +518,7 @@ Blockly.Blocks['turtle_transfer_to'].init = function() {
       .appendTitle('items from selected slot to slot');
   this.setInputsInline(true);
   this.setOutput(true, 'Boolean');
-  this.setHelpUrl(BlocklyLua.BASE_TURTLE_HELP_URL_ + 'transferTo');
+  this.setHelpUrl(Blockly.ComputerCraft.BASE_TURTLE_HELP_URL_ + 'transferTo');
   this.setTooltip('Transfers items from the currently selected slot\n' +
                   ' to the specified, returning whether it was successful.');
 };

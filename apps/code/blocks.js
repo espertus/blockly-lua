@@ -23,13 +23,14 @@
  */
 'use strict';
 
-var BlocklyLua = {};
+Blockly.ComputerCraft = {};
 
-BlocklyLua.BASE_HELP_URL = 'http://computercraft.info/wiki/';
+Blockly.ComputerCraft.BASE_HELP_URL = 'http://computercraft.info/wiki/';
 
-BlocklyLua.ExpStmtBlock = function() {};
+Blockly.ComputerCraft.ExpStmtBlock = function() {};
 
-BlocklyLua.ExpStmtBlock.prototype.changeModes = function(shouldBeStatement) {
+Blockly.ComputerCraft.ExpStmtBlock.prototype.changeModes =
+    function(shouldBeStatement) {
   this.unplug(true, true);
   if (shouldBeStatement) {
     this.setOutput(false);
@@ -44,7 +45,8 @@ BlocklyLua.ExpStmtBlock.prototype.changeModes = function(shouldBeStatement) {
   }
 };
 
-BlocklyLua.ExpStmtBlock.prototype.customContextMenu = function(options) {
+Blockly.ComputerCraft.ExpStmtBlock.prototype.customContextMenu =
+    function(options) {
   var option = {enabled: true};
   option.text = this.isStatement ? 'Add Output' : 'Remove Output';
   var thisBlock = this;
@@ -54,18 +56,19 @@ BlocklyLua.ExpStmtBlock.prototype.customContextMenu = function(options) {
   options.push(option);
 };
 
-BlocklyLua.ExpStmtBlock.prototype.mutationToDom = function() {
+Blockly.ComputerCraft.ExpStmtBlock.prototype.mutationToDom = function() {
   // Save whether it is a statement.
   var container = document.createElement('mutation');
   container.setAttribute('is_statement', this['isStatement'] || false);
   return container;
 };
 
-BlocklyLua.ExpStmtBlock.prototype.domToMutation = function(xmlElement) {
+Blockly.ComputerCraft.ExpStmtBlock.prototype.domToMutation
+    = function(xmlElement) {
   this.changeModes(xmlElement.getAttribute('is_statement') == 'true');
 };
 
-BlocklyLua.ExpStmtBlock.prototype.adjustCode = function(code) {
+Blockly.ComputerCraft.ExpStmtBlock.prototype.adjustCode = function(code) {
   if (this.isStatement) {
     return code + '\n';
   } else {
@@ -73,7 +76,7 @@ BlocklyLua.ExpStmtBlock.prototype.adjustCode = function(code) {
   }
 };
 
-BlocklyLua.StmtConns = {
+Blockly.ComputerCraft.StmtConns = {
   NONE: 0,
   PREVIOUS: 1,
   NEXT: 2
@@ -93,8 +96,8 @@ BlocklyLua.StmtConns = {
  *     - {string} name The name of the ComputerCraft function to be called,
  *         not including the prefix.
  *     - {number} stmtConns The types of statement connections, if any.
- *         This should be the disjunction of BlocklyLua.StmtConns values
- *         and may be omitted if there are no statement connections.
+ *         This should be the disjunction of Blockly.ComputerCraft.StmtConns
+ *         values and may be omitted if there are no statement connections.
  *     - {string} output The type of the output, if any.  Legal values are
  *         {'Boolean', 'Number', 'String', 'Table'}.  This should be omitted
  *         if the block does not have an output.
@@ -105,21 +108,21 @@ BlocklyLua.StmtConns = {
  *         element is its type, from the set above.
  *     - {string} tooltip The text for the tooltip.
  */
-BlocklyLua.buildValueBlock = function(prefix, colour, func) {
+Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
   var blockName = prefix + '_' + func.name;
   Blockly.Blocks[blockName] = {
     init: function() {
       this.setColour(colour);
       this.setInputsInline(true);
       this.setHelpUrl(
-        BlocklyLua.BASE_HELP_URL_ + prefix.charAt(0).toUpperCase() +
+        Blockly.ComputerCraft.BASE_HELP_URL_ + prefix.charAt(0).toUpperCase() +
             prefix.slice(1) + '.' + func.name);
       this.setTooltip(func.tooltip);
       if (func.stmtConns) {
         this.setPreviousStatement(
-          func.stmtConns & BlocklyLua.StmtConns.PREVIOUS);
+          func.stmtConns & Blockly.ComputerCraft.StmtConns.PREVIOUS);
         this.setPreviousStatement(
-          func.stmtConns & BlocklyLua.StmtConns.NEXT);
+          func.stmtConns & Blockly.ComputerCraft.StmtConns.NEXT);
       }
       if (func.output) {
         this.setOutput(true, func.output);
@@ -139,14 +142,14 @@ BlocklyLua.buildValueBlock = function(prefix, colour, func) {
     }
   };
   Blockly.Lua[blockName] = function(block) {
-    return BlocklyLua.generateValueCode(
+    return Blockly.ComputerCraft.generateValueCode(
       block,
       prefix + '.' + func.name,
       func.args.map(function(pair) {return pair[0];}));
   };
 };
 
-BlocklyLua.generateValueCode = function(block, funcName, argNames) {
+Blockly.ComputerCraft.generateValueCode = function(block, funcName, argNames) {
   var args = argNames.map(function(name) {
     return Blockly.Lua.valueToCode(block, name, Blockly.Lua.ORDER_NONE);
   });

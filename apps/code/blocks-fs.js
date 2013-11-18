@@ -23,9 +23,9 @@
  */
 'use strict';
 
-BlocklyLua.FS_BLOCK_COLOUR_ = 410;
+Blockly.ComputerCraft.FS_BLOCK_COLOUR_ = 410;
 
-BlocklyLua.FS_FUNCS_ = [
+Blockly.ComputerCraft.FS_FUNCS_ = [
   {name: 'list',
    output: 'Table',
    text: 'list files in %1',
@@ -75,7 +75,7 @@ BlocklyLua.FS_FUNCS_ = [
    args: [['DIR', 'String']],
    tooltip: 'Gets the amount of free space in the given directory, in bytes.'},
   {name: 'makeDir',
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS | BlocklyLua.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'create directory %1',
    args: [['DIR', 'String']],
    tooltip:
@@ -84,7 +84,7 @@ BlocklyLua.FS_FUNCS_ = [
    'If the location is already a directory, nothing changes.\n' +
    'If the location is already a file, an error occurs.'},
   {name: 'move',
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS | BlocklyLua.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'move file/directory from %1 to %2',
    args: [['PATH1', 'String'], ['PATH2', 'String']],
    tooltip: 'Moves a file or directory to a new location.\n' +
@@ -92,7 +92,7 @@ BlocklyLua.FS_FUNCS_ = [
    'The second input must include a file name and that file must not yet exist.'
   },
   {name: 'copy',
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS | BlocklyLua.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'copy file/directory from %1 to %2',
    args: [['PATH1', 'String'], ['PATH2', 'String']],
    tooltip: 'Copies a file or directory to a new location.\n' +
@@ -100,7 +100,7 @@ BlocklyLua.FS_FUNCS_ = [
    'The second input must include a file name and that file must not yet exist.'
   },
   {name: 'delete',
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS | BlocklyLua.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'delete file/directory %1',
    args: [['PATH', 'String']],
    tooltip: 'Deletes a file or directory and its contents.\n' +
@@ -114,7 +114,7 @@ BlocklyLua.FS_FUNCS_ = [
    'Neither path needs to exist; this function only manipulates strings.'}
 ];
 
-for (var i = 0; i < BlocklyLua.FS_FUNCS_.length; i++) {
-  BlocklyLua.buildValueBlock(
-    'fs', BlocklyLua.FS_BLOCK_COLOUR_, BlocklyLua.FS_FUNCS_[i]);
+for (var i = 0; i < Blockly.ComputerCraft.FS_FUNCS_.length; i++) {
+  Blockly.ComputerCraft.buildValueBlock(
+    'fs', Blockly.ComputerCraft.FS_BLOCK_COLOUR_, Blockly.ComputerCraft.FS_FUNCS_[i]);
 };

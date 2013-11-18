@@ -23,12 +23,12 @@
  */
 'use strict';
 
-BlocklyLua.OS_BLOCK_COLOUR_ = 30;
+Blockly.ComputerCraft.OS_BLOCK_COLOUR_ = 30;
 
-BlocklyLua.OS_FUNCS_ = [
+Blockly.ComputerCraft.OS_FUNCS_ = [
   {name: 'terminate',
    // This has a previous, but not a following, statement, which is rare.
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS,
    text: 'terminate with error %1',
    args: [['MSG', null]],
    tooltip:
@@ -36,16 +36,16 @@ BlocklyLua.OS_FUNCS_ = [
    'This should not be used for normal termination.'
   },
   {name: 'sleep',
-   stmtConns: BlocklyLua.StmtConns.PREVIOUS | BlocklyLua.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'sleep %1 seconds',
    args: [['VALUE', 'Number']],
    tooltip: 'Sleep for the specified number of seconds.'
   }
 ];
 
-for (var i = 0; i < BlocklyLua.OS_FUNCS_.length; i++) {
-  BlocklyLua.buildValueBlock(
-    'os', BlocklyLua.OS_BLOCK_COLOUR_, BlocklyLua.OS_FUNCS_[i]);
+for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
+  Blockly.ComputerCraft.buildValueBlock(
+    'os', Blockly.ComputerCraft.OS_BLOCK_COLOUR_, Blockly.ComputerCraft.OS_FUNCS_[i]);
 }
 
 // Added in order to continue to support programs with the old block name.

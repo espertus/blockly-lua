@@ -23,8 +23,8 @@
  */
 'use strict';
 
-BlocklyLua.BASE_PERIPHERAL_HELP_URL_ = BlocklyLua.BASE_HELP_URL + 'Peripheral.';
-BlocklyLua.PERIPHERAL_BLOCK_COLOUR_ = 65;
+Blockly.ComputerCraft.BASE_PERIPHERAL_HELP_URL_ = Blockly.ComputerCraft.BASE_HELP_URL + 'Peripheral.';
+Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
 function BlockWithSide(blockName, title, outputType, tooltip, funcName) {
   this.blockName = blockName;
@@ -34,7 +34,7 @@ function BlockWithSide(blockName, title, outputType, tooltip, funcName) {
   this.funcName = funcName;
 };
 
-BlocklyLua.SIDES_ = [['in front', 'front'],
+Blockly.ComputerCraft.SIDES_ = [['in front', 'front'],
                      ['in back', 'back'],
                      ['to the left', 'left'],
                      ['to the right', 'right'],
@@ -47,7 +47,7 @@ BlockWithSide.prototype.addSideInput = function() {
   this.appendDummyInput('SIDE')
       .appendTitle(
         new Blockly.FieldDropdown(
-          BlocklyLua.SIDES_,
+          Blockly.ComputerCraft.SIDES_,
           function(value) {
             if (value == 'cable') {
               if (!thisBlock.cableMode) {
@@ -64,7 +64,7 @@ BlockWithSide.prototype.addSideInput = function() {
 };
 
 BlockWithSide.prototype.init = function() {
-  this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+  this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
   var thisBlock = this;
   this.appendDummyInput()
       .appendTitle(this.title);
@@ -72,7 +72,7 @@ BlockWithSide.prototype.init = function() {
   this.setOutput(true, this.outputType);
   this.setInputsInline(true);
   this.setTooltip(this.tooltip);
-  this.setHelpUrl(BlocklyLua.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
+  this.setHelpUrl(Blockly.ComputerCraft.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
   Blockly.Lua[this.blockName] = BlockWithSide.prototype.generateLua;
 
 };
@@ -221,7 +221,7 @@ Blockly.Blocks['peripheral_call'].decompose = function(workspace) {
 Blockly.Blocks['peripheral_mutatorcontainer'] = {
   // Peripheral input container (for mutator dialog).
   init: function() {
-    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(Blockly.Msg.PERIPHERAL_MUTATORCONTAINER_TITLE);
     this.appendStatementInput('STACK');
@@ -233,7 +233,7 @@ Blockly.Blocks['peripheral_mutatorcontainer'] = {
 Blockly.Blocks['peripheral_mutatorarg'] = {
   // Peripheral input (for mutator dialog).
   init: function() {
-    this.setColour(BlocklyLua.PERIPHERAL_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle('input')
         .appendTitle(new Blockly.FieldTextInput('x', this.validator), 'NAME');
@@ -341,8 +341,8 @@ Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
 
 // The next block is unlike the rest in this file because it doesn't
 // have a "side" argument.  Declare it as a simple value block.
-BlocklyLua.buildValueBlock(
-  'peripheral', BlocklyLua.PERIPHERAL_BLOCK_COLOUR_,
+Blockly.ComputerCraft.buildValueBlock(
+  'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
   {name: 'get_names',
    output: 'List',
    text: 'get names of connected peripherals',

@@ -23,7 +23,7 @@
  */
 'use strict';
 
-BlocklyLua.deprecatedOnChange = function(newBlock) {
+Blockly.ComputerCraft.deprecatedOnChange = function(newBlock) {
   return function() {
     if (!this.workspace) {
       // Block has been deleted.
@@ -37,14 +37,14 @@ BlocklyLua.deprecatedOnChange = function(newBlock) {
 Blockly.Blocks['turtle_get_item_count'] = {
   // Block for returning the number of items in the supplied slot.
   init: function() {
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('get item count in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the count of items in the supplied slot number.');
   },
-  onchange: BlocklyLua.deprecatedOnChange('get [item count/free space] in slot')
+  onchange: Blockly.ComputerCraft.deprecatedOnChange('get [item count/free space] in slot')
 };
 
 Blockly.Lua['turtle_get_item_count'] = function(block) {
@@ -59,14 +59,14 @@ Blockly.Blocks['turtle_get_item_space'] = {
   // Block for getting the number of items that can be put in the numbered
   // slot.
   init: function() {
-    this.setColour(BlocklyLua.TURTLE_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_);
     this.appendValueInput('VALUE')
         .setCheck('Number')
         .appendTitle('get free space in slot');
     this.setOutput(true, 'Number');
     this.setTooltip('Get the number of items that can be placed in the numbered slot.');
   },
-  onchange: BlocklyLua.deprecatedOnChange('get [item count/free space] in slot')
+  onchange: Blockly.ComputerCraft.deprecatedOnChange('get [item count/free space] in slot')
 };
 
 Blockly.Lua['turtle_get_item_space'] = function(block) {
