@@ -1,5 +1,5 @@
 /**
- * Blockly Lua: ComputerCraft File System API
+ * Blockly Lua: ComputerCraft Operating System (OS) API
  *
  * Copyright 2013 Google Inc.
  * http://blockly.googlecode.com/
@@ -18,7 +18,7 @@
  */
 
 /**
- * @fileoverview Blocks for ComputerCraft File System (FS) API.
+ * @fileoverview Blocks for ComputerCraft Operating System (OS) API.
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
@@ -36,7 +36,8 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
    'This should not be used for normal termination.'
   },
   {name: 'sleep',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
+   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS |
+   Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'sleep %1 seconds',
    args: [['VALUE', 'Number']],
    tooltip: 'Sleep for the specified number of seconds.'
@@ -45,7 +46,9 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
 
 for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
   Blockly.ComputerCraft.buildValueBlock(
-    'os', Blockly.ComputerCraft.OS_BLOCK_COLOUR_, Blockly.ComputerCraft.OS_FUNCS_[i]);
+    'os',
+    Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
+    Blockly.ComputerCraft.OS_FUNCS_[i]);
 }
 
 // Added in order to continue to support programs with the old block name.
