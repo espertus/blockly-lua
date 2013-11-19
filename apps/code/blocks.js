@@ -154,6 +154,33 @@ Blockly.ComputerCraft.StmtConns = {
   NEXT: 2
 };
 
+
+// ValueBlock is a block whose only inputs are value inputs (no dropdown
+// menus, etc.).  It should be constructed with buildValueBlock(), below,
+// which describes the parameters.
+
+Blockly.ComputerCraft.ValueBlock = function(prefix, colour, func) {
+  Blockly.ComputerCraft.Block.call(this, prefix, colour, func);
+}
+
+Blockly.ComputerCraft.ValueBlock.prototype.init = function() {
+  Blockly.ComputerCraft.Block.prototype.init.call(this);
+  // Build up arguments to the format expected by interpolateMsg.
+  var interpArgs = []
+  interpArgs.push(this.func.text);
+  if (this.func.args) {
+    for (var j = 0; j < this.func.args.length; j++) {
+      var arg = [];
+      arg.push(this.func.args[j][0]);  // name
+      arg.push(this.func.args[j][1]);  // type
+      arg.push(Blockly.ALIGN_RIGHT);
+      interpArgs.push(arg);
+    }
+  }
+  interpArgs.push(Blockly.ALIGN_RIGHT);
+  Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
+}
+
 /**
  * Create a block that has only value inputs (no dropdown menus, etc.).
  *
@@ -183,45 +210,8 @@ Blockly.ComputerCraft.StmtConns = {
  */
 Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
   var blockName = prefix + '_' + func.name;
-  Blockly.Blocks[blockName] = {
-    init: function() {
-      this.setColour(colour);
-      this.setInputsInline(true);
-      this.setHelpUrl(
-        Blockly.ComputerCraft.BASE_HELP_URL + prefix.charAt(0).toUpperCase() +
-            prefix.slice(1) + '.' + func.name);
-      if (func.tooltip) {
-        this.setTooltip(func.tooltip);
-      }
-      if (func.stmtConns) {
-        this.setPreviousStatement(
-          (func.stmtConns & Blockly.ComputerCraft.StmtConns.PREVIOUS) != 0);
-        this.setNextStatement(
-          (func.stmtConns & Blockly.ComputerCraft.StmtConns.NEXT) != 0);
-      }
-      if (func.output) {
-        this.setOutput(true, func.output);
-      }
-      if (func.multipleOutputs) {
-        this.multipleOutputs = func.multipleOutputs;
-        this.setOutput(true);  // We don't specify types for multiple outputs.
-      }
-      // Build up arguments to the format expected by interpolateMsg.
-      var interpArgs = []
-      interpArgs.push(func.text);
-      if (func.args) {
-        for (var j = 0; j < func.args.length; j++) {
-          var arg = [];
-          arg.push(func.args[j][0]);  // name
-          arg.push(func.args[j][1]);  // type
-          arg.push(Blockly.ALIGN_RIGHT);
-          interpArgs.push(arg);
-        }
-      }
-      interpArgs.push(Blockly.ALIGN_RIGHT);
-      Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
-    }
-  };
+  Blockly.Blocks[blockName] =
+      new Blockly.ComputerCraft.ValueBlock(prefix, colour, func);
   Blockly.Lua[blockName] = function(block) {
     return Blockly.ComputerCraft.generateValueCode(
       block,
