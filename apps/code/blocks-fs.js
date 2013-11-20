@@ -26,7 +26,7 @@
 Blockly.ComputerCraft.FS_BLOCK_COLOUR_ = 410;
 
 Blockly.ComputerCraft.FS_FUNCS_ = [
-  {name: 'list',
+  {funcName: 'list',
    output: 'Table',
    text: 'list files in %1',
    args: [['DIR', 'String']],
@@ -34,27 +34,27 @@ Blockly.ComputerCraft.FS_FUNCS_ = [
    'Returns a list of all the files\n' +
    '(including subdirectories but not their contents)\n' +
    'contained in a directory, as a numerically indexed table.'},
-  {name: 'exists',
+  {funcName: 'exists',
    output: 'Boolean',
    text: 'path %1 exists?',
    args: [['PATH', 'String']],
    tooltip:
    'Checks if its input refers to an existing file or directory,\n' +
    'returning true if it does, false otherwise'},
-  {name: 'isReadOnly',
+  {funcName: 'isReadOnly',
    output: 'Boolean',
    text: 'is path %1 read-only?',
    args: [['PATH', 'String']],
    tooltip:
    'Checks if a file or directory is read-only (cannot be modified),\n' +
    'returning true if it is, false otherwise'},
-  {name: 'getName',
+  {funcName: 'getName',
    output: 'String',
    text: 'get file name from path %1',
    args: [['PATH', 'String']],
    tooltip:
    'Gets the final part (file name) from a path'},
-  {name: 'getDrive',
+  {funcName: 'getDrive',
    output: 'String',
    text: 'get drive type for path %1',
    args: [['PATH', 'String']],
@@ -64,18 +64,18 @@ Blockly.ComputerCraft.FS_FUNCS_ = [
    '“hdd” if the path is stored on the computer’s local hard drive,\n' +
    '“rom” if the path is in ROM, or the side on which a disk drive\n' +
    'is attached if the path is on a floppy disk.'},
-  {name: 'getSize',
+  {funcName: 'getSize',
    output: 'Number',
    text: 'get size of file %1',
    args: [['PATH', 'String']],
    tooltip: 'Gets the amount of space taken up by the file, in bytes.\n'},
-  {name: 'getFreeSpace',
+  {funcName: 'getFreeSpace',
    output: 'Number',
    text: 'get amount of free space in %1',
    args: [['DIR', 'String']],
    tooltip: 'Gets the amount of free space in the given directory, in bytes.'},
-  {name: 'makeDir',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
+  {funcName: 'makeDir',
+   stmtConns: Blockly.ComputerCraft.StmtConns.BOTH,
    text: 'create directory %1',
    args: [['DIR', 'String']],
    tooltip:
@@ -83,29 +83,29 @@ Blockly.ComputerCraft.FS_FUNCS_ = [
    'creating any missing parent components.\n' +
    'If the location is already a directory, nothing changes.\n' +
    'If the location is already a file, an error occurs.'},
-  {name: 'move',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
+  {funcName: 'move',
+   stmtConns: Blockly.ComputerCraft.StmtConns.BOTH,
    text: 'move file/directory from %1 to %2',
    args: [['PATH1', 'String'], ['PATH2', 'String']],
    tooltip: 'Moves a file or directory to a new location.\n' +
    'The parent of the new location must be an existing writeable directory.\n' +
    'The second input must include a file name and that file must not yet exist.'
   },
-  {name: 'copy',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
+  {funcName: 'copy',
+   stmtConns: Blockly.ComputerCraft.StmtConns.BOTH,
    text: 'copy file/directory from %1 to %2',
    args: [['PATH1', 'String'], ['PATH2', 'String']],
    tooltip: 'Copies a file or directory to a new location.\n' +
    'The parent of the new location must be an existing writeable directory.\n' +
    'The second input must include a file name and that file must not yet exist.'
   },
-  {name: 'delete',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS | Blockly.ComputerCraft.StmtConns.NEXT,
+  {funcName: 'delete',
+   stmtConns: Blockly.ComputerCraft.StmtConns.BOTH,
    text: 'delete file/directory %1',
    args: [['PATH', 'String']],
    tooltip: 'Deletes a file or directory and its contents.\n' +
    'Nothing happens if the file/directory does not exist.'},
-  {name: 'combine',
+  {funcName: 'combine',
    output: 'String',
    text: 'combine file paths %1 and %2',
    args: [['PATH1', 'String'], ['PATH2', 'String']],
@@ -116,5 +116,6 @@ Blockly.ComputerCraft.FS_FUNCS_ = [
 
 for (var i = 0; i < Blockly.ComputerCraft.FS_FUNCS_.length; i++) {
   Blockly.ComputerCraft.buildValueBlock(
-    'fs', Blockly.ComputerCraft.FS_BLOCK_COLOUR_, Blockly.ComputerCraft.FS_FUNCS_[i]);
+    'fs', Blockly.ComputerCraft.FS_BLOCK_COLOUR_,
+    Blockly.ComputerCraft.FS_FUNCS_[i]);
 };

@@ -26,7 +26,7 @@
 Blockly.ComputerCraft.OS_BLOCK_COLOUR_ = 30;
 
 Blockly.ComputerCraft.OS_FUNCS_ = [
-  {name: 'terminate',
+  {funcName: 'terminate',
    // This has a previous, but not a following, statement, which is rare.
    stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS,
    text: 'terminate with error %1',
@@ -35,7 +35,7 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
    'End the program with the provided error message.  ' +
    'This should not be used for normal termination.'
   },
-  {name: 'sleep',
+  {funcName: 'sleep',
    stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS |
    Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'sleep %1 seconds',

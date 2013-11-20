@@ -89,7 +89,7 @@ Code.tabClick = function(id) {
     // the resulting code is correct.
     var badBlock = Blockly.Lua.getUnconnectedBlock();
     if (badBlock) {
-      warningText = 'This block is not propertly connected to other blocks.';
+      warningText = 'This block is not properly connected to other blocks.';
     } else {
       badBlock = Blockly.Lua.getBlockWithWarning();
       if (badBlock) {

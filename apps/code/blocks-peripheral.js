@@ -23,127 +23,51 @@
  */
 'use strict';
 
-Blockly.ComputerCraft.BASE_PERIPHERAL_HELP_URL_ = Blockly.ComputerCraft.BASE_HELP_URL + 'Peripheral.';
 Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
-function BlockWithSide(blockName, title, outputType, tooltip, funcName) {
-  this.blockName = blockName;
-  this.title = title;
-  this.outputType = outputType;
-  this.tooltip = tooltip;
-  this.funcName = funcName;
-};
+Blockly.ComputerCraft.PERIPHERAL_FUNCS_ = [
+  {funcName: 'isPresent',
+   output: 'Boolean',
+   text: 'is peripheral present?',
+   tooltip:
+   'Return true if a peripheral is connected on the specified side.'},
+  {funcName: 'getType',
+   output: 'String',
+   text: 'get type of peripheral',
+   tooltip:
+   'Return the type of the connected peripheral or nil if none present'},
+  {funcName: 'getMethods',
+   output: 'List',
+   text: 'get method names of peripheral',
+   tooltip:
+   'Return a list of the names of the connected peripheral\'s methods,\n' +
+   'or nil if no peripheral is connected.'},
+  {funcName: 'wrap',
+   output: 'List',
+   text: 'wrap peripheral',
+   tooltip:
+   'Return the connected peripheral\'s methods so they can be called,\n' +
+   'or nil if no peripheral is connected.'}];
 
-Blockly.ComputerCraft.SIDES_ = [['in front', 'front'],
-                     ['in back', 'back'],
-                     ['to the left', 'left'],
-                     ['to the right', 'right'],
-                     ['above', 'top'],
-                     ['below', 'bottom'],
-                     ['through cable...', 'cable']];
+for (var i = 0; i < Blockly.ComputerCraft.PERIPHERAL_FUNCS_.length; i++) {
+  Blockly.ComputerCraft.buildBlockWithSide(
+    'peripheral',
+    Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
+    Blockly.ComputerCraft.PERIPHERAL_FUNCS_[i]);
+}
 
-BlockWithSide.prototype.addSideInput = function() {
-  var thisBlock = this;
-  this.appendDummyInput('SIDE')
-      .appendTitle(
-        new Blockly.FieldDropdown(
-          Blockly.ComputerCraft.SIDES_,
-          function(value) {
-            if (value == 'cable') {
-              if (!thisBlock.cableMode) {
-                thisBlock.enterCableMode();
-              }
-            } else {
-              if (thisBlock.cableMode) {
-                thisBlock.leaveCableMode();
-              }
-            }
-          }),
-        'SIDES');
-  this.cableMode = false;
-};
+// The next block is unlike the rest in this file because it doesn't
+// have a "side" argument.  It is a simple value block.
+Blockly.ComputerCraft.buildValueBlock(
+  'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
+  {funcName: 'getNames',
+   output: 'List',
+   text: 'get names of connected peripherals',
+   args: [],
+   tooltip:
+   'Returns the names of any peripherals connected\n' +
+   'directly or through a wired modem.'});
 
-BlockWithSide.prototype.init = function() {
-  this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
-  var thisBlock = this;
-  this.appendDummyInput()
-      .appendTitle(this.title);
-  this.addSideInput();
-  this.setOutput(true, this.outputType);
-  this.setInputsInline(true);
-  this.setTooltip(this.tooltip);
-  this.setHelpUrl(Blockly.ComputerCraft.BASE_PERIPHERAL_HELP_URL_ + this.funcName);
-  Blockly.Lua[this.blockName] = BlockWithSide.prototype.generateLua;
-
-};
-
-BlockWithSide.prototype.enterCableMode = function() {
-  // Create child text block.  Perhaps this should only be done once per block?
-  var textBlock = new Blockly.Block(this.workspace, 'text');
-  textBlock.initSvg();
-  textBlock.render();
-  this.appendValueInput('CABLE')
-      .setCheck('String')
-      .connection.connect(textBlock.outputConnection);
-  this.cableMode = true;
-};
-
-BlockWithSide.prototype.leaveCableMode = function() {
-    this.removeInput('CABLE', true);
-    this.cableMode = false;
-  };
-
-BlockWithSide.prototype.mutationToDom = function() {
-  var container = document.createElement('mutation');
-  container.setAttribute('cable_mode', this.cableMode);
-  return container;
-};
-
-BlockWithSide.prototype.domToMutation = function(xmlElement) {
-  this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
-  if (this.cableMode) {
-    this.appendValueInput('CABLE')
-        .setCheck('String');
-  }
-};
-
-BlockWithSide.prototype.generateLua = function(block) {
-  var side = block.cableMode ?
-      (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
-      :  block.getTitleValue('SIDES');
-  var code = 'peripheral.' + block.funcName + '(\'' + side + '\')';
-  return [code, Blockly.Lua.ORDER_HIGH];
-};
-
-Blockly.Blocks['peripheral_is_present'] = new BlockWithSide(
-  'peripheral_is_present',
-  'is peripheral present',
-  'Boolean',
-  'Return true if a peripheral is connected on the specified side.',
-  'isPresent');
-
-Blockly.Blocks['peripheral_get_type'] = new BlockWithSide(
-  'peripheral_get_type',
-  'get type of peripheral',
-  'String',
-  'Return the type of the connected peripheral or nil if none present',
-  'getType');
-
-Blockly.Blocks['peripheral_get_methods'] = new BlockWithSide(
-  'peripheral_get_methods',
-  'get method names of peripheral',
-  'List',
-  'Return a list of the names of the connected peripheral\'s methods,\n' +
-      'or nil if no peripheral is connected.',
-  'getMethods');
-
-Blockly.Blocks['peripheral_wrap'] = new BlockWithSide(
-  'peripheral_wrap',
-  'wrap peripheral',
-  'List',
-  'Return the connected peripheral\'s methods so they can be called,\n' +
-      'or nil if no peripheral is connected.',
-  'wrap');
 
 // The rest of this file is devoted to the block 'peripheral_call',
 // which calls a method on an attached peripheral with an arbitrary
@@ -152,17 +76,18 @@ Blockly.Blocks['peripheral_wrap'] = new BlockWithSide(
 // Second argument: method name
 // Any number of subsequent arguments to be passed to method.
 // This will override (and explicitly call) most of the prototype's methods.
-Blockly.Blocks['peripheral_call'] = new BlockWithSide(
-  'peripheral_call',
-  'call method',
-  null,
-  'Calls a method on a connected peripheral. \n' +
-      'Click on the star to add parameters.',
-  'call');
+Blockly.Blocks['peripheral_call'] = new Blockly.ComputerCraft.BlockWithSide(
+  'periperal',
+  Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
+  {funcName: 'call',
+   text: 'call method',
+   tooltip: 'Calls a method on a connected peripheral.\n' +
+   'Click on the star to add parameters.',
+   helpUrlType: Blockly.ComputerCraft.HelpUrlType.PREFIX_DIR});
 
 Blockly.Blocks['peripheral_call'].init = function() {
   // Call prototype's init method to set up basics, including side.
-  BlockWithSide.prototype.init.call(this);
+  Blockly.ComputerCraft.BlockWithSide.prototype.init.call(this);
   // Add mutator.
   this.setMutator(new Blockly.Mutator(['peripheral_mutatorarg']));
   this.arguments_ = [];
@@ -175,26 +100,27 @@ Blockly.Blocks['peripheral_call'].init = function() {
   this.moveInputBefore('ON', 'SIDE')
   this.appendDummyInput()
       .appendTitle('', 'PARAMS');
-  // Override default code generator.
-  Blockly.Lua['peripheral_call'] = function(block) {
-    // Generate Lua for calling a method on an attached peripheral.
-    var side = block.cableMode ?
-        (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
-        :  block.getTitleValue('SIDES');
-    var method = Blockly.Lua.valueToCode(
-      block, 'METHOD', Blockly.Lua.ORDER_NONE) || '';
-    var code = 'peripheral.call(\'' + side + '\', ' + method;
-    for (var x = 1; this.getInput('PARAM' + x); x++) {
-      code += ', ' +
-          Blockly.Lua.valueToCode(block, 'PARAM' + x, Blockly.Lua.ORDER_NONE);
-    }
-    code += ')';
-    return [code, Blockly.Lua.ORDER_HIGH];
-  };
+};
+
+// Override default code generator.
+Blockly.Lua['peripheral_call'] = function(block) {
+  // Generate Lua for calling a method on an attached peripheral.
+  var side = block.cableMode ?
+      (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
+      :  block.getTitleValue('SIDES');
+  var method = Blockly.Lua.valueToCode(
+    block, 'METHOD', Blockly.Lua.ORDER_NONE) || '';
+  var code = 'peripheral.call(\'' + side + '\', ' + method;
+  for (var x = 1; this.getInput('PARAM' + x); x++) {
+    code += ', ' +
+        Blockly.Lua.valueToCode(block, 'PARAM' + x, Blockly.Lua.ORDER_NONE);
+  }
+  code += ')';
+  return [code, Blockly.Lua.ORDER_HIGH];
 };
 
 Blockly.Blocks['peripheral_call'].enterCableMode = function() {
-  BlockWithSide.prototype.enterCableMode.call(this);
+  Blockly.ComputerCraft.BlockWithSide.prototype.enterCableMode.call(this);
   if (this.getInput('PARAM1')) {
     this.moveInputBefore('CABLE', 'PARAM1');
   }
@@ -316,7 +242,8 @@ Blockly.Blocks['peripheral_call'].saveConnections = function(containerBlock) {
 
 Blockly.Blocks['peripheral_call'].mutationToDom = function() {
   // Save cable state.
-  var container = BlockWithSide.prototype.mutationToDom.call(this);
+  var container =
+      Blockly.ComputerCraft.BlockWithSide.prototype.mutationToDom.call(this);
   // Save argument names.
   for (var x = 0; x < this.arguments_.length; x++) {
     var parameter = document.createElement('arg');
@@ -328,7 +255,8 @@ Blockly.Blocks['peripheral_call'].mutationToDom = function() {
 
 Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
   // Restore cable state.
-  BlockWithSide.prototype.domToMutation.call(this, xmlElement);
+  Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation.call(
+    this, xmlElement);
   // Restore argument inputs.
   this.arguments_ = [];
   for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
@@ -338,15 +266,3 @@ Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
   }
   this.updateParams_(null);
 };
-
-// The next block is unlike the rest in this file because it doesn't
-// have a "side" argument.  Declare it as a simple value block.
-Blockly.ComputerCraft.buildValueBlock(
-  'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
-  {name: 'get_names',
-   output: 'List',
-   text: 'get names of connected peripherals',
-   args: [],
-   tooltip:
-   'Returns the names of any peripherals connected\n' +
-   'directly or through a wired modem.'});
