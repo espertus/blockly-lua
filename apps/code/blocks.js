@@ -35,8 +35,8 @@ Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
  * - prefix
  * - an underscore
  * - either:
- *   - func.blockName, if provided, or
- *   - func.funcName, with every instance of '[A-Z]' replaced with '_[a-z]'.
+ *   - info.blockName, if provided, or
+ *   - info.funcName, with every instance of '[A-Z]' replaced with '_[a-z]'.
  *     For example, 'is_present'  would become 'isPresent'.
  * @param {string} prefix A ComputerCraft API prefix, such as 'os'.
  * @param {Object} func An object containing a funcName field and optionally
@@ -44,12 +44,12 @@ Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
  * @return {string} An underscore-separated string suitable for use as a block
  *     name.
  */
-Blockly.ComputerCraft.getBlockName_ = function(prefix, func) {
-  var name = func.blockName;
+Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
+  var name = info.blockName;
   if (!name) {
     name = '';
-    for (var i = 0; i < func.funcName.length; i++) {
-      var c = func.funcName[i];
+    for (var i = 0; i < info.funcName.length; i++) {
+      var c = info.funcName[i];
       if (Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_.test(c)) {
         name += '_' + c.toLowerCase();
       } else {
@@ -60,11 +60,11 @@ Blockly.ComputerCraft.getBlockName_ = function(prefix, func) {
   return prefix + '_' + name;
 }
 
-Blockly.ComputerCraft.Block = function(prefix, colour, func) {
+Blockly.ComputerCraft.Block = function(prefix, colour, info) {
   this.prefix = prefix;
   this.colour = colour;
-  this.func = func;
-  this.blockName = Blockly.ComputerCraft.getBlockName_(prefix, func);
+  this.info = info;
+  this.blockName = Blockly.ComputerCraft.getBlockName_(prefix, info);
 };
 
 Blockly.ComputerCraft.HelpUrlType = {
@@ -75,42 +75,42 @@ Blockly.ComputerCraft.HelpUrlType = {
 Blockly.ComputerCraft.Block.prototype.init = function() {
   this.setColour(this.colour);
   this.setInputsInline(true);
-  if (this.func.helpUrlType ==
+  if (this.info.helpUrlType ==
       Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME) {
       this.helpUrl =
         Blockly.ComputerCraft.BASE_HELP_URL +
             this.prefix.charAt(0).toUpperCase() +
-            this.prefix.slice(1) + '.' + this.func.funcName;
+            this.prefix.slice(1) + '.' + this.info.funcName;
   }
-  if (this.func.tooltip) {
-    this.setTooltip(this.func.tooltip);
+  if (this.info.tooltip) {
+    this.setTooltip(this.info.tooltip);
   }
-  if (this.func.stmtConns) {
+  if (this.info.stmtConns) {
     this.setPreviousStatement(
-      (this.func.stmtConns & Blockly.ComputerCraft.StmtConns.PREVIOUS) != 0);
+      (this.info.stmtConns & Blockly.ComputerCraft.StmtConns.PREVIOUS) != 0);
     this.setNextStatement(
-      (this.func.stmtConns & Blockly.ComputerCraft.StmtConns.NEXT) != 0);
+      (this.info.stmtConns & Blockly.ComputerCraft.StmtConns.NEXT) != 0);
   }
-  if (this.func.output) {
-    this.setOutput(true, this.func.output);
+  if (this.info.output) {
+    this.setOutput(true, this.info.output);
   }
-  if (this.func.multipleOutputs) {
-    this.multipleOutputs = this.func.multipleOutputs;
+  if (this.info.multipleOutputs) {
+    this.multipleOutputs = this.info.multipleOutputs;
     this.setOutput(true);  // We don't specify types for multiple outputs.
   }
   // Subclass must set up inputs, including block title.
 };
 
-Blockly.ComputerCraft.buildExpStmtBlock = function(prefix, colour, func) {
-  var newBlock = new Blockly.ComputerCraft.ExpStmtBlock(prefix, colour, func);
+Blockly.ComputerCraft.buildExpStmtBlock = function(prefix, colour, info) {
+  var newBlock = new Blockly.ComputerCraft.ExpStmtBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   if (!newBlock.suppressLua) {
     Blockly.Lua[newBlock.blockName] = function(block) {
       var code = block.prefix + '.';
-      if (block.func.directions) {
+      if (block.info.directions) {
         code += block.getTitleValue('DIR') + '(';
       } else {
-        code += block.func.funcName + '(';
+        code += block.info.funcName + '(';
       }
       var args = block.inputList.filter(function(i) {
         return i.type == Blockly.INPUT_VALUE;}).
@@ -127,11 +127,11 @@ Blockly.ComputerCraft.buildExpStmtBlock = function(prefix, colour, func) {
 };
 
 
-// This also uses func.directions.
-Blockly.ComputerCraft.ExpStmtBlock = function(prefix, colour, func) {
-  Blockly.ComputerCraft.Block.call(this, prefix, colour, func);
-  func.output = 'Boolean';
-  func.multipleOutputs = 2;
+// This also uses info.directions.
+Blockly.ComputerCraft.ExpStmtBlock = function(prefix, colour, info) {
+  Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
+  info.output = 'Boolean';
+  info.multipleOutputs = 2;
   // Provide some shortcuts.
 /*
   this.adjustCode = function(code) {
@@ -142,11 +142,11 @@ Blockly.ComputerCraft.ExpStmtBlock = function(prefix, colour, func) {
 
 Blockly.ComputerCraft.ExpStmtBlock.prototype.init = function() {
   Blockly.ComputerCraft.Block.prototype.init.call(this);
-  if (this.func.directions) {
+  if (this.info.directions) {
     this.appendDummyInput('DIRECTIONS')
-        .appendTitle(new Blockly.FieldDropdown(this.func.directions), 'DIR');
+        .appendTitle(new Blockly.FieldDropdown(this.info.directions), 'DIR');
   }
-  if (this.func.helpUrlType ==
+  if (this.info.helpUrlType ==
       Blockly.ComputerCraft.HelpUrlType.PREFIX_DIR) {
     var thisBlock = this;
     this.setHelpUrl(function() {
@@ -157,10 +157,10 @@ Blockly.ComputerCraft.ExpStmtBlock.prototype.init = function() {
   }
 /*
   // Create Lua generator.
-  if (!this.func.suppressLua) {
+  if (!this.info.suppressLua) {
     Blockly.Lua[this.blockName] = function(block) {
       var code = block.prefix + '.';
-      if (block.func.directions) {
+      if (block.info.directions) {
         code += block.getTitleValue('DIR') + '(';
       } else {
         code += block.funcName + '(';
@@ -239,20 +239,20 @@ Blockly.ComputerCraft.StmtConns = {
 // menus, etc.).  It should be constructed with buildValueBlock(), below,
 // which describes the parameters.
 
-Blockly.ComputerCraft.ValueBlock = function(prefix, colour, func) {
-  Blockly.ComputerCraft.Block.call(this, prefix, colour, func);
+Blockly.ComputerCraft.ValueBlock = function(prefix, colour, info) {
+  Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
 }
 
 Blockly.ComputerCraft.ValueBlock.prototype.init = function() {
   Blockly.ComputerCraft.Block.prototype.init.call(this);
   // Build up arguments to the format expected by interpolateMsg.
   var interpArgs = []
-  interpArgs.push(this.func.text);
-  if (this.func.args) {
-    for (var j = 0; j < this.func.args.length; j++) {
+  interpArgs.push(this.info.text);
+  if (this.info.args) {
+    for (var j = 0; j < this.info.args.length; j++) {
       var arg = [];
-      arg.push(this.func.args[j][0]);  // name
-      arg.push(this.func.args[j][1]);  // type
+      arg.push(this.info.args[j][0]);  // name
+      arg.push(this.info.args[j][1]);  // type
       arg.push(Blockly.ALIGN_RIGHT);
       interpArgs.push(arg);
     }
@@ -270,7 +270,7 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function() {
  * @param {!string} prefix A lower-case prefix corresponding to a
  *     ComputerCraft API, such as "os".
  * @param {number} colour The block's colour.
- * @param {!Object} func An object with the following fields:
+ * @param {!Object} info An object with the following fields:
  *     - {string} funcName The name of the ComputerCraft function to be called,
  *         not including the prefix.
  *     - {?string} blockName The name of the block to be created, without the
@@ -290,14 +290,14 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function() {
  *         omitted or the empty list if there are no inputs.
  *     - {?string} tooltip The text for the tooltip.
  */
-Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, func) {
-  func.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
-  var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, func);
+Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
+  info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
+  var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   Blockly.Lua[newBlock.blockName] = function(block) {
     return Blockly.ComputerCraft.ValueBlock.generateLua(
       block,
-      func.args ? func.args.map(function(pair) {return pair[0];}) : []);
+      info.args ? info.args.map(function(pair) {return pair[0];}) : []);
   };
 };
 
@@ -305,9 +305,9 @@ Blockly.ComputerCraft.ValueBlock.generateLua = function(block, argNames) {
   var args = argNames.map(function(name) {
     return Blockly.Lua.valueToCode(block, name, Blockly.Lua.ORDER_NONE);
   });
-  var code = block.prefix + '.' + block.func.funcName +
+  var code = block.prefix + '.' + block.info.funcName +
       '(' + args.join(', ') + ')';
-  if (block.func.output) {
+  if (block.info.output) {
     return [code, Blockly.Lua.ORDER_HIGH];
   } else {
     return code + '\n';
@@ -319,15 +319,15 @@ Blockly.ComputerCraft.ValueBlock.generateLua = function(block, argNames) {
 // cable).  It may also have other inputs.  It should be built with
 // buildSideBlock(), below, which describes the parameters.
 
-Blockly.ComputerCraft.BlockWithSide = function(prefix, colour, func) {
-  Blockly.ComputerCraft.Block.call(this, prefix, colour, func);
+Blockly.ComputerCraft.BlockWithSide = function(prefix, colour, info) {
+  Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
   this.prefix = prefix;
 }
 
 Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
   Blockly.ComputerCraft.Block.prototype.init.call(this);
   this.appendDummyInput()
-      .appendTitle(this.func.text);
+      .appendTitle(this.info.text);
   this.addSideInput();
 };
 
@@ -335,12 +335,12 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
  * Create a block that has a side input.
  *
  * This creates Blockly.Blocks[NAME] and Blockly.Lua[NAME], where
- * NAME is func.blockName or inferred from func.funcName.  FIX
+ * NAME is info.blockName or inferred from info.funcName.  FIX
  *
  * @param {!string} prefix A lower-case prefix corresponding to a
  *     ComputerCraft API, such as 'os'.
  * @param {number} colour The block's colour.
- * @param {!Object} func An object with the following fields:
+ * @param {!Object} info An object with the following fields:
  *     - {string} funcName The name of the ComputerCraft function to be called,
  *         without the prefix.
  *     - {?string} blockName The name of the block to be created, without the
@@ -355,8 +355,8 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
  *     - {?number} multipleOutputs The number of outputs, if greater than 1.
  *     - {?string} tooltip The text for the tooltip.
  */
-Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, func) {
-  var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, func);
+Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
+  var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   Blockly.Lua[newBlock.blockName] =
       Blockly.ComputerCraft.BlockWithSide.prototype.generateLua;
@@ -429,6 +429,6 @@ Blockly.ComputerCraft.BlockWithSide.prototype.generateLua =
   var side = block.cableMode ?
       (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
       :  block.getTitleValue('SIDES');
-  var code = block.prefix + '.' + block.func.funcName + '(\'' + side + '\')';
+  var code = block.prefix + '.' + block.info.funcName + '(\'' + side + '\')';
   return [code, Blockly.Lua.ORDER_HIGH];
 };

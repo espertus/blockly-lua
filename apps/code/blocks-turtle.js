@@ -52,14 +52,14 @@ Blockly.Lua['turtle_turn'] = function(block) {
   return 'turtle.' + block.getTitleValue('DIR') + '()\n';
 };
 
-Blockly.ComputerCraft.Turtle.buildExpStmtBlock = function(func) {
-  if (!func.helpUrlType) {
-    func.helpUrlType = func.directions ?
+Blockly.ComputerCraft.Turtle.buildExpStmtBlock = function(info) {
+  if (!info.helpUrlType) {
+    info.helpUrlType = info.directions ?
         Blockly.ComputerCraft.HelpUrlType.PREFIX_DIR
         : Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
   }
   Blockly.ComputerCraft.buildExpStmtBlock(
-    'turtle', Blockly.ComputerCraft.Turtle.BLOCK_COLOUR_, func);
+    'turtle', Blockly.ComputerCraft.Turtle.BLOCK_COLOUR_, info);
 };
 
 // Block for moving forward, back, up, or down.
