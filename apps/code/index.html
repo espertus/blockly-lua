@@ -25,6 +25,7 @@
   <script type="text/javascript" src="blocks-os.js"></script>
   <script type="text/javascript" src="blocks-colour.js"></script>
   <script type="text/javascript" src="blocks-peripheral.js"></script>
+  <script type="text/javascript" src="blocks-disk.js"></script>
   <script type="text/javascript" src="blocks-fs.js"></script>
   <script type="text/javascript" src="blocks-old.js"></script>
 
@@ -136,7 +137,7 @@
                 </value>
               </block>
             </category>
-            <category name="Operating system">
+            <category name="Operating System">
               <block type="os_terminate"></block>
                 <value name="MSG">
                   <block type="text"></block>
@@ -231,6 +232,18 @@
               <block type="peripheral_get_methods"></block>
               <block type="peripheral_wrap"></block>
               <block type="peripheral_call"></block>
+            </category>
+            <category name="Disk">
+              <block type="disk_is_present"></block>
+              <block type="disk_has_data"></block>
+              <block type="disk_get_mount_path"></block>
+              <block type="disk_get_label"></block>
+              <block type="disk_get_id"></block>
+              <block type="disk_has_audio"></block>
+              <block type="disk_get_audio_title"></block>
+              <block type="disk_play_audio"></block>
+              <block type="disk_stop_audio"></block>
+              <block type="disk_eject"></block>
             </category>
           </category>
           <category name="Logic">
