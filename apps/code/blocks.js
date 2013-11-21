@@ -400,6 +400,14 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
  *     Blockly.ComputerCraft.BlockWithSide.
  */
 Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
+  if (!info.helpUrlType) {
+    info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
+  }
+  // If no output or statement connections are specified,
+  // place a previous and next statement connector.
+  if (!info.output && !info.stmtConns && !(info.stmtConns == 0)) {
+    info.stmtConns =  Blockly.ComputerCraft.StmtConns.BOTH;
+  }
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   Blockly.Lua[newBlock.blockName] =
