@@ -478,9 +478,16 @@ Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation =
 
 Blockly.ComputerCraft.BlockWithSide.prototype.generateLua =
     function(block) {
-  var side = block.cableMode ?
-      (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
-      :  block.getTitleValue('SIDES');
-  var code = block.prefix + '.' + block.info.funcName + '(\'' + side + '\')';
-  return [code, Blockly.Lua.ORDER_HIGH];
+      var code = block.prefix + '.' + block.info.funcName + '(';
+      if (block.cableMode) {
+        code += Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE);
+      } else {
+        code += "'" + block.getTitleValue('SIDES')+ "'";
+      }
+      code += ')';
+      if (block.info.output) {
+        return [code, Blockly.Lua.ORDER_HIGH];
+      } else {
+        return code + '\n';
+      }
 };
