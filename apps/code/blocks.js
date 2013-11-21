@@ -398,6 +398,11 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
  * @param {Object} info Information about the block being defined.
  *     The fields are the same as for the constructor
  *     Blockly.ComputerCraft.BlockWithSide.
+ *     In addition to the fields used by the Blockly.ComputerCraft.BlockWithSide
+ *     constructor, this has:
+ *     <ul>
+ *     <li>suppressLua {boolean} If true, no Lua code generator is created.
+ *     </ul>
  */
 Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   if (!info.helpUrlType) {
@@ -410,8 +415,10 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   }
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] =
-      Blockly.ComputerCraft.BlockWithSide.generateLua;
+  if (!info.suppressLua) {
+    Blockly.Lua[newBlock.blockName] =
+        Blockly.ComputerCraft.BlockWithSide.generateLua;
+  }
 };
 
 Blockly.ComputerCraft.BlockWithSide.SIDES_ =
