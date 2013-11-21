@@ -61,8 +61,9 @@ Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
  * - an underscore
  * - either:
  *   - info.blockName, if provided, or
- *   - info.funcName, with every instance of '[A-Z]' replaced with '_[a-z]'.
- *     For example, 'is_present'  would become 'isPresent'.
+ *   - info.funcName, with every instance of '[A-Z]+' replaced with '_[a-z]+'.
+ *     For example, 'isPresent' would become 'is_present' and
+ *     'getID' would become 'get_id'.
  * @param {string} prefix A ComputerCraft API prefix, such as 'os'.
  * @param {Object} func An object containing a funcName field and optionally
  *     a blockName
@@ -71,15 +72,21 @@ Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
  */
 Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
   var name = info.blockName;
+  var inCapital = false;
   if (!name) {
     name = '';
     for (var i = 0; i < info.funcName.length; i++) {
       var c = info.funcName[i];
       if (Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_.test(c)) {
-        name += '_' + c.toLowerCase();
+        // Only place one underscore for multiple adjacent capital letters.
+        if (!inCapital) {
+          inCapital = true;
+          name += '_';
+        }
       } else {
-        name += c;
+        inCapital = false;
       }
+      name += c.toLowerCase();
     }
   }
   return prefix + '_' + name;
