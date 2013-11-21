@@ -354,6 +354,9 @@ Blockly.ComputerCraft.ValueBlock.generateLua = function(block, argNames) {
  * 'back', 'left', 'right', 'top', 'bottom', or an arbitrary string identifying
  * a cable).  The block may also have other inputs.
  *
+ * A question mark is added to the end of the block name if the output (as
+ * specified in the 'info' parameter) is Boolean.
+ *
  * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
  * @param {number} colour The block colour, an HSV hue value.
  * @param {Object} info Information about the block being defined.
@@ -374,6 +377,10 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
   this.appendDummyInput()
       .appendTitle(this.info.text);
   this.addSideInput();
+  if (this.info.output == 'Boolean') {
+    this.appendDummyInput()
+        .appendTitle('?');
+  };
 };
 
 /**

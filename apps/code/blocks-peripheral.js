@@ -28,7 +28,7 @@ Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_ = 65;
 Blockly.ComputerCraft.PERIPHERAL_FUNCS_ = [
   {funcName: 'isPresent',
    output: 'Boolean',
-   text: 'is peripheral present?',
+   text: 'is peripheral present',
    tooltip:
    'Return true if a peripheral is connected on the specified side.'},
   {funcName: 'getType',
