@@ -411,7 +411,7 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   Blockly.Lua[newBlock.blockName] =
-      Blockly.ComputerCraft.BlockWithSide.prototype.generateLua;
+      Blockly.ComputerCraft.BlockWithSide.generateLua;
 };
 
 Blockly.ComputerCraft.BlockWithSide.SIDES_ =
@@ -476,15 +476,22 @@ Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation =
   }
 };
 
-Blockly.ComputerCraft.BlockWithSide.prototype.generateLua =
+// Generates code for the "side" argument of a BlockWithSide.
+// Quotation marks are needed for one of the direction values
+// but not for a cable input.
+Blockly.ComputerCraft.BlockWithSide.prototype.generateSideCode = function() {
+  if (this.cableMode) {
+    return Blockly.Lua.valueToCode(this, 'CABLE', Blockly.Lua.ORDER_NONE);
+  } else {
+    return "'" + this.getTitleValue('SIDES')+ "'";
+  }
+};
+
+Blockly.ComputerCraft.BlockWithSide.generateLua =
     function(block) {
-      var code = block.prefix + '.' + block.info.funcName + '(';
-      if (block.cableMode) {
-        code += Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE);
-      } else {
-        code += "'" + block.getTitleValue('SIDES')+ "'";
-      }
-      code += ')';
+      var code = block.prefix + '.' + block.info.funcName + '(' +
+          block.generateSideCode() +
+          ')';
       if (block.info.output) {
         return [code, Blockly.Lua.ORDER_HIGH];
       } else {
