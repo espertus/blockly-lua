@@ -69,12 +69,29 @@ Blockly.ComputerCraft.DISK_FUNCS_ = [
   {funcName: 'eject',
    text: 'eject from drive',
    tooltip:
-   'Ejects any item currently in the drive,\n' +
-   'spilling it into the world as a loose item.'}];
+   'Eject any item currently in the drive,\n' +
+   'spilling it into the world as a loose item.'},
+  // The resulting block will get modified after the loop.
+  {funcName: 'setLabel',
+   text: 'Set the label on the disk in drive',
+   tooltip: 'Writes a label to the floppy disk in the attached drive.'}];
 
 for (var i = 0; i < Blockly.ComputerCraft.DISK_FUNCS_.length; i++) {
   Blockly.ComputerCraft.buildBlockWithSide(
     'disk',
     Blockly.ComputerCraft.DISK_BLOCK_COLOUR_,
     Blockly.ComputerCraft.DISK_FUNCS_[i]);
+};
+
+Blockly.Blocks['disk_set_label'].init = function() {
+  Blockly.ComputerCraft.BlockWithSide.prototype.init.call(this);
+  this.appendValueInput('LABEL')
+      .setCheck('String')
+      .appendTitle('to');
+};
+
+Blockly.Blocks['disk_set_label'].enterCableMode = function() {
+  Blockly.ComputerCraft.BlockWithSide.prototype.enterCableMode.call(this);
+  // The cable input was added to the end.  Move it before the label name.
+  this.moveInputBefore('CABLE', 'LABEL');
 };
