@@ -184,7 +184,7 @@ Blockly.Blocks['turtle_place'].domToMutation = function(xmlElement) {
 
 Blockly.Lua['turtle_place'] = function(block) {
   var code = 'turtle.' + block.getTitleValue('DIR') + '(' +
-      (Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) || '') +
+      Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) +
       ')';
   return block.adjustCode(code);
 };
@@ -279,8 +279,7 @@ Blockly.Blocks['turtle_get_slot_info'] = {
 };
 
 Blockly.Lua['turtle_get_slot_info'] = function(block) {
-  var slot = Blockly.Lua.valueToCode(block, 'SLOT', Blockly.Lua.ORDER_NONE)
-      || '1';  // Alternative value temporary until we enforce parameters.
+  var slot = Blockly.Lua.valueToCode(block, 'SLOT', Blockly.Lua.ORDER_NONE);
   var code = 'turtle.getItem' + block.getTitleValue('CHOICE') +
       '(' + slot + ')';
   return [code, Blockly.Lua.ORDER_NONE];
@@ -358,8 +357,8 @@ Blockly.Blocks['turtle_refuel'].init = function() {
 };
 
 Blockly.Lua['turtle_refuel'] = function(block) {
-  var argument0 = Blockly.Lua.valueToCode(
-    block, 'VALUE', Blockly.Lua.ORDER_NONE) || '';
+  var argument0 =
+      Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE);
   var code = 'turtle.refuel(' + argument0 + ')';
   return block.adjustCode(code);
 }
@@ -403,15 +402,14 @@ Blockly.Blocks['turtle_transfer_to'].init = function() {
 };
 
 Blockly.Lua['turtle_transfer_to'] = function(block) {
-  var argument0 = Blockly.Lua.valueToCode(
-    block, 'SLOT', Blockly.Lua.ORDER_NONE) || '';
-  var argument1 = Blockly.Lua.valueToCode(
-    block, 'QUANTITY', Blockly.Lua.ORDER_NONE) || '';
+  var argument0 =
+      Blockly.Lua.valueToCode(block, 'SLOT', Blockly.Lua.ORDER_NONE);
+  var argument1 =
+      Blockly.Lua.valueToCode(block, 'QUANTITY', Blockly.Lua.ORDER_NONE);
   var code = 'turtle.transferTo(' + argument0 +
       (argument1 != '' ? ', ' + argument1 : '') + ')';
   return block.adjustCode(code);
 };
-
 
 // Block to indicate that an operation should be applied to as many items as
 // possible.  The Turtle library omits the argument in this case.
