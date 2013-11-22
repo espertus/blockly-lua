@@ -155,6 +155,45 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
   // Subclass must set up inputs, including block title.
 };
 
+// This is a static method that must be called explicitly.
+// It generates Lua without worrying about whether it will be an expression
+// or statement.
+// To avoid code duplication, it violates abstraction by supporting all of the
+// direct subclasses of Blockly.ComputerCraft.Block.
+Blockly.ComputerCraft.generateLuaInner_ = function(block) {
+  var code = block.prefix + '.';
+
+  if (block.info.directions) {
+    code += block.getTitleValue('DIR') + '(';
+  } else {
+    code += block.info.funcName + '(';
+  }
+  var args = block.inputList.filter(function(i) {
+    return i.type == Blockly.INPUT_VALUE ||
+        (i.type == Blockly.DUMMY_INPUT && i.name == 'SIDE' && !block.cableMode);});
+  var argsCode = args.map(function(i) {
+    if (i.name == 'SIDE') {
+      return Blockly.ComputerCraft.BlockWithSide.prototype.generateSideCode.call(
+        block);
+    } else {
+      return Blockly.Lua.valueToCode(
+        block, i.name, Blockly.Lua.ORDER_NONE);
+    }
+  });
+  code += argsCode.join(', ');
+  code += ')';
+  return code;
+};
+
+// This is a static method that must be called explicitly.
+Blockly.ComputerCraft.generateLua = function(block) {
+  var code = Blockly.ComputerCraft.generateLuaInner_(block);
+  if (block.outputConnection) {
+    return [code, Blockly.Lua.ORDER_HIGH];
+  } else {
+    return code + '\n';
+  }
+};
 
 /**
  * Class for ComputerCraft blocks that can switch between being expressions
@@ -336,24 +375,7 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
   info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
   var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] = function(block) {
-    return Blockly.ComputerCraft.ValueBlock.generateLua(
-      block,
-      info.args ? info.args.map(function(pair) {return pair[0];}) : []);
-  };
-};
-
-Blockly.ComputerCraft.ValueBlock.generateLua = function(block, argNames) {
-  var args = argNames.map(function(name) {
-    return Blockly.Lua.valueToCode(block, name, Blockly.Lua.ORDER_NONE);
-  });
-  var code = block.prefix + '.' + block.info.funcName +
-      '(' + args.join(', ') + ')';
-  if (block.info.output) {
-    return [code, Blockly.Lua.ORDER_HIGH];
-  } else {
-    return code + '\n';
-  }
+  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
 };
 
 /**
@@ -416,8 +438,7 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   if (!info.suppressLua) {
-    Blockly.Lua[newBlock.blockName] =
-        Blockly.ComputerCraft.BlockWithSide.generateLua;
+    Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
   }
 };
 
@@ -492,16 +513,4 @@ Blockly.ComputerCraft.BlockWithSide.prototype.generateSideCode = function() {
   } else {
     return "'" + this.getTitleValue('SIDES')+ "'";
   }
-};
-
-Blockly.ComputerCraft.BlockWithSide.generateLua =
-    function(block) {
-      var code = block.prefix + '.' + block.info.funcName + '(' +
-          block.generateSideCode() +
-          ')';
-      if (block.info.output) {
-        return [code, Blockly.Lua.ORDER_HIGH];
-      } else {
-        return code + '\n';
-      }
 };
