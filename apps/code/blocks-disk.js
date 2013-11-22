@@ -30,42 +30,42 @@ Blockly.ComputerCraft.DISK_FUNCS_ = [
    output: 'Boolean',
    text: 'is an item in disk drive',
    tooltip:
-   'Checks whether any item (such as a music disk or floppy disk)\n'+
+   'Check whether any item (such as a music disk or floppy disk)\n'+
    'is present in the adjacent disk drive.'},
   {funcName: 'hasData',
    output: 'Boolean',
    text: 'is floppy disk in drive',
    tooltip:
-   'Checks whether a floppy disk (as opposed to a music disk) is in the drive.'
+   'Check whether a floppy disk (as opposed to a music disk) is in the drive.'
   },
   {funcName: 'getMountPath',
    output: 'String',
    text: 'get mount path for floppy disk in drive',
    tooltip:
-   'Gets the directory name where the contents\n' +
+   'Get the directory name where the contents\n' +
    'of the floppy disk can be accessed.'},
   {funcName: 'getLabel',
    text: 'read label on floppy disk in drive',
    output: 'String',
-   tooltip: 'Reads the label of the floppy disk in the drive.'},
+   tooltip: 'Read the label of the floppy disk in the drive.'},
   {funcName: 'getID',
    text: 'get ID of floppy disk in drive',
    output: 'Number',
-   tooltip: 'Gets the floppy disk\'s unique numeric identifier.'},
+   tooltip: 'Get the floppy disk\'s unique numeric identifier.'},
   {funcName: 'hasAudio',
    text: 'is music disk in drive',
    output: 'Boolean',
-   tooltip: 'Checks if a music disk is in the drive.'},
+   tooltip: 'Check if a music disk is in the drive.'},
   {funcName: 'getAudioTitle',
    text: 'get title of music disk in drive',
    output: 'String',
-   tooltip: 'Gets the title of the music disk in the drive.'},
+   tooltip: 'Get the title of the music disk in the drive.'},
   {funcName: 'playAudio',
    text: 'play music disk in drive',
    tooltip: 'Starts playing the music disk in the drive.'},
   {funcName: 'stopAudio',
    text: 'stop music disk in drive',
-   tooltip: 'Stops playing the music disk in the drive.'},
+   tooltip: 'Stop playing the music disk in the drive.'},
   {funcName: 'eject',
    text: 'eject from drive',
    tooltip:
