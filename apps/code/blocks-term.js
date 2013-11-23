@@ -42,6 +42,7 @@ Blockly.ComputerCraft.TERM_FUNCS_ = [
   },
   {funcName: 'getCursorPos',
    text: 'get cursor position',
+   output: 'Number',  // first output
    tooltip: 'Get the x and y coodinates of the cursor.',
    multipleOutputs: 2
   },
@@ -51,13 +52,15 @@ Blockly.ComputerCraft.TERM_FUNCS_ = [
    tooltip: 'Set the x and y coodinates, respecitvely, of the cursor.'
   },
   {funcName: 'isColor',
-   text: 'computer supports colour',
+   text: 'computer supports colour?',
+   output: 'Boolean',
    tooltip:
    'Return true if the computer supports colour, false otherwise.\n' +
-   'This is used to determine if an Advanced Computer is being used.'
+   'This indicates whether an Advanced Computer is being used.'
   },
   {funcName: 'getSize',
    text: 'get width and height of screen',
+   output: 'Number',  // first output
    multipleOutputs: 2,
    tooltip:
    'Get the maximum x-coordinate (width) and y-coordinate (height)\n' +
