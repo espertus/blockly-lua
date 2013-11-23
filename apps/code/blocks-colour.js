@@ -100,7 +100,7 @@ Blockly.Lua['colour_picker'] = function(block) {
   for (var i = 0; i < COLOURS_.length; i++) {
     var entry = COLOURS_[i];
     if (entry.rgb == colour) {
-      return [entry.value, Blockly.Lua.ORDER_NONE];
+      return [entry.value, Blockly.Lua.ORDER_HIGH];
     }
   }
   // This line shouldn't be reached.
