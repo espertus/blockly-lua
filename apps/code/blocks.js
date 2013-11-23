@@ -167,6 +167,9 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
 // To avoid code duplication, it violates abstraction by supporting all of the
 // direct subclasses of Blockly.ComputerCraft.Block.
 Blockly.ComputerCraft.generateLuaInner_ = function(block) {
+  function fieldIsDropdown(field) {
+    return field instanceof Blockly.FieldDropdown;
+  };
   var code = block.prefix + '.';
 
   if (block.info.directions) {
@@ -176,14 +179,23 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block) {
   }
   var args = block.inputList.filter(function(i) {
     return i.type == Blockly.INPUT_VALUE ||
-        (i.type == Blockly.DUMMY_INPUT && i.name == 'SIDE' && !block.cableMode);});
+        (i.type == Blockly.DUMMY_INPUT && i.titleRow.some(fieldIsDropdown) &&
+         // Ignore dropdown menus if they are SIDE inputs in cable mode.
+         // The name of the cable will be gotten from the next input.
+         !(i.name == 'SIDE' && block.cableMode));
+    });
   var argsCode = args.map(function(i) {
-    if (i.name == 'SIDE') {
-      return Blockly.ComputerCraft.BlockWithSide.prototype.generateSideCode.call(
-        block);
-    } else {
+    if (i.type == Blockly.INPUT_VALUE) {
       return Blockly.Lua.valueToCode(
         block, i.name, Blockly.Lua.ORDER_NONE);
+    } else {
+      // Find the dropdown menu input.
+      var dropdowns = i.titleRow.filter(fieldIsDropdown);
+      if (dropdowns.length != 1) {
+        window.alert('Error generating code for: ' + block);
+        return '';
+      }
+      return dropdowns[0].value_;  // abstraction violation
     }
   });
   code += argsCode.join(', ');
@@ -444,12 +456,12 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
 };
 
 Blockly.ComputerCraft.BlockWithSide.SIDES_ =
-    [['in front', 'front'],
-     ['in back', 'back'],
-     ['to the left', 'left'],
-     ['to the right', 'right'],
-     ['above', 'top'],
-     ['below', 'bottom'],
+    [['in front', "'front'"],
+     ['in back', "'back'"],
+     ['to the left', "'left'"],
+     ['to the right', "'right'"],
+     ['above', "'top'"],
+     ['below', "'bottom'"],
      ['through cable...', 'cable']];
 
 Blockly.ComputerCraft.BlockWithSide.prototype.addSideInput = function() {
@@ -502,16 +514,5 @@ Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation =
   if (this.cableMode) {
     this.appendValueInput('CABLE')
         .setCheck('String');
-  }
-};
-
-// Generates code for the "side" argument of a BlockWithSide.
-// Quotation marks are needed for one of the direction values
-// but not for a cable input.
-Blockly.ComputerCraft.BlockWithSide.prototype.generateSideCode = function() {
-  if (this.cableMode) {
-    return Blockly.Lua.valueToCode(this, 'CABLE', Blockly.Lua.ORDER_NONE);
-  } else {
-    return "'" + this.getTitleValue('SIDES')+ "'";
   }
 };
