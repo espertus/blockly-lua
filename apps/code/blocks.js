@@ -124,6 +124,12 @@ Blockly.ComputerCraft.Block = function(prefix, colour, info) {
   this.colour = colour;
   this.info = info;
   this.blockName = Blockly.ComputerCraft.getBlockName_(prefix, info);
+  // If no output or statement connections are specified,
+  // place a previous and next statement connector.
+  if (!info.multipleOutputs && !info.output &&
+      info.stmtConns != Blockly.ComputerCraft.StmtConns.NONE) {
+    info.stmtConns = Blockly.ComputerCraft.StmtConns.BOTH;
+  }
 };
 
 Blockly.ComputerCraft.Block.prototype.init = function() {
@@ -429,11 +435,6 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
 Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   if (!info.helpUrlType) {
     info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
-  }
-  // If no output or statement connections are specified,
-  // place a previous and next statement connector.
-  if (!info.output && !info.stmtConns && !(info.stmtConns == 0)) {
-    info.stmtConns =  Blockly.ComputerCraft.StmtConns.BOTH;
   }
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
