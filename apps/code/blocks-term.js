@@ -120,6 +120,39 @@ for (var i = 0; i < Blockly.ComputerCraft.TERM_FUNCS_.length; i++) {
     Blockly.ComputerCraft.TERM_FUNCS_[i]);
 }
 
+Blockly.Blocks['term_set_text_scale'].onchange = function() {
+  if (!this.workspace) {
+    // Block has been deleted.
+    return;
+  }
+  // If there's no child block, no warning.
+  if (!this.childBlocks_) {
+    this.setWarningText(null);
+    return;
+  }
+  // Don't display (or remove) a warning if the child
+  // block is selected, since editing might be in progress.
+  // Flaw: No warning is displayed if after typing (but not entering)
+  // a bad value, user clicks on 'Lua'.
+  if (Blockly.selected == this.childBlocks_[0]) {
+    return;
+  }
+  // If the input is a constant, make sure it is divisible by .5
+  // and in the range [.5, 5].
+  var code = Blockly.Lua.valueToCode(this, 'SCALE', Blockly.Lua.ORDER_NONE);
+  if (code) {
+    var num = Number(code);
+    if (num != NaN) {
+      if (num * 2 != Math.floor(num * 2) || num < .5 || num > 5) {
+        this.setWarningText(
+          'The scale value must be a multiple of .5 in the range .5 to 5.');
+        return;
+      }
+    }
+  }
+  this.setWarningText(null);
+};
+
 Blockly.Blocks['term_set_cursor_blink'] = new Blockly.ComputerCraft.Block(
   'term', Blockly.ComputerCraft.TERM_BLOCK_COLOUR_, {
     funcName: 'setCursorBlink',
