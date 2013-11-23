@@ -156,7 +156,9 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
   }
   if (this.info.multipleOutputs) {
     this.multipleOutputs = this.info.multipleOutputs;
-    this.setOutput(true);  // We don't specify types for multiple outputs.
+    if (!this.info.output) {
+      this.setOutput(true);
+    }
   }
   // Subclass must set up inputs, including block title.
 };
