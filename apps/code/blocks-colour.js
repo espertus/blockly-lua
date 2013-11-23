@@ -1,7 +1,7 @@
 /**
- * Blockly Apps: Blocklycraft
+ * Blockly Lua: ComputerCraft Colour API
  *
- * Copyright 2012 Google Inc.
+ * Copyright 2013 Google Inc.
  * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -85,7 +85,12 @@ Blockly.Blocks['colour_picker'] = {
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#cc4c4c'), 'COLOUR');
     this.setOutput(true, 'Colour');
-    this.setTooltip('Choose among colours (from left to right, top to bottom):\nwhite, orange, magenta, light blue,\nyellow, lime, pink, grey,\nlight gray, cyan purple, blue,\nbrown, green, red, black.');
+    this.setTooltip(
+      'Choose among colours (from left to right, top to bottom):\n' +
+      'white, orange, magenta, light blue,\n' +
+      'yellow, lime, pink, grey,\n' +
+      'light gray, cyan purple, blue,\n' +
+      'brown, green, red, black.');
   }
 };
 
