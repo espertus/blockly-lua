@@ -84,14 +84,10 @@ for (var i = 0; i < Blockly.ComputerCraft.DISK_FUNCS_.length; i++) {
 };
 
 Blockly.Blocks['disk_set_label'].init = function() {
+  // Call prototype's init method to set up basics, including side.
   Blockly.ComputerCraft.BlockWithSide.prototype.init.call(this);
+  // Add additional inputs.
   this.appendValueInput('LABEL')
       .setCheck('String')
       .appendTitle('to');
-};
-
-Blockly.Blocks['disk_set_label'].enterCableMode = function() {
-  Blockly.ComputerCraft.BlockWithSide.prototype.enterCableMode.call(this);
-  // The cable input was added to the end.  Move it before the label name.
-  this.moveInputBefore('CABLE', 'LABEL');
 };

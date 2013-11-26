@@ -68,7 +68,6 @@ Blockly.ComputerCraft.buildValueBlock(
    'Returns the names of any peripherals connected\n' +
    'directly or through a wired modem.'});
 
-
 // The rest of this file is devoted to the block 'peripheral_call',
 // which calls a method on an attached peripheral with an arbitrary
 // number of named (method) arguments.  The arguments to this block are:
@@ -76,11 +75,12 @@ Blockly.ComputerCraft.buildValueBlock(
 // Second argument: method name
 // Any number of subsequent arguments to be passed to method.
 // This will override (and explicitly call) most of the prototype's methods.
-Blockly.Blocks['peripheral_call'] = new Blockly.ComputerCraft.BlockWithSide(
-  'periperal',
+Blockly.ComputerCraft.buildBlockWithSide(
+  'peripheral',
   Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
   {funcName: 'call',
-   text: 'call method',
+   text: 'call method %1 on peripheral',
+   args: [['METHOD', 'String']],
    tooltip: 'Calls a method on a connected peripheral.\n' +
    'Click on the star to add parameters.',
    helpUrlType: Blockly.ComputerCraft.HelpUrlType.PREFIX_DIR});
@@ -91,39 +91,6 @@ Blockly.Blocks['peripheral_call'].init = function() {
   // Add mutator.
   this.setMutator(new Blockly.Mutator(['peripheral_mutatorarg']));
   this.arguments_ = [];
-  // Add additional inputs.
-  this.appendValueInput('METHOD')
-      .setCheck('String');
-  this.appendDummyInput('ON')
-      .appendTitle('on peripheral');
-  this.moveInputBefore('METHOD', 'SIDE')
-  this.moveInputBefore('ON', 'SIDE')
-  this.appendDummyInput()
-      .appendTitle('', 'PARAMS');
-};
-
-// Override default code generator.
-Blockly.Lua['peripheral_call'] = function(block) {
-  // Generate Lua for calling a method on an attached peripheral.
-  var side = block.cableMode ?
-      (Blockly.Lua.valueToCode(block, 'CABLE', Blockly.Lua.ORDER_NONE) || '')
-      :  block.getTitleValue('SIDES');
-  var method = Blockly.Lua.valueToCode(
-    block, 'METHOD', Blockly.Lua.ORDER_NONE) || '';
-  var code = 'peripheral.call(\'' + side + '\', ' + method;
-  for (var x = 1; this.getInput('PARAM' + x); x++) {
-    code += ', ' +
-        Blockly.Lua.valueToCode(block, 'PARAM' + x, Blockly.Lua.ORDER_NONE);
-  }
-  code += ')';
-  return [code, Blockly.Lua.ORDER_HIGH];
-};
-
-Blockly.Blocks['peripheral_call'].enterCableMode = function() {
-  Blockly.ComputerCraft.BlockWithSide.prototype.enterCableMode.call(this);
-  if (this.getInput('PARAM1')) {
-    this.moveInputBefore('CABLE', 'PARAM1');
-  }
 };
 
 // Allow the user to add named inputs for the run-time method call.

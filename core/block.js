@@ -1414,7 +1414,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
               .appendTitle(text);
         }
         this.appendDummyInput(tuple[0])
-            .appendTitle(tuple[1])
+            .appendTitle(tuple[1], tuple[0])
             .setAlign(tuple[2]);
       } else {
         // It's a value input.
@@ -1492,7 +1492,24 @@ Blockly.Block.prototype.moveInputBefore = function(name, refName) {
   goog.asserts.assert(inputIndex != -1, 'Named input "%s" not found.', name);
   goog.asserts.assert(refIndex != -1, 'Reference input "%s" not found.',
                       refName);
+  this.moveNumberedInputBefore(inputIndex, refIndex);
+};
+
+/**
+ * Move an input to a different location on this block.
+ * @param {number} inputIndex Index of the input to move.
+ * @param {number} refIndex Index of input that should be after the moved input.
+ */
+Blockly.Block.prototype.moveNumberedInputBefore = function(
+  inputIndex, refIndex) {
+  // Validate arguments.
+  goog.asserts.assert(inputIndex != refIndex, 'Can\'t move input to itself.');
+  goog.asserts.assert(inputIndex < this.inputList.length,
+                      'Input index ' + inputIndex + ' out of bounds.')
+  goog.asserts.assert(refIndex < this.inputList.length,
+                      'Reference input ' + refIndex + ' out of bounds.')
   // Remove input.
+  var input = this.inputList[inputIndex];
   this.inputList.splice(inputIndex, 1);
   if (inputIndex < refIndex) {
     refIndex--;

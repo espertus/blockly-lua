@@ -409,6 +409,9 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
  * Class for ComputerCraft blocks that have an input that only appears if
  * a dropdown menu has a specific value.
  *
+ * While additional inputs not included in info.args or referenced in info.text
+ * may be added, those fields musta not be modified after block construction.
+ *
  * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
  * @param {number} colour The block colour, an HSV hue value.
  * @param {Object} info Information about the block being defined.
@@ -427,7 +430,6 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
 Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
   // Initially, all of the inputs will appear.
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
-  this.prefix = prefix;
 }
 
 /**
@@ -453,20 +455,20 @@ Blockly.ComputerCraft.buildBlockWithDependentInput = function(
  * @return {?string} The name of the input following the dependent one,
  *     or null if the dependent one was the final one.
  */
-Blockly.ComputerCraft.BlockWithDependentInput.prototype.getFollowingInput_ =
-    function() {
+Blockly.ComputerCraft.BlockWithDependentInput.getFollowingInput_ =
+    function(block) {
   var found = false;  // Was the dependent input found?
-  for (var i = 0; i < this.inputList.length; i++) {
-    var input = this.inputList[i];
+  for (var i = 0; i < block.inputList.length; i++) {
+    var input = block.inputList[i];
     if (found) {
       return input.name;
     } else {
-      found = input.name == this.info.depName;
+      found = input.name == block.info.depName;
     }
   }
   if (!found) {
-    throw 'No input named ' + this.info.depName + ' found in block ' +
-        this.type;
+    throw 'No input named ' + block.info.depName + ' found in block ' +
+        block.type;
   }
   return null;
 };
@@ -491,11 +493,13 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
           function(value) {
             if (value == thisBlock.info.ddValue) {
               if (!thisBlock.dependentInputShown) {
-                thisBlock.showDependentInput();
+                Blockly.ComputerCraft.
+                    BlockWithDependentInput.showDependentInput_(thisBlock);
               }
             } else {
               if (thisBlock.dependentInputShown) {
-                thisBlock.removeDependentInput();
+                Blockly.ComputerCraft.
+                    BlockWithDependentInput.removeDependentInput_(thisBlock);
               }
             }
           });
@@ -508,25 +512,45 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
   }
   // This will call interpolateMsg.
   Blockly.ComputerCraft.ValueBlock.prototype.init.call(this, args);
-  this.followingInput = this.getFollowingInput_();
-  this.dependentInputShown = false;
-  this.removeInput(this.info.depName);
+
+  // Determine the position of the dependent input so it can be reinserted
+  // in the same place when needed.  Note that inputs may be added (or removed)
+  // after it, but it is not permitted to remove earlier inputs.
+  for (var i = 0; i < this.inputList.length; i++) {
+    if (this.inputList[i].name == this.info.depName) {
+      this.depPos = i;
+    }
+  }
+  goog.asserts.assert(
+    typeof this.depPos == 'number',
+    'Dependent input ' + this.info.depName + ' could not be found.');
+
+  // If the dropdown specifies that the dependent input should not appear,
+  // remove it.
+  if (this.getTitleValue(this.info.ddName) != this.info.ddValue) {
+    Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_(this);
+  }
 };
 
-Blockly.ComputerCraft.BlockWithDependentInput.prototype.showDependentInput =
-    function() {
-      this.appendValueInput(this.info.depName)
-          .setCheck(this.info.depType);
-      if (this.followingInput) {
-        this.moveInputBefore(this.info.depName, this.followingInput);
+Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
+    function(block) {
+      block.appendValueInput(block.info.depName)
+          .setCheck(block.info.depType);
+      // Move the dependent input before any ones that should follow it.
+      if (block.inputList.length - 1 != block.depPos) {
+        block.moveNumberedInputBefore(
+          // Newly added dependent input.
+          block.inputList.length - 1,
+          // Input that should follow it.
+          block.depPos);
       }
-      this.dependentInputShown = true;
+      block.dependentInputShown = true;
     };
 
-Blockly.ComputerCraft.BlockWithDependentInput.prototype.removeDependentInput =
-    function() {
-      this.removeInput(this.info.depName, true);
-      this.dependentInputShown = false;
+Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_ =
+    function(block) {
+      block.removeInput(block.info.depName, true);
+      block.dependentInputShown = false;
     };
 
 Blockly.ComputerCraft.BlockWithDependentInput.prototype.mutationToDom =
@@ -541,46 +565,44 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.domToMutation =
   var value = xmlElement.getAttribute('dependent_input') ||
           // Included for backward compatability.
           xmlElement.getAttribute('cable_mode');
-  if (value == true) {
-    this.showDependentInput();
+  if (value == 'true') {
+    Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_(this);
   }
     };
 
-
-
 /**
- * Class for ComputerCraft blocks that have a 'side' input (one of 'front',
- * 'back', 'left', 'right', 'top', 'bottom', or an arbitrary string identifying
- * a cable).  The block may also have other inputs.
+ * Class for ComputerCraft blocks with a 'side' input (one of 'front', 'back',
+ * 'left', 'right', 'top', 'bottom', or an arbitrary string identifying a
+ * cable).  The block may also have both earlier inputs, provided through
+ * info.text and info.args, and later inputs.  If an input is added after
+ * the block is constructed, the method inputAdded() must be called.
  *
- * A question mark is added to the end of the block name if the output (as
- * specified in the 'info' parameter) is Boolean.
+ * The side input and the dependent string input will be added on to the
+ * end of the provided inputs, mutating the text and args arguments.  They
+ * are named SIDE and CABLE, respectively.
+ *
+ * A question mark will be automatically added to the end of the block name if
+ * the output (as specified in the 'info' parameter) is Boolean.
  *
  * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
  * @param {number} colour The block colour, an HSV hue value.
  * @param {Object} info Information about the block being defined.
- *     In addition to the fields used for the parent class
- *     Blockly.ComputerCraft.Block:
- *     <ul>
- *     <li>text {!string} The block title.
- *     </ul>
+ *     The same fields are used as in the constructor of the parent class,
+ *     Blockly.ComputerCraft.BlockWithDependentInput.  Notes:
  * @return {Blockly.ComputerCraft.BlockWithSide} The new block.
  */
 Blockly.ComputerCraft.BlockWithSide = function(prefix, colour, info) {
   Blockly.ComputerCraft.BlockWithDependentInput.call(this, prefix, colour, info);
-  this.prefix = prefix;
 }
 
-Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
-  Blockly.ComputerCraft.Block.prototype.init.call(this);
-  this.appendDummyInput()
-      .appendTitle(this.info.text);
-  this.addSideInput();
-  if (this.info.output == 'Boolean') {
-    this.appendDummyInput()
-        .appendTitle('?');
-  };
-};
+Blockly.ComputerCraft.BlockWithSide.SIDES_ =
+    [['in front', 'front'],
+     ['in back', 'back'],
+     ['to the left', 'left'],
+     ['to the right', 'right'],
+     ['above', 'top'],
+     ['below', 'bottom'],
+     ['through cable...', 'cable']];
 
 /**
  * Create a block that has a side input.
@@ -588,8 +610,6 @@ Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
  * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
  * @param {number} colour The block colour, an HSV hue value.
  * @param {Object} info Information about the block being defined.
- *     The fields are the same as for the constructor
- *     Blockly.ComputerCraft.BlockWithSide.
  *     In addition to the fields used by the Blockly.ComputerCraft.BlockWithSide
  *     constructor, this has:
  *     <ul>
@@ -600,6 +620,21 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   if (!info.helpUrlType) {
     info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
   }
+  if (!info.args) {
+    info.args = [];
+  }
+  // Add SIDE and CABLE inputs to info.text.
+  info.text += ' %' + (info.args.length + 1) + ' %' + (info.args.length + 2);
+  // Add SIDE and CABLE inputs to info.args.
+  info.args.push(['SIDE', Blockly.ComputerCraft.BlockWithSide.SIDES_]);
+  info.args.push(['CABLE', 'String']);
+  // Specify that SIDE is the dropdown controlling the dependent input.
+  info.ddName = 'SIDE';
+  info.ddValue = 'cable';
+  // Specify that CABLE is the dependent input.
+  info.depName = 'CABLE';
+  info.depType = 'String';
+
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   if (!info.suppressLua) {
@@ -607,64 +642,20 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   }
 };
 
-Blockly.ComputerCraft.BlockWithSide.SIDES_ =
-    [['in front', "'front'"],
-     ['in back', "'back'"],
-     ['to the left', "'left'"],
-     ['to the right', "'right'"],
-     ['above', "'top'"],
-     ['below', "'bottom'"],
-     ['through cable...', 'cable']];
-
-Blockly.ComputerCraft.BlockWithSide.prototype.addSideInput = function() {
-  var thisBlock = this;
-  this.appendDummyInput('SIDE')
-      .appendTitle(
-        new Blockly.FieldDropdown(
-          Blockly.ComputerCraft.BlockWithSide.SIDES_,
-          function(value) {
-            if (value == 'cable') {
-              if (!thisBlock.cableMode) {
-                thisBlock.enterCableMode();
-              }
-            } else {
-              if (thisBlock.cableMode) {
-                thisBlock.leaveCableMode();
-              }
-            }
-          }),
-        'SIDES');
-  this.cableMode = false;
-};
-
-Blockly.ComputerCraft.BlockWithSide.prototype.enterCableMode = function() {
-  // Create child text block.
-  // Perhaps this should only be done once per block?
-  var textBlock = new Blockly.Block(this.workspace, 'text');
-  textBlock.initSvg();
-  textBlock.render();
-  this.appendValueInput('CABLE')
-      .setCheck('String')
-      .connection.connect(textBlock.outputConnection);
-  this.cableMode = true;
-};
-
-Blockly.ComputerCraft.BlockWithSide.prototype.leaveCableMode = function() {
-    this.removeInput('CABLE', true);
-    this.cableMode = false;
+Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
+  Blockly.ComputerCraft.BlockWithDependentInput.prototype.init.call(this);
+  // Add question mark at end of text if the block is a predicate.
+  if (this.info.output == 'Boolean') {
+    // TODO: Make sure label is unique.
+    this.appendDummyInput('question-mark')
+        .appendTitle('?');
+    if (!this.followingInput) {
+      this.followingInput = 'question-mark';
+    }
   };
-
-Blockly.ComputerCraft.BlockWithSide.prototype.mutationToDom = function() {
-  var container = document.createElement('mutation');
-  container.setAttribute('cable_mode', this.cableMode);
-  return container;
 };
 
 Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation =
-    function(xmlElement) {
-  this.cableMode = xmlElement.getAttribute('cable_mode') == 'true';
-  if (this.cableMode) {
-    this.appendValueInput('CABLE')
-        .setCheck('String');
-  }
-};
+    Blockly.ComputerCraft.BlockWithDependentInput.prototype.domToMutation;
+Blockly.ComputerCraft.BlockWithSide.prototype.mutationToDom =
+    Blockly.ComputerCraft.BlockWithDependentInput.prototype.mutationToDom;
