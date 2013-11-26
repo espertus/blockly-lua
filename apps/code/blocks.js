@@ -407,7 +407,8 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
 
 /**
  * Class for ComputerCraft blocks that have an input that only appears if
- * a dropdown menu has a specific value.
+ * a dropdown menu has a specific value.  This specific value must not be
+ * the default first option.
  *
  * While additional inputs not included in info.args or referenced in info.text
  * may be added, those fields musta not be modified after block construction.
@@ -421,7 +422,7 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
  *     <li>ddTitle {!string} Name of dropdown that controls whether
  *         dependent value input appears.
  *     <li>ddValue {!string} Value of dropdown when dependent value input
- *         appears.
+ *         appears.  This must not be the first option.
  *     <li>depName {!string} Name of dependent value input.
  *     <li>depType {?Array<string>|string} Type of dependent value input.
  *     </ul>
@@ -524,12 +525,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
   goog.asserts.assert(
     typeof this.depPos == 'number',
     'Dependent input ' + this.info.depName + ' could not be found.');
-
-  // If the dropdown specifies that the dependent input should not appear,
-  // remove it.
-  if (this.getTitleValue(this.info.ddName) != this.info.ddValue) {
-    Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_(this);
-  }
+  Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_(this);
 };
 
 Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
