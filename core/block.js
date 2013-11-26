@@ -1415,7 +1415,7 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
         }
         this.appendDummyInput(tuple[0])
             .appendTitle(tuple[1])
-            .setAlign(tuple[3]);
+            .setAlign(tuple[2]);
       } else {
         // It's a value input.
         this.appendValueInput(tuple[0])
