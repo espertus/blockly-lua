@@ -1381,13 +1381,15 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
 /**
  * Interpolate a message string, creating titles and inputs.
  * @param {string} msg The message string to parse.  %1, %2, etc. are symbols
- *     for value inputs.
+ *     for value or dropown inputs.
  * @param {!Array.<string|number>|number} var_args A series of tuples that
  *     each specify the value inputs to create.  Each tuple has three values:
- *     the input name, its check type, and its title's alignment.  The last
- *     parameter is not a tuple, but just an alignment for any trailing dummy
- *     input.  This last parameter is mandatory; there may be any number of
- *     tuples (though the number of tuples must match the symbols in msg).
+ *     - the input name
+ *     - its check type(s) (for value inputs) or a Blockly.FieldDropdown
+ *     - its title's alignment
+ *     The last parameter is not a tuple, but just an alignment for any trailing
+ *     dummy input.  This last parameter is mandatory; there may be any number
+ *     of tuples (though the number of tuples must match the symbols in msg).
  */
 Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
   // Remove the msg from the start and the dummy alignment from the end of args.
@@ -1400,15 +1402,27 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
     var text = goog.string.trim(tokens[i]);
     var symbol = tokens[i + 1];
     if (symbol) {
-      // Value input.
+      // Input.
       var digit = parseInt(symbol.charAt(1), 10);
       var tuple = arguments[digit];
       goog.asserts.assertArray(tuple,
           'Message symbol "%s" is out of range.', symbol);
-      this.appendValueInput(tuple[0])
-          .setCheck(tuple[1])
-          .setAlign(tuple[2])
-          .appendTitle(text);
+      if (tuple[1] instanceof Blockly.FieldDropdown) {
+        // It's a dropdown menu input.
+        if (text) {
+          this.appendDummyInput()
+              .appendTitle(text);
+        }
+        this.appendDummyInput(tuple[0])
+            .appendTitle(tuple[1])
+            .setAlign(tuple[3]);
+      } else {
+        // It's a value input.
+        this.appendValueInput(tuple[0])
+            .setCheck(tuple[1])
+            .setAlign(tuple[2])
+            .appendTitle(text);
+      }
       arguments[digit] = null;  // Inputs may not be reused.
     } else if (text) {
       // Trailing dummy input.
