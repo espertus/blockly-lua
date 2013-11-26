@@ -185,8 +185,11 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block) {
         (i.type == Blockly.DUMMY_INPUT && i.titleRow.some(fieldIsDropdown) &&
          // Ignore dropdown menus if they are SIDE inputs in cable mode.
          // The name of the cable will be gotten from the next input.
-         !(i.name == 'SIDE' && block.cableMode));
-    });
+         !(i.name == 'SIDE' && block.cableMode) &&
+         // Ignore dropdown menus if they are the controlling input of
+         // a BlockWithDependentInput and the input is being shown.
+         !(i.name == block.info.ddName && block.dependentInputShown));
+  });
   var argsCode = args.map(function(i) {
     if (i.type == Blockly.INPUT_VALUE) {
       return Blockly.Lua.valueToCode(
@@ -198,7 +201,7 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block) {
         window.alert('Error generating code for: ' + block);
         return '';
       }
-      return dropdowns[0].value_;  // abstraction violation
+      return "'" + dropdowns[0].value_ + "'";  // abstraction violation
     }
   });
   code += argsCode.join(', ');
@@ -363,16 +366,19 @@ Blockly.ComputerCraft.ValueBlock = function(prefix, colour, info) {
   Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
 }
 
-Blockly.ComputerCraft.ValueBlock.prototype.init = function() {
+Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
   Blockly.ComputerCraft.Block.prototype.init.call(this);
   // Build up arguments to the format expected by interpolateMsg.
   var interpArgs = []
   interpArgs.push(this.info.text);
-  if (this.info.args) {
-    for (var j = 0; j < this.info.args.length; j++) {
+  var args = opt_args || this.info.args;
+  if (args) {
+    for (var j = 0; j < args.length; j++) {
       var arg = [];
-      arg.push(this.info.args[j][0]);  // name
-      arg.push(this.info.args[j][1]);  // type
+      arg.push(args[j][0]);  // name
+      // The next argument is either a type (expressed as a string) for a
+      // value input, or a Blockly.FieldDropdown.
+      arg.push(args[j][1]);
       arg.push(Blockly.ALIGN_RIGHT);
       interpArgs.push(arg);
     }
@@ -400,6 +406,149 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
 };
 
 /**
+ * Class for ComputerCraft blocks that have an input that only appears if
+ * a dropdown menu has a specific value.
+ *
+ * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
+ * @param {number} colour The block colour, an HSV hue value.
+ * @param {Object} info Information about the block being defined.
+ *     In addition to the fields used for the parent class
+ *     Blockly.ComputerCraft.ValueBlock:
+ *     <ul>
+ *     <li>ddTitle {!string} Name of dropdown that controls whether
+ *         dependent value input appears.
+ *     <li>ddValue {!string} Value of dropdown when dependent value input
+ *         appears.
+ *     <li>depName {!string} Name of dependent value input.
+ *     <li>depType {?Array<string>|string} Type of dependent value input.
+ *     </ul>
+ * @return {Blockly.ComputerCraft.BlockWithSide} The new block.
+ */
+Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
+  // Initially, all of the inputs will appear.
+  Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
+  this.prefix = prefix;
+}
+
+/**
+ *
+ * @param {!string} prefix A lower-case prefix corresponding to a
+ *     ComputerCraft API, such as "os".
+ * @param {number} colour The block's colour.
+ * @param {!Object} info Information about the block being defined.
+ *     This adds no fields to the ones used by the constructor
+ *     Blockly.ComputerCraft.BlockWithDependentInput.
+ */
+Blockly.ComputerCraft.buildBlockWithDependentInput = function(
+  prefix, colour, info) {
+  var newBlock = new Blockly.ComputerCraft.BlockWithDependentInput(
+    prefix, colour, info);
+  Blockly.Blocks[newBlock.blockName] = newBlock;
+  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
+};
+
+/**
+ * Find the name of the input following the dependent one.
+ *
+ * @return {?string} The name of the input following the dependent one,
+ *     or null if the dependent one was the final one.
+ */
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.getFollowingInput_ =
+    function() {
+  var found = false;  // Was the dependent input found?
+  for (var i = 0; i < this.inputList.length; i++) {
+    var input = this.inputList[i];
+    if (found) {
+      return input.name;
+    } else {
+      found = input.name == this.info.depName;
+    }
+  }
+  if (!found) {
+    throw 'No input named ' + this.info.depName + ' found in block ' +
+        this.type;
+  }
+  return null;
+};
+
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
+  // Create the dropdown inputs without mutating args.
+  // That way, init() can be rerun without error.
+  var args = []
+  for (var i = 0; i < this.info.args.length; i++) {
+    var tuple = this.info.args[i];
+    if (typeof tuple[1] == 'string') {
+      args.push(tuple);
+    } else {
+      var newTuple = []
+      newTuple[0] = tuple[0];
+      // Current tuple represents a dropdown menu.
+      if (newTuple[0] == this.info.ddName) {
+        // It's the input that controls the dependent input.
+        var thisBlock = this;
+        newTuple[1] = new Blockly.FieldDropdown(
+          tuple[1],
+          function(value) {
+            if (value == thisBlock.info.ddValue) {
+              if (!thisBlock.dependentInputShown) {
+                thisBlock.showDependentInput();
+              }
+            } else {
+              if (thisBlock.dependentInputShown) {
+                thisBlock.removeDependentInput();
+              }
+            }
+          });
+      } else {
+        // It's an ordinary dropdown menu.
+        newTuple[1] = new Blockly.FieldDropdown(tuple[1]);
+      }
+      args.push(newTuple);
+    }
+  }
+  // This will call interpolateMsg.
+  Blockly.ComputerCraft.ValueBlock.prototype.init.call(this, args);
+  this.followingInput = this.getFollowingInput_();
+  this.dependentInputShown = false;
+  this.removeInput(this.info.depName);
+};
+
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.showDependentInput =
+    function() {
+      this.appendValueInput(this.info.depName)
+          .setCheck(this.info.depType);
+      if (this.followingInput) {
+        this.moveInputBefore(this.info.depName, this.followingInput);
+      }
+      this.dependentInputShown = true;
+    };
+
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.removeDependentInput =
+    function() {
+      this.removeInput(this.info.depName, true);
+      this.dependentInputShown = false;
+    };
+
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.mutationToDom =
+    function() {
+      var container = document.createElement('mutation');
+      container.setAttribute('dependent_input', this.dependentInputShown);
+      return container;
+    };
+
+Blockly.ComputerCraft.BlockWithDependentInput.prototype.domToMutation =
+    function(xmlElement) {
+  var value = xmlElement.getAttribute('dependent_input') ||
+          // Included for backward compatability.
+          xmlElement.getAttribute('cable_mode');
+  if (value == true) {
+    this.showDependentInput();
+  }
+    };
+
+
+
+/**
  * Class for ComputerCraft blocks that have a 'side' input (one of 'front',
  * 'back', 'left', 'right', 'top', 'bottom', or an arbitrary string identifying
  * a cable).  The block may also have other inputs.
@@ -418,7 +567,7 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
  * @return {Blockly.ComputerCraft.BlockWithSide} The new block.
  */
 Blockly.ComputerCraft.BlockWithSide = function(prefix, colour, info) {
-  Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
+  Blockly.ComputerCraft.BlockWithDependentInput.call(this, prefix, colour, info);
   this.prefix = prefix;
 }
 
