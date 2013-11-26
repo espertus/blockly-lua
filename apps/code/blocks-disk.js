@@ -28,13 +28,13 @@ Blockly.ComputerCraft.DISK_BLOCK_COLOUR_ = 290;
 Blockly.ComputerCraft.DISK_FUNCS_ = [
   {funcName: 'isPresent',
    output: 'Boolean',
-   text: 'is an item in disk drive',
+   text: 'an item is in disk drive',
    tooltip:
    'Check whether any item (such as a music disk or floppy disk)\n'+
    'is present in the adjacent disk drive.'},
   {funcName: 'hasData',
    output: 'Boolean',
-   text: 'is floppy disk in drive',
+   text: 'a floppy disk is in drive',
    tooltip:
    'Check whether a floppy disk (as opposed to a music disk) is in the drive.'
   },
@@ -53,7 +53,7 @@ Blockly.ComputerCraft.DISK_FUNCS_ = [
    output: 'Number',
    tooltip: 'Get the floppy disk\'s unique numeric identifier.'},
   {funcName: 'hasAudio',
-   text: 'is music disk in drive',
+   text: 'music disk is in drive',
    output: 'Boolean',
    tooltip: 'Check if a music disk is in the drive.'},
   {funcName: 'getAudioTitle',
@@ -71,10 +71,10 @@ Blockly.ComputerCraft.DISK_FUNCS_ = [
    tooltip:
    'Eject any item currently in the drive,\n' +
    'spilling it into the world as a loose item.'},
-  // The resulting block will get modified after the loop.
   {funcName: 'setLabel',
+   // The label input is added below.
    text: 'Set the label on the disk in drive',
-   tooltip: 'Writes a label to the floppy disk in the attached drive.'}];
+   tooltip: 'Write to the label to the floppy disk in the attached drive.'}];
 
 for (var i = 0; i < Blockly.ComputerCraft.DISK_FUNCS_.length; i++) {
   Blockly.ComputerCraft.buildBlockWithSide(
