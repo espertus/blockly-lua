@@ -29,6 +29,7 @@
   <script type="text/javascript" src="blocks-os.js"></script>
   <script type="text/javascript" src="blocks-paintutils.js"></script>
   <script type="text/javascript" src="blocks-peripheral.js"></script>
+  <script type="text/javascript" src="blocks-shell.js"></script>
   <script type="text/javascript" src="blocks-term.js"></script>
   <script type="text/javascript" src="blocks-textutils.js"></script>
   <script type="text/javascript" src="blocks-turtle.js"></script>
@@ -87,7 +88,6 @@
       <td height="99%" colspan=2 id="content_area">
         <xml id="toolbox" style="display: none">
           <category name="ComputerCraft">
-            <block type="test_count"></block>
             <category name="Colour">
               <block type="colour_picker"></block>
             </category>
@@ -243,6 +243,16 @@
               <block type="peripheral_get_methods"></block>
               <block type="peripheral_wrap"></block>
               <block type="peripheral_call"></block>
+            </category>
+            <category name="Shell">
+              <block type="shell_exit"></block>
+              <block type="shell_dir"></block>
+              <block type="shell_set_dir"></block>
+              <block type="shell_path"></block>
+              <block type="shell_set_path"></block>
+              <block type="shell_aliases"></block>
+              <block type="shell_change_alias"></block>
+              <block type="shell_programs"></block>
             </category>
             <category name="Terminal">
               <block type="term_write"></block>
