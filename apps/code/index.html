@@ -21,14 +21,19 @@
   <script type="text/javascript" src="../../lua_compressed.js"></script>
   <script type="text/javascript" src="../../msg/js/en.js"></script>
   <script type="text/javascript" src="blocks.js"></script>
-  <script type="text/javascript" src="blocks-turtle.js"></script>
-  <script type="text/javascript" src="blocks-os.js"></script>
+
+  <!-- API categories. -->
   <script type="text/javascript" src="blocks-colour.js"></script>
-  <script type="text/javascript" src="blocks-peripheral.js"></script>
   <script type="text/javascript" src="blocks-disk.js"></script>
   <script type="text/javascript" src="blocks-fs.js"></script>
+  <script type="text/javascript" src="blocks-os.js"></script>
+  <script type="text/javascript" src="blocks-paintutils.js"></script>
+  <script type="text/javascript" src="blocks-peripheral.js"></script>
   <script type="text/javascript" src="blocks-term.js"></script>
   <script type="text/javascript" src="blocks-textutils.js"></script>
+  <script type="text/javascript" src="blocks-turtle.js"></script>
+
+  <!-- Deprecated blocks. -->
   <script type="text/javascript" src="blocks-old.js"></script>
 
   <!-- Render the page.  -->
@@ -156,7 +161,7 @@
             <category name="Colour">
               <block type="colour_picker"></block>
             </category>
-            <category name="Textutils">
+            <category name="Text Utilities">
               <block type="textutils_slow_write">
                 <value name="TEXT">
                   <block type="text"></block>
@@ -177,9 +182,15 @@
                   </block>
                 </value>
               </block>
+              <block type="textutils_paged_print">
+                <value name="TEXT">
+                  <block type="text"></block>
+                </value>
+              </block>
               <block type="textutils_serialize"></block>
               <block type="textutils_unserialize"></block>
               <block type="textutils_url_encode"></block>
+              <block type="textutils_format_time"></block>
             </category>
             <category name="File System">
               <block type="fs_list">
@@ -249,6 +260,49 @@
                 </value>
                 <value name="PATH2">
                   <block type="text"></block>
+                </value>
+              </block>
+            </category>
+            <category name="Paint Utilities">
+              <block type="paintutils_load_image">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="paintutils_draw_image">
+                <value name="X">
+                  <block type="math_number"></block>
+                </value>
+                <value name="Y">
+                  <block type="math_number"></block>
+                </value>
+              </block>
+              <block type="paintutils_draw_pixel">
+                <value name='COLOUR'>
+                  <block type="colour_picker"></block>
+                </value>
+                <value name="X">
+                  <block type="math_number"></block>
+                </value>
+                <value name="Y">
+                  <block type="math_number"></block>
+                </value>
+              </block>
+              <block type="paintutils_draw_line">
+                <value name='COLOUR'>
+                  <block type="colour_picker"></block>
+                </value>
+                <value name="X1">
+                  <block type="math_number"></block>
+                </value>
+                <value name="Y1">
+                  <block type="math_number"></block>
+                </value>
+                <value name="X2">
+                  <block type="math_number"></block>
+                </value>
+                <value name="Y2">
+                  <block type="math_number"></block>
                 </value>
               </block>
             </category>
