@@ -46,6 +46,12 @@ Blockly.ComputerCraft.TEXTUTILS_FUNCS_ = [
    'A value of 1 outputs one character per second.' +
    'Unlike with the "write string" block, a newline is printed at the end.\n'
   },
+  {funcName: 'pagedPrint',
+   text: 'write string %1 paginated',
+   args: [['TEXT', 'String']],
+   tooltip:
+   'Print the string to the screen (terminal or monitor),\n' +
+   'waiting for confirmation before scrolling down.'},
   {funcName: 'serialize',
    text: 'convert table %1 to string',
    args: [['TABLE', 'Table']],
@@ -72,7 +78,7 @@ Blockly.ComputerCraft.TEXTUTILS_FUNCS_ = [
    'Spaces are replaced with "+s".  Unsafe characters,\n' +
    'such as quotation marks, are replaced by their ASCII\n' +
    'values and preceded with a percent sign (%).'
-  },
+  }
 ];
 
 for (var i = 0; i < Blockly.ComputerCraft.TEXTUTILS_FUNCS_.length; i++) {
@@ -81,3 +87,18 @@ for (var i = 0; i < Blockly.ComputerCraft.TEXTUTILS_FUNCS_.length; i++) {
     Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
     Blockly.ComputerCraft.TEXTUTILS_FUNCS_[i]);
 }
+
+Blockly.ComputerCraft.buildBlockWithDependentInput(
+  'textutils',
+  Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
+  {funcName: 'formatTime',
+   text: 'format %1 %2',
+   args: [['CHOICE',
+           [['current time', 'current'],
+            ['time...', 'time']]],
+          ['TIME', 'Time']],
+   ddName: 'CHOICE',
+   ddValue: 'time',
+   depName: 'TIME',
+   depType: 'Time',
+   tooltip: 'Format the current or given time as a printable string.'});
