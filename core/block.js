@@ -1385,7 +1385,7 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
  * @param {!Array.<string|number>|number} var_args A series of tuples that
  *     each specify the value inputs to create.  Each tuple has three values:
  *     - the input name
- *     - its check type(s) (for value inputs) or a Blockly.FieldDropdown
+ *     - its check type(s) (for value inputs) or a unique Blockly.FieldDropdown
  *     - its title's alignment
  *     The last parameter is not a tuple, but just an alignment for any trailing
  *     dummy input.  This last parameter is mandatory; there may be any number
