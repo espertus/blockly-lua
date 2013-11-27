@@ -450,30 +450,6 @@ Blockly.ComputerCraft.buildBlockWithDependentInput = function(
   Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
 };
 
-/**
- * Find the name of the input following the dependent one.
- *
- * @return {?string} The name of the input following the dependent one,
- *     or null if the dependent one was the final one.
- */
-Blockly.ComputerCraft.BlockWithDependentInput.getFollowingInput_ =
-    function(block) {
-  var found = false;  // Was the dependent input found?
-  for (var i = 0; i < block.inputList.length; i++) {
-    var input = block.inputList[i];
-    if (found) {
-      return input.name;
-    } else {
-      found = input.name == block.info.depName;
-    }
-  }
-  if (!found) {
-    throw 'No input named ' + block.info.depName + ' found in block ' +
-        block.type;
-  }
-  return null;
-};
-
 Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
   // Create the dropdown inputs without mutating args.
   // That way, init() can be rerun without error.
