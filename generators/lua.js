@@ -45,6 +45,16 @@ Blockly.Lua = new Blockly.Generator('Lua');
 Blockly.Lua.addReservedWords(
     // Special character
     '_' +
+    // From theoriginalbit's script:
+    // https://github.com/espertus/blockly-lua/issues/6
+    '__inext,assert,bit,colors,colours,coroutine,disk,dofile,error,fs,' +
+    'fetfenv,getmetatable,gps,help,io,ipairs,keys,loadfile,loadstring,math,' +
+    'native,next,os,paintutils,pairs,parallel,pcall,peripheral,print,' +
+    'printError,rawequal,rawget,rawset,read,rednet,redstone,rs,select,' +
+    'setfenv,setmetatable,sleep,string,table,term,textutils,tonumber,' +
+    'tostring,turtle,type,unpack,vector,write,xpcall,_VERSION,__indext,' +
+    // Not included in the script, probably because it wasn't enabled:
+    'HTTP,' +
     // Keywords (http://www.lua.org/pil/1.3.html).
     'and,break,do,else,elseif,end,false,for,function,if,in,local,nil,not,or,' +
     'repeat,return,then,true,until,while,' +
@@ -55,12 +65,7 @@ Blockly.Lua.addReservedWords(
     'loadfile,next,pairs,pcall,print,rawequal,rawget,rawlen,rawset,select,' +
     'setmetatable,tonumber,tostring,type,_VERSION,xpcall,' +
     // Modules (http://www.lua.org/manual/5.2/manual.html, section 6.3).
-    'require,package,string,table,math,bit32,io,file,os,debug', +
-    // ComputerCraft libraries (http://computercraft.info/wiki/Category:APIs)
-    'bit,colors,coroutine,disk,fs,gps,help,HTTP,keys,paintutil,parallel,' +
-    'peripheral,rednet,redstone,shell,term,textutils,turtle,vector,' +
-    // Our reserved words
-    'sensor', 'getSensor'
+    'require,package,string,table,math,bit32,io,file,os,debug'
 );
 
 /**
