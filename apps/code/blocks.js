@@ -497,6 +497,14 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
     var tuple = this.info.args[i];
     if (typeof tuple[1] == 'string') {
       args.push(tuple);
+      if (tuple[0] == this.info.depName &&
+          this.info.text.indexOf('%0') == -1) {
+        // This mutates this.info.text if it has not yet been mutated
+        // to add a dummy input before the dependent input.
+        var re = new RegExp('%' + (i + 1) + '(\D|$)');
+        var sub = '%0 %' + (i + 1);
+        this.info.text = this.info.text.replace(re, sub);
+      }
     } else {
       var newTuple = []
       newTuple[0] = tuple[0];
@@ -520,7 +528,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
             }
           });
       } else {
-        // It's an ordinary dropdown menu.
+        // It's another dropdown menu.
         newTuple[1] = new Blockly.FieldDropdown(tuple[1]);
       }
       args.push(newTuple);
@@ -549,11 +557,13 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
 // this is called from domToMutation.
 Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
     function(block, permitChild) {
-      var input = block.appendValueInput(block.info.depName)
+      // Create dependent input, and put it into position.
+      var depInput = block.appendValueInput(block.info.depName)
           .setCheck(block.info.depType);
-      if (block.info.depTitle) {
-        input.appendTitle(block.info.depTitle);
+      if (block.depPos != block.inputList.length - 1) {
+        block.moveNumberedInputBefore(block.inputList.length - 1, block.depPos);
       }
+
       // Check if we should create a child block.
       if (permitChild && block.info.addChild) {
         goog.asserts.assert(
@@ -565,25 +575,18 @@ Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
           block.info.depType == 'String' ? 'text' : 'math_number');
         childBlock.initSvg();
         childBlock.render();
-        input.connection.connect(childBlock.outputConnection);
+        depInput.connection.connect(childBlock.outputConnection);
         if (block.info.addChild == Blockly.ComputerCraft.InputAddType.FIRST) {
           block.info.addChild = Blockly.ComputerCraft.InputAddType.NONE;
         }
       }
-      // Move the dependent input before any ones that should follow it.
-      if (block.inputList.length - 1 != block.depPos) {
-        block.moveNumberedInputBefore(
-          // Newly added dependent input.
-          block.inputList.length - 1,
-          // Input that should follow it.
-          block.depPos);
-      }
+
       block.dependentInputShown = true;
     };
 
 Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_ =
     function(block) {
-      block.removeInput(block.info.depName, true);
+      block.removeInput(block.info.depName);
       block.dependentInputShown = false;
     };
 
@@ -663,8 +666,9 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   if (!info.args) {
     info.args = [];
   }
-  // Add SIDE and CABLE inputs to info.text.
-  info.text += ' %' + (info.args.length + 1) + ' %' + (info.args.length + 2);
+  // Add SIDE, dummy, and CABLE inputs to info.text.
+  // A dummy input will be inserted in BlockWithDependentInput.init().
+  info.text += ' %' + (info.args.length + 1) + '%0 %' + (info.args.length + 2);
   // Add SIDE and CABLE inputs to info.args.
   info.args.push(['SIDE', Blockly.ComputerCraft.BlockWithSide.SIDES_]);
   info.args.push(['CABLE', 'String']);
@@ -675,6 +679,13 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   info.depName = 'CABLE';
   info.depType = 'String';
   info.addChild = Blockly.ComputerCraft.InputAddType.FIRST;
+
+  // Add question mark at end of text if the block is a predicate.
+  if (info.output == 'Boolean') {
+    info.text += '?';
+  };
+
+  // Build block.
   var newBlock = new Blockly.ComputerCraft.BlockWithSide(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   if (!info.suppressLua) {
@@ -684,11 +695,6 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
 
 Blockly.ComputerCraft.BlockWithSide.prototype.init = function() {
   Blockly.ComputerCraft.BlockWithDependentInput.prototype.init.call(this);
-  // Add question mark at end of text if the block is a predicate.
-  if (this.info.output == 'Boolean') {
-    this.appendDummyInput()
-        .appendTitle('?');
-  };
 };
 
 Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation =

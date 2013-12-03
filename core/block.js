@@ -1381,7 +1381,7 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
 /**
  * Interpolate a message string, creating titles and inputs.
  * @param {string} msg The message string to parse.  %1, %2, etc. are symbols
- *     for value or dropown inputs.
+ *     for value or dropown inputs.  %0 indicates a dummy input.
  * @param {!Array.<string|number>|number} var_args A series of tuples that
  *     each specify the value inputs to create.  Each tuple has three values:
  *     - the input name
@@ -1392,45 +1392,80 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
  *     of tuples (though the number of tuples must match the symbols in msg).
  */
 Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
-  // Remove the msg from the start and the dummy alignment from the end of args.
-  goog.asserts.assertString(msg);
-  var dummyAlign = arguments.length - 1;
-  goog.asserts.assertNumber(dummyAlign);
-
-  var tokens = msg.split(/(%\d)/);
-  for (var i = 0; i < tokens.length; i += 2) {
-    var text = goog.string.trim(tokens[i]);
-    var symbol = tokens[i + 1];
-    if (symbol) {
-      // Input.
-      var digit = parseInt(symbol.charAt(1), 10);
-      var tuple = arguments[digit];
-      goog.asserts.assertArray(tuple,
-          'Message symbol "%s" is out of range.', symbol);
-      if (tuple[1] instanceof Blockly.FieldDropdown) {
-        // It's a dropdown menu input.
-        if (text) {
-          this.appendDummyInput()
-              .appendTitle(text);
-        }
-        this.appendDummyInput(tuple[0])
-            .appendTitle(tuple[1], tuple[0])
-            .setAlign(tuple[2]);
-      } else {
-        // It's a value input.
-        this.appendValueInput(tuple[0])
-            .setCheck(tuple[1])
-            .setAlign(tuple[2])
-            .appendTitle(text);
-      }
-      arguments[digit] = null;  // Inputs may not be reused.
-    } else if (text) {
-      // Trailing dummy input.
-      this.appendDummyInput()
-          .setAlign(dummyAlign)
-          .appendTitle(text);
+  function addTitleToInput(title) {
+    if (typeof title == 'string') {
+      this.appendTitle(title);
+    } else {
+      this.appendTitle(title[0], title[1]);
     }
   }
+
+  // Validate the msg at the start and the dummy alignment at the end,
+  // and remove the latter.
+  goog.asserts.assertString(msg);
+  var dummyAlign = arguments[arguments.length - 1];
+  goog.asserts.assert(
+      dummyAlign === Blockly.ALIGN_LEFT ||
+      dummyAlign === Blockly.ALIGN_CENTRE ||
+      dummyAlign === Blockly.ALIGN_RIGHT,
+      'Illegal final argument "%d" is not an alignment.', dummyAlign);
+  arguments.length = arguments.length - 1;
+
+  var tokens = msg.split(/(%\d)/);
+  // Build up a list of unattached titles to append to the next
+  // input that gets created.  Each entry in the list is either:
+  // - A string to display.
+  // - A two-element array, whose first element is the string to
+  //   display and whose second element is the name of the title.
+  var titles = [];
+  for (var i = 0; i < tokens.length; i += 2) {
+    var text = goog.string.trim(tokens[i]);
+    if (text) {
+      titles.push(text);
+    }
+    var symbol = tokens[i + 1];
+    if (symbol) {
+      // Numeric field.
+      var digit = parseInt(symbol.charAt(1), 10);
+      goog.asserts.assert(digit < arguments.length,
+        'Message symbol "%s" is out of range.', symbol);
+      if (digit) {
+        var tuple = arguments[digit];
+        goog.asserts.assertArray(tuple,
+            'Argument "%s" is not a tuple.', symbol);
+      } else {
+        // It could have been initialized on a previous iteration.
+        var tuple = null;
+      }
+      if (tuple && tuple[1] instanceof Blockly.FieldDropdown) {
+        // It's a dropdown menu input.
+        titles.push([tuple[1], tuple[0]]);
+      } else {
+        if (digit == 0) {
+          // It's a dummy input.
+          var input = this.appendDummyInput();
+        } else {
+          // It's a value input.
+          var input = this.appendValueInput(tuple[0])
+              .setCheck(tuple[1])
+              .setAlign(tuple[2]);
+        }
+        if (titles.length) {
+          titles.forEach(addTitleToInput, input);
+          titles = [];
+        }
+      }
+      // Items may not be reused. There's no harm in nulling arguments[0].
+      arguments[digit] = null;
+    }
+  }
+  // Output any remaining titles in a dummy input.
+  if (titles.length) {
+    var input = this.appendDummyInput()
+        .setAlign(dummyAlign);
+    titles.forEach(addTitleToInput, input);
+  }
+
   // Verify that all inputs were used.
   for (var i = 1; i < arguments.length - 1; i++) {
     goog.asserts.assert(arguments[i] === null,
@@ -1467,7 +1502,7 @@ Blockly.Block.prototype.appendInput_ = function(type, name) {
 };
 
 /**
- * Move an input to a different location on this block.
+ * Move an named input to a different location on this block.
  * @param {string} name The name of the input to move.
  * @param {string} refName Name of input that should be after the moved input.
  */
@@ -1496,7 +1531,7 @@ Blockly.Block.prototype.moveInputBefore = function(name, refName) {
 };
 
 /**
- * Move an input to a different location on this block.
+ * Move a numbered input to a different location on this block.
  * @param {number} inputIndex Index of the input to move.
  * @param {number} refIndex Index of input that should be after the moved input.
  */
