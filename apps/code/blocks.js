@@ -124,8 +124,11 @@ Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
  *     <li>quoteDropdownValues {?boolean} Indicates whether dropdown values
  *         should be quoted when used as parameters.  This defaults to true.
  *     <li>tooltip {?string} Tooltip text.
- *     <li>helpUrl {?Blockly.ComputerCraft.HelpUrlType} How to create the
- *         help URL, as a function of other fields.
+ *     <li>helpUrl {?string} The help URL, accessible through the context menu.
+ *         This may also be specified through helpUrlType.
+ *     <li>helpUrlType {?Blockly.ComputerCraft.HelpUrlType} How to create the
+ *         help URL, as a function of other fields.  This is ignored if
+ *         helpUrl is provided.
  *     </ul>
  */
 Blockly.ComputerCraft.Block = function(prefix, colour, info) {
