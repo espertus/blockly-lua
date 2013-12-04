@@ -461,6 +461,8 @@ Blockly.ComputerCraft.InputAddType = {
  *         appears.  This must not be the first option.
  *     <li>depName {!string} Name of dependent value input.
  *     <li>depType {?Array.<string>|string} Type of dependent value input.
+ *     <li>depTitle {?string} Optional text to appear before dependent input
+ *         only when it is shown.
  *     <li>addChild {?Blockly.ComputerCraft.InputAddTypes} Whether to
  *         automatically add and attach an input block when the dependent input
  *         is added.  This can only be done if depType is 'String' or 'Number'.
@@ -488,6 +490,12 @@ Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER = '^';
  * - depType: The type of the dependent Input.  This is determined by the type
  *   associated with depName.
  *
+ * This method has no effect if info.ddName or info.depName is already defined
+ * (besides asserting that, if one is set, both are).
+ *
+ * This mutates info.args, so be careful not to share this field (unless
+ * info.ddName and info.depName are already defined).
+ *
  * @param {!object} info An object with an args attribute whose value is an
  *   array of two-element tuples.  Each tuple represents an input.  The first
  *   element of each tuple is a string giving the input name.  The second
@@ -503,51 +511,68 @@ Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER = '^';
  */
 Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_ =
     function(info) {
-  // Define short names for convenience and code clarity.
-  var ddMarker = Blockly.ComputerCraft.BlockWithDependentInput.DD_MARKER;
-  var depMarker = Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER;
-  for (var i = 0; i < info.args.length; i++) {
-    var arg = info.args[i];
-    var name = arg[0];
-    if (name) {
-      if (name.charAt(name.length - 1) == ddMarker) {
-        goog.asserts.assert(!info.ddName,
-          'info.ddName is being redefined.');
-        arg[0] = name.slice(0, -1);
-        info.ddName = arg[0];
-        for (var j = 0; j < arg[1].length; j++) {
-          var choice = arg[1][j];
-          var choiceName = choice[1];
-          if (choiceName.charAt(choiceName.length - 1) == ddMarker) {
-            goog.asserts.assert(!info.ddValue,
-              'info.ddValue is being redefined.');
-            choice[1] = choiceName.slice(0, -1);
-            info.ddValue = choice[1];
+      // Skip if the attributes have already been defined.
+      if (!info.ddName && !info.depName) {
+        // Define short names for convenience and code clarity.
+        var ddMarker = Blockly.ComputerCraft.BlockWithDependentInput.DD_MARKER;
+        var depMarker = Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER;
+        for (var i = 0; i < info.args.length; i++) {
+          var arg = info.args[i];
+          var name = arg[0];
+          if (name) {
+            if (name.charAt(name.length - 1) == ddMarker) {
+              goog.asserts.assert(!info.ddName,
+                'info.ddName is being redefined.');
+              arg[0] = name.slice(0, -1);
+              info.ddName = arg[0];
+              for (var j = 0; j < arg[1].length; j++) {
+                var choice = arg[1][j];
+                var choiceName = choice[1];
+                if (choiceName.charAt(choiceName.length - 1) == ddMarker) {
+                  goog.asserts.assert(!info.ddValue,
+                    'info.ddValue is being redefined.');
+                  choice[1] = choiceName.slice(0, -1);
+                  info.ddValue = choice[1];
+                }
+              }
+              goog.asserts.assert(info.ddValue,
+                'No enabling value was found in dropdown ', info.ddName);
+            } else if (name.charAt(name.length - 1) == depMarker) {
+              goog.asserts.assert(!info.depName,
+                'info.depName is being redefined.');
+              arg[0] = name.slice(0, -1);
+              info.depName = arg[0];
+              goog.asserts.assert(typeof arg[1] == 'string',
+                'Dependent inputs must be simple types.');
+              info.depType = arg[1];
+            }
           }
         }
-        goog.asserts.assert(info.ddValue,
-          'No enabling value was found in dropdown ', info.ddName);
-      } else if (name.charAt(name.length - 1) == depMarker) {
-        goog.asserts.assert(!info.depName,
-          'info.depName is being redefined.');
-        arg[0] = name.slice(0, -1);
-        info.depName = arg[0];
-        goog.asserts.assert(typeof arg[1] == 'string',
-          'Dependent inputs must be simple types.');
-        info.depType = arg[1];
       }
-    }
-  }
-  if (info.ddName) {
-    goog.asserts.assert(info.depName,
-      'A controlling dropdown menu was defined but not a dependent input.');
-  } else {
-    goog.assert.assert(!info.depName,
-      'A dependent input was defined but not a controlling dropdown menu.');
-  }
-};
+
+      // Validate the attributes, even if we didn't modify them.
+      if (info.ddName) {
+        goog.asserts.assert(info.depName,
+          'A controlling dropdown menu was defined but not a dependent input.');
+      } else {
+        goog.assert.assert(!info.depName,
+          'A dependent input was defined but not a controlling dropdown menu.');
+      }
+    };
 
 /**
+ * Create a block whose inputs that has a "dependent" value input that is only
+ * shown if an associated dropdown menu has a certain value.
+ *
+ * There are two ways to specify the connection between the dropdown menu and
+ * the dependent input.  The first is to define the ddName, ddValue, depName,
+ * and depValue attributes of info, as described in the constructor above.
+ * The second, more compact, way is to mark the dropdown input, the choice
+ * that controls the dependent input, and the dependent input, as described
+ * in setDependenceInfo_() above.  Because that method mutates info, be
+ * careful not to pass in shared data (specifically, dropdown menu descriptions).
+ *
+ * This method also creates a Lua code generator.
  *
  * @param {!string} prefix A lower-case prefix corresponding to a
  *     ComputerCraft API, such as "os".
@@ -578,7 +603,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
         // This mutates this.info.text if it has not yet been mutated
         // to add a dummy input and the dependent input's title before the
         // dependent input.
-        var re = new RegExp('%' + (i + 1) + '(\D|$)');
+        var re = new RegExp('%' + (i + 1) + '(?=(\\D|$))');
         var sub = '%0 ' + (this.info.depTitle || '') + ' %' + (i + 1);
         this.info.text = this.info.text.replace(re, sub);
       }
@@ -752,18 +777,20 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   if (!info.args) {
     info.args = [];
   }
-  // Add SIDE, dummy, and CABLE inputs to info.text.
+  // Add SIDE and CABLE inputs to info.text.
   // A dummy input will be inserted in BlockWithDependentInput.init().
-  info.text += ' %' + (info.args.length + 1) + '%0 %' + (info.args.length + 2);
+  info.text += ' %' + (info.args.length + 1) + ' %' + (info.args.length + 2);
   // Add SIDE and CABLE inputs to info.args.
   info.args.push(['SIDE', Blockly.ComputerCraft.BlockWithSide.SIDES_]);
   info.args.push(['CABLE', 'String']);
-  // Specify that SIDE is the dropdown controlling the dependent input.
-  info.ddName = 'SIDE';
-  info.ddValue = 'cable';
-  // Specify that CABLE is the dependent input.
-  info.depName = 'CABLE';
+
+  // Explicitly set the dependent block attributes; otherwise, info.args will be
+  // mutated in setDependenceInfo_().
+  info.ddName = 'SIDE';    // This is the controlling dropdown menu.
+  info.ddValue = 'cable';  // This is the value for showing the dependent input.
+  info.depName = 'CABLE';  // This is the dependent input.
   info.depType = 'String';
+  // Only create a child string the first time the dependent input is shown.
   info.addChild = Blockly.ComputerCraft.InputAddType.FIRST;
 
   // Add question mark at end of text if the block is a predicate.
