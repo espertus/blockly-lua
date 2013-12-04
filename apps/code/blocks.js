@@ -460,7 +460,7 @@ Blockly.ComputerCraft.InputAddType = {
  *     <li>ddValue {!string} Value of dropdown when dependent value input
  *         appears.  This must not be the first option.
  *     <li>depName {!string} Name of dependent value input.
- *     <li>depType {?Array<string>|string} Type of dependent value input.
+ *     <li>depType {?Array.<string>|string} Type of dependent value input.
  *     <li>addChild {?Blockly.ComputerCraft.InputAddTypes} Whether to
  *         automatically add and attach an input block when the dependent input
  *         is added.  This can only be done if depType is 'String' or 'Number'.
@@ -471,6 +471,81 @@ Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
   // Initially, all of the inputs will appear.
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
 }
+
+Blockly.ComputerCraft.BlockWithDependentInput.DD_MARKER = '*';
+Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER = '^';
+
+/**
+ * Sets the following attributes on the argument:
+ * - ddName: The name of the dropdown that controls the dependent input.
+ *   This is determined by finding which input name ends with the character
+ *   DD_MARKER.
+ * - ddValue: The value of the dropdown that indicates that the dependent input
+ *   should be enabled.  This is determined by finding which dropdown value
+ *   ends with the character DD_MARKER.
+ * - depName: The name of the dependent input.  This is determined by finding
+ *   which input name ends with the character DEP_MARKER.
+ * - depType: The type of the dependent Input.  This is determined by the type
+ *   associated with depName.
+ *
+ * @param {!object} info An object with an args attribute whose value is an
+ *   array of two-element tuples.  Each tuple represents an input.  The first
+ *   element of each tuple is a string giving the input name.  The second
+ *   element is either a string describing a type (such as 'String' or 'Number')
+ *   or an array of dropdown choices: two-element tuples where the first element
+ *   is the displayed string and the second element the language-independent
+ *   value. The name of one dropdown menu input should end with DD_MARKER, as
+ *   should the name of whichever of the dropdown menu's values enables the
+ *   dependent input.  Similarly, the name of the dependent input should end
+ *   with DEP_MARKER.  These markers are stripped off.  It is an error for
+ *   more than one input to have a DD_MARKER or for more than one to have a
+ *   DEP_MARKER.  It is acceptable to have neither.
+ */
+Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_ =
+    function(info) {
+  // Define short names for convenience and code clarity.
+  var ddMarker = Blockly.ComputerCraft.BlockWithDependentInput.DD_MARKER;
+  var depMarker = Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER;
+  for (var i = 0; i < info.args.length; i++) {
+    var arg = info.args[i];
+    var name = arg[0];
+    if (name) {
+      if (name.charAt(name.length - 1) == ddMarker) {
+        goog.asserts.assert(!info.ddName,
+          'info.ddName is being redefined.');
+        arg[0] = name.slice(0, -1);
+        info.ddName = arg[0];
+        for (var j = 0; j < arg[1].length; j++) {
+          var choice = arg[1][j];
+          var choiceName = choice[1];
+          if (choiceName.charAt(choiceName.length - 1) == ddMarker) {
+            goog.asserts.assert(!info.ddValue,
+              'info.ddValue is being redefined.');
+            choice[1] = choiceName.slice(0, -1);
+            info.ddValue = choice[1];
+          }
+        }
+        goog.asserts.assert(info.ddValue,
+          'No enabling value was found in dropdown ', info.ddName);
+      } else if (name.charAt(name.length - 1) == depMarker) {
+        goog.asserts.assert(!info.depName,
+          'info.depName is being redefined.');
+        arg[0] = name.slice(0, -1);
+        info.depName = arg[0];
+        goog.asserts.assert(typeof arg[1] == 'string',
+          'Dependent inputs must be simple types.');
+        info.depType = arg[1];
+      }
+    }
+  }
+  if (info.ddName) {
+    goog.asserts.assert(info.depName,
+      'A controlling dropdown menu was defined but not a dependent input.');
+  } else {
+    goog.assert.assert(!info.depName,
+      'A dependent input was defined but not a controlling dropdown menu.');
+  }
+};
 
 /**
  *
@@ -483,6 +558,7 @@ Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
  */
 Blockly.ComputerCraft.buildBlockWithDependentInput = function(
   prefix, colour, info) {
+  Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_(info);
   var newBlock = new Blockly.ComputerCraft.BlockWithDependentInput(
     prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
@@ -500,9 +576,10 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
       if (tuple[0] == this.info.depName &&
           this.info.text.indexOf('%0') == -1) {
         // This mutates this.info.text if it has not yet been mutated
-        // to add a dummy input before the dependent input.
+        // to add a dummy input and the dependent input's title before the
+        // dependent input.
         var re = new RegExp('%' + (i + 1) + '(\D|$)');
-        var sub = '%0 %' + (i + 1);
+        var sub = '%0 ' + (this.info.depTitle || '') + ' %' + (i + 1);
         this.info.text = this.info.text.replace(re, sub);
       }
     } else {
@@ -548,7 +625,13 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
   goog.asserts.assert(
     typeof this.depPos == 'number',
     'Dependent input ' + this.info.depName + ' could not be found.');
-  Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_(this);
+
+  // Check whether the dependent input should be removed.
+  if (this.getTitleValue(this.info.ddName) == this.info.ddValue) {
+    this.dependentInputShown = true;
+  } else {
+    Blockly.ComputerCraft.BlockWithDependentInput.removeDependentInput_(this);
+  }
 };
 
 // Show the dependent input.  The argument permitChild determines whether
@@ -560,6 +643,9 @@ Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
       // Create dependent input, and put it into position.
       var depInput = block.appendValueInput(block.info.depName)
           .setCheck(block.info.depType);
+      if (block.info.depTitle) {
+        depInput.appendTitle(block.info.depTitle);
+      }
       if (block.depPos != block.inputList.length - 1) {
         block.moveNumberedInputBefore(block.inputList.length - 1, block.depPos);
       }
@@ -603,7 +689,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.domToMutation =
       var value = xmlElement.getAttribute('dependent_input') ||
           // Included for backward compatability.
           xmlElement.getAttribute('cable_mode');
-      if (value == 'true') {
+      if (value == 'true' && !this.dependentInputShown) {
         Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_(
           this, false);
       }
