@@ -46,8 +46,9 @@ Blockly.ComputerCraft.StmtConns = {
 Blockly.ComputerCraft.HelpUrlType = {
   // Concatenate the prefix and funcName.
   PREFIX_NAME: 1,  // Used by Block.
-  // Concatenate the prefix and chosen direction value.
-  PREFIX_DIR: 2    // Used by ExpStmtBlock.
+  // Concatenate the prefix and the value of the title of the dropdown menu
+  // specified by ddFuncName.
+  PREFIX_DD: 2     // Used by ExpStmtBlock and ValueBlock.
 };
 
 // This is only used in Blockly.ComputerCraft.getBlockName_ but is declared
@@ -313,12 +314,10 @@ Blockly.ComputerCraft.ExpStmtBlock.prototype.init = function() {
         .appendTitle(new Blockly.FieldDropdown(this.info.directions), 'DIR');
   }
   if (this.info.helpUrlType ==
-      Blockly.ComputerCraft.HelpUrlType.PREFIX_DIR) {
+      Blockly.ComputerCraft.HelpUrlType.PREFIX_DD) {
     var thisBlock = this;
     this.setHelpUrl(function() {
-      return Blockly.ComputerCraft.BASE_HELP_URL +
-            thisBlock.prefix.charAt(0).toUpperCase() +
-            thisBlock.prefix.slice(1) + '.' + thisBlock.getTitleValue('DIR');
+      return Blockly.ComputerCraft.buildDynamicHelpUrl_(thisBlock, 'DIR');
     });
   }
 };
@@ -385,14 +384,37 @@ Blockly.ComputerCraft.ExpStmtBlock.prototype.adjustCode = function(code) {
  *         the value inputs.  The first element of each tuple it its name,
  *         the second its type (which may be null).
  *     </ul>
- * @return {Blockly.ComputerCraft.ExpStmtBlock} The new block.
+ * @return {Blockly.ComputerCraft.ValueBlock} The new block.
  */
 Blockly.ComputerCraft.ValueBlock = function(prefix, colour, info) {
   Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
 }
 
+/**
+ * Build up a help URL based on the current value of a dropdown menu.
+ * @param {!object} block A block containing an dropdown menu.
+ * @param {!title} title The name of the dropdown menu whose value
+ *   should be used in construct the URL.
+ * @return {string} A help URL
+ */
+Blockly.ComputerCraft.buildDynamicHelpUrl_ = function(block, title) {
+  return Blockly.ComputerCraft.BASE_HELP_URL +
+      block.prefix.charAt(0).toUpperCase() + block.prefix.slice(1) + '.' +
+      block.getTitleValue(block.info.ddFuncName);
+};
+
 Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
+  // Set up the help URL if it is variable.
+  if (this.info.helpUrlType == Blockly.ComputerCraft.HelpUrlType.PREFIX_DD) {
+    var thisBlock = this;
+    this.setHelpUrl(function() {
+      return Blockly.ComputerCraft.buildDynamicHelpUrl_(
+        thisBlock, thisBlock.info.ddFuncName);
+    });
+  }
+
   Blockly.ComputerCraft.Block.prototype.init.call(this);
+
   // Build up arguments to the format expected by interpolateMsg.
   var interpArgs = []
   interpArgs.push(this.info.text);
@@ -432,7 +454,9 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
  *     Blockly.ComputerCraft.ValueBlock.
  */
 Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
-  info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
+  if (!info.helpUrlType) {
+    info.helpUrlType = Blockly.ComputerCraft.HelpUrlType.PREFIX_NAME;
+  }
   var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
   Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
