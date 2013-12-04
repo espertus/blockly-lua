@@ -403,7 +403,7 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
       arg.push(args[j][0]);  // name
       // The next argument is either a type (expressed as a string) for a
       // value input, or a Blockly.FieldDropdown.
-      if (args[j] instanceof Blockly.FieldDropdown) {
+      if (args[j][1] instanceof Blockly.FieldDropdown) {
         var dd = new Blockly.FieldDropdown(
           args[j][1].menuGenerator_, args[j][1].changeHandler_);
         dd.prefixTitle = args[j][1].prefixTitle;
