@@ -23,6 +23,7 @@
   <script type="text/javascript" src="blocks.js"></script>
 
   <!-- API categories. -->
+  <script type="text/javascript" src="blocks-bit.js"></script>
   <script type="text/javascript" src="blocks-colour.js"></script>
   <script type="text/javascript" src="blocks-disk.js"></script>
   <script type="text/javascript" src="blocks-fs.js"></script>
@@ -88,6 +89,15 @@
       <td height="99%" colspan=2 id="content_area">
         <xml id="toolbox" style="display: none">
           <category name="ComputerCraft">
+            <category name="Bit">
+              <block type="bit_shift">
+                <value name="BITS">
+                  <block type="math_number"></block>
+                </value>
+              </block>
+              <block type="bit_bitwise"></block>
+              <block type="bit_bnot"></block>
+            </category>
             <category name="Colour">
               <block type="colour_picker"></block>
             </category>
