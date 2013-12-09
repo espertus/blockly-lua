@@ -30,11 +30,27 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
     text: 'Vote for %1: %2 %3',
     args: [['OFFICE', [['President', 'president'],
                        ['Vice President', 'vp']]],
-           ['CANDIDATE', [['George Washington', 'washington'],
+           ['CANDIDATE*', [['George Washington', 'washington*'],
                           ['Abraham Lincoln', 'lincoln'],
                           ['write-in candidate', 'writein']]],
-           ['WRITE_IN', 'String']],
-    ddName: 'CANDIDATE',
-    ddValue: 'writein',
-    depName: 'WRITE_IN',
-    depType: 'String'});
+           ['WRITE_IN^', 'String']]
+});
+
+Blockly.ComputerCraft.buildBlockWithDependentInput(
+  'test',
+  200, {
+    funcName: 'count',
+    text: '%1 %2',
+    args: [['ENABLE*', [['Disable dependent input', 'disable'],
+                       ['Enable dependent input', 'enable*']]],
+           ['AMOUNT^', 'Number']],
+    addChild: Blockly.ComputerCraft.InputAddType.FIRST});
+
+Blockly.Blocks['test_varargs'] = new Blockly.ComputerCraft.VarArgsBlock(
+  'test',
+  200,
+  {blockName: 'varargs',
+   text: 'give me more',
+   varArgName: 'argument',
+   varArgType: 'String',
+   varContainerName: 'arguments'});
