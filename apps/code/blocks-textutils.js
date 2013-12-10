@@ -98,3 +98,30 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
             ['time...', 'time*']]],
           ['TIME^', 'Time']],
    tooltip: 'Format the current or given time as a printable string.'});
+
+Blockly.ComputerCraft.buildVarArgsBlock(
+  'textutils',
+  Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
+  {funcName: 'tabulate',
+   text: 'display tables %v',
+   varArgName: 'table',
+   varArgType: ['Table', 'List'],
+   varArgCount: 1,
+   varContainerName: 'tables',
+   tooltip:
+   'Print tables to the screen in an ordered form.\n' +
+   'Click on the star to add (or remove) tables.'});
+
+Blockly.ComputerCraft.buildVarArgsBlock(
+  'textutils',
+  Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
+  {funcName: 'pagedTabulate',
+   text: 'display tables %v with pagination',
+   varArgName: 'table',
+   varArgType: ['Table', 'List'],
+   varArgCount: 1,
+   varContainerName: 'tables',
+   tooltip:
+   'Print tables to the screen in an ordered form.\n' +
+   'Click on the star to add (or remove) tables.\n' +
+   'Unlike plain "tabulate", this pauses for confirmation before scrolling.'});
