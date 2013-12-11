@@ -476,6 +476,13 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
   Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
 };
 
+Blockly.ComputerCraft.nameValidator = function(newVar) {
+  // Merge runs of whitespace.  Strip leading and trailing whitespace.
+  // Beyond this, all names are legal.
+  newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+  return newVar || null;
+};
+
 /**
  * Constructor for blocks with a var args input.
  *
@@ -490,6 +497,7 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
  * There are these new info fields, only the first of which is required:
  * - !varArgName (e.g., "argument")
  * - ?varArgType (e.g., "String")
+ * - ?varArgField, an optional Field to appear in the mutator args.
  * - ?varArgCount (# of var args present)
  * - ?varContainerName (e.g., "arguments")
  * - ?varContainerTooltip
@@ -528,18 +536,21 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.init = function() {
 
   // Setup mutator.
   var thisBlock = this;
-  Blockly.Blocks[this.blockName + '_vararg_mutator_arg'] = {
+  Blockly.Blocks[this.blockName + '_mutator_arg'] = {
     init: function() {
       this.setColour(thisBlock.colour)
-      this.appendDummyInput()
-          .appendTitle(new Blockly.FieldLabel(thisBlock.info.varArgName), 'NAME');
+      var input = this.appendDummyInput()
+          .appendTitle(new Blockly.FieldLabel(thisBlock.info.varArgName));
+      if (thisBlock.info.varArgField) {
+        input.appendTitle(thisBlock.info.varArgField.clone());
+      }
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setTooltip(thisBlock.info.varArgTooltip || '');
       this.contextMenu = false;
     }
   };
-  Blockly.Blocks[this.blockName + '_vararg_mutator_container'] = {
+  Blockly.Blocks[this.blockName + '_mutator_container'] = {
     init: function() {
       this.setColour(thisBlock.colour);
       this.appendDummyInput()
@@ -549,18 +560,18 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.init = function() {
       this.contextMenu = false;
     }
   };
-  this.setMutator(new Blockly.Mutator([this.blockName + '_vararg_mutator_arg']));
+  this.setMutator(new Blockly.Mutator([this.blockName + '_mutator_arg']));
 };
 
 // Create mutator from program block.
 Blockly.ComputerCraft.VarArgsBlock.prototype.decompose = function(workspace) {
   var containerBlock =
-      new Blockly.Block(workspace, this.blockName + '_vararg_mutator_container');
+      new Blockly.Block(workspace, this.blockName + '_mutator_container');
   containerBlock.initSvg();
   var connection = containerBlock.getInput('STACK').connection;
   for (var x = 1; x <= this.info.varArgCount; x++) {
     var argBlock =
-        new Blockly.Block(workspace, this.blockName + '_vararg_mutator_arg');
+        new Blockly.Block(workspace, this.blockName + '_mutator_arg');
     argBlock.initSvg();
     connection.connect(argBlock.previousConnection);
     connection = argBlock.nextConnection;
