@@ -75,6 +75,8 @@ Blockly.ComputerCraft.buildValueBlock(
 // Second argument: method name
 // Any number of subsequent arguments to be passed to method.
 // This will override (and explicitly call) most of the prototype's methods.
+// I had to do this the hard way (instead of using VarArgsBlock) because
+// this also has a dependent input.
 Blockly.ComputerCraft.buildBlockWithSide(
   'peripheral',
   Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
@@ -116,7 +118,7 @@ Blockly.Blocks['peripheral_mutatorcontainer'] = {
   init: function() {
     this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle(Blockly.Msg.PERIPHERAL_MUTATORCONTAINER_TITLE);
+        .appendTitle('arguments');
     this.appendStatementInput('STACK');
     this.setTooltip('');
     this.contextMenu = false;
@@ -128,7 +130,7 @@ Blockly.Blocks['peripheral_mutatorarg'] = {
   init: function() {
     this.setColour(Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_);
     this.appendDummyInput()
-        .appendTitle('input')
+        .appendTitle('argument')
         .appendTitle(new Blockly.FieldTextInput('x', this.validator), 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
