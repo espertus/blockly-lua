@@ -102,6 +102,7 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
            [['current time', 'current'],
             ['time...', 'time*']]],
           ['TIME^', 'Time']],
+   addChild: Blockly.ComputerCraft.InputAddType.NEVER,
    tooltip: 'Format the current or given time as a printable string.'});
 
 Blockly.ComputerCraft.buildVarArgsBlock(
