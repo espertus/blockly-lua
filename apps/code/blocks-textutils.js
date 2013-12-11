@@ -26,15 +26,20 @@
 Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_ = 190;
 
 Blockly.ComputerCraft.TEXTUTILS_FUNCS_ = [
-  {funcName: 'slowWrite',
-   text: 'write string %1 to screen at rate %2',
-   args: [['TEXT', 'String'], ['RATE', 'Number']],
+  {blockName: 'write',
+   text: 'write string %1 %2 to screen at rate %3',
+   args: [['TEXT', 'String'],
+          ['MODE',
+           new Blockly.FieldDropdown([['without newline', 'slowWrite'],
+                                      ['with newline', 'slowPrint']])],
+          ['RATE', 'Number']],
+   ddFuncName: 'MODE',
    tooltip:
    'Write the given string to the screen (terminal or monitor)\n'+
    'at the current cursor position character-by-character.\n' +
    'The higher the rate, the faster the string is output.\n' +
-   'A value of 1 outputs one character per second.' +
-   'Unlike with the "write line" block, no newline is printed at the end.\n'
+   'A value of 1 outputs one character per second.\n' +
+   'If a newline is used, the next output will be to a new line.'
   },
   {funcName: 'slowPrint',
    text: 'write line %1 to screen at rate %2',
@@ -63,7 +68,7 @@ Blockly.ComputerCraft.TEXTUTILS_FUNCS_ = [
    '"convert string to table" block.'
   },
   {funcName: 'unserialize',
-   text: 'covert string %1 to table',
+   text: 'convert string %1 to table',
    args: [['TEXT', 'String']],
    output: 'Table',
    tooltip:
@@ -102,26 +107,17 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
 Blockly.ComputerCraft.buildVarArgsBlock(
   'textutils',
   Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
-  {funcName: 'tabulate',
-   text: 'display tables %v',
+  {blockName: 'tabulate',
+   text: 'display tables %v %1',
+   args: [['MODE', new Blockly.FieldDropdown(
+           [['with pagination', 'pagedTabulate'],
+            ['without pagination', 'tabulate']])]],
+   ddFuncName: 'MODE',
    varArgName: 'table',
    varArgType: ['Table', 'List'],
    varArgCount: 1,
    varContainerName: 'tables',
    tooltip:
    'Print tables to the screen in an ordered form.\n' +
+   'If pagination is used, this pauses for confirmation before scrolling.\n' +
    'Click on the star to add (or remove) tables.'});
-
-Blockly.ComputerCraft.buildVarArgsBlock(
-  'textutils',
-  Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
-  {funcName: 'pagedTabulate',
-   text: 'display tables %v with pagination',
-   varArgName: 'table',
-   varArgType: ['Table', 'List'],
-   varArgCount: 1,
-   varContainerName: 'tables',
-   tooltip:
-   'Print tables to the screen in an ordered form.\n' +
-   'Click on the star to add (or remove) tables.\n' +
-   'Unlike plain "tabulate", this pauses for confirmation before scrolling.'});
