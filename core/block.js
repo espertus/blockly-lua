@@ -1471,9 +1471,8 @@ Blockly.Block.prototype.interpolateMsg = function(msg, var_args) {
     goog.asserts.assert(arguments[i] === null,
         'Input "%%s" not used in message: "%s"', i, msg);
   }
-  // Make the inputs inline unless there is only one input and
-  // no text follows it.
-  this.setInputsInline(!msg.match(/%1\s*$/))
+  // Make the inputs inline unless there is only one input.
+  this.setInputsInline(this.inputList.length > 1);
 };
 
 /**
