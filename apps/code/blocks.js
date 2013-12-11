@@ -41,7 +41,7 @@ Blockly.ComputerCraft.StmtConns = {
 /**
  * Ways of computing a help URL as a function of other pieces of information
  * about a block.  In all cases, the URL begins with
- * Blockly.ComptuerCraft.BASE_HELP_URL.
+ * Blockly.ComputerCraft.BASE_HELP_URL.
  */
 Blockly.ComputerCraft.HelpUrlType = {
   // Concatenate the prefix and funcName.
