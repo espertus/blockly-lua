@@ -55,6 +55,16 @@ Blockly.Field = function(text) {
 };
 
 /**
+ * Clone this Field.
+ *
+ * @return {Blockly.Field} The result of calling the constructor again with the
+ *   same arguments as when this was constructed.
+ */
+Blockly.Field.prototype.clone = function() {
+  return new Field(this.getText());
+};
+
+/**
  * Non-breaking space.
  */
 Blockly.Field.NBSP = '\u00A0';

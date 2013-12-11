@@ -64,6 +64,16 @@ Blockly.FieldImage = function(src, width, height) {
 goog.inherits(Blockly.FieldImage, Blockly.Field);
 
 /**
+ * Clone this FieldImage.
+ *
+ * @return {Blockly.FieldImage} The result of calling the constructor again
+ *   with the current values of the arguments used during construction.
+ */
+Blockly.FieldImage.prototype.clone = function() {
+  return new Blockly.FieldImage(this.getText(), this.width, this.height);
+};
+
+/**
  * Rectangular mask used by Firefox.
  * @type {Element}
  * @private

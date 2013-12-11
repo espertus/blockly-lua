@@ -64,6 +64,16 @@ Blockly.FieldAngle = function(text, opt_changeHandler) {
 goog.inherits(Blockly.FieldAngle, Blockly.FieldTextInput);
 
 /**
+ * Clone this FieldAngle.
+ *
+ * @return {Blockly.FieldAngle} The result of calling the constructor again
+ *   with the current values of the arguments used during construction.
+ */
+Blockly.FieldAngle.prototype.clone = function() {
+  return new Blockly.FieldAngle(this.getText(), this.changeHandler_);
+};
+
+/**
  * Half the width of protractor image.
  */
 Blockly.FieldAngle.HALF = 100 / 2;
