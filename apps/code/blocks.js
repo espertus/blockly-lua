@@ -76,6 +76,7 @@ Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
   if (!name) {
     var inCapital = false;
     name = '';
+    goog.asserts.assert(info.funcName, 'info.funcName not defined');
     for (var i = 0; i < info.funcName.length; i++) {
       var c = info.funcName[i];
       if (Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_.test(c)) {
@@ -182,56 +183,68 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
 // To avoid code duplication, it violates abstraction by supporting all of the
 // direct subclasses of Blockly.ComputerCraft.Block.
 Blockly.ComputerCraft.generateLuaInner_ = function(block) {
-  function fieldIsDropdown(field) {
-    return field instanceof Blockly.FieldDropdown;
-  };
   var code = block.prefix + '.';
 
+  // Determine the function name.
   if (block.info.ddFuncName) {
     code += block.getTitleValue(block.info.ddFuncName) + '(';
   } else {
     code += block.info.funcName + '(';
   }
+
+  // If the client provided an ordered list of parameters, use it.
   if (block.info.parameterOrder) {
-    // If the client provided an ordered list of parameters, use it.
-    var args = block.info.parameterOrder.map(
+    var inputs = block.info.parameterOrder.map(
       function(name) {
         return Blockly.Block.prototype.getInput.call(block, name);
-        });
+      });
   } else {
-    // Otherwise, select among the non-dummy inputs.
-    var args = block.inputList.filter(function(i) {
-      // NOTE: This only supports value and dropdown inputs.
-      return i.type == Blockly.INPUT_VALUE ||
-          (i.type == Blockly.DUMMY_INPUT && i.titleRow.some(fieldIsDropdown) &&
-           // Ignore dropdown menus if they provide the Lua function name
-           !block.info.ddFuncName &&
-           // Ignore dropdown menus if they are the controlling input of
-           // a BlockWithDependentInput and the input is being shown.
-           !(i.name == block.info.ddName && block.dependentInputShown));
-    });
+    var inputs = block.inputList;
   }
-  var argsCode = args.map(function(i) {
+
+  var inputsCode = [];
+  inputs.forEach(function(i) {
     if (i.type == Blockly.INPUT_VALUE) {
-      return Blockly.Lua.valueToCode(
-        block, i.name, Blockly.Lua.ORDER_NONE);
+      inputsCode.push(Blockly.Lua.valueToCode(
+        block, i.name, Blockly.Lua.ORDER_NONE));
+    } else if (i.type == Blockly.DUMMY_INPUT) {
+      i.titleRow.forEach(function(field) {
+        if (field instanceof Blockly.FieldDropdown) {
+          if (field.name == block.info.ddName) {
+            // If this is a controlling dropdown, we need to check to see
+            // whether we should generate code for it.
+            // Define convenience alias.
+            var Type = Blockly.ComputerCraft.ControllingInputCodeGenType;
+            if (block.info.codeGenType == Type.NEVER) {
+              return;
+            } else if (block.info.codeGenType == Type.ONLY_IF_DEP_HIDDEN) {
+              if (field.value_ == block.info.ddValue) {
+                return false;
+              }
+            } else {
+              goog.asserts.assert(
+                block.info.codeGenType == Type.ALWAYS,
+                'Illegal value for info.codeGenType: ', block.info.codeGenType);
+            }
+          } else if (field.name == block.info.ddFuncName) {
+            // Don't generate code if the this dropdown determined the name
+            // of the function call.
+            return;
+          }
+          // If we made it here, we should generate code.
+          if (block.info.quoteDropdownValues ||
+              typeof block.info.quoteDropdownValues == 'undefined') {
+            inputsCode.push("'" + field.value_ + "'");
+          } else {
+            inputsCode.push(field.value);
+          }
+        }
+      });
     } else {
-      // Find the dropdown menu input.
-      var dropdowns = i.titleRow.filter(fieldIsDropdown);
-      if (dropdowns.length != 1) {
-        window.alert('Error generating code for: ' + block);
-        return '';
-      }
-      if (block.info.quoteDropdownValues ||
-          typeof block.info.quoteDropdownValues == 'undefined') {
-        return "'" + dropdowns[0].value_ + "'";  // abstraction violation
-      } else {
-        return dropdowns[0].value_ ;  // abstraction violation
-      }
+      goog.asserts.fail('Unrecognized input type in generateLua: ' + i.type);
     }
   });
-  code += argsCode.join(', ');
-  code += ')';
+  code += inputsCode.join(', ') + ')';
   return code;
 };
 
@@ -428,8 +441,7 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
       // The next argument is either a type (expressed as a string) for a
       // value input, or a Blockly.FieldDropdown.
       if (args[j][1] instanceof Blockly.FieldDropdown) {
-        var dd = new Blockly.FieldDropdown(
-          args[j][1].menuGenerator_, args[j][1].changeHandler_);
+        var dd = args[j][1].clone();
         dd.prefixTitle = args[j][1].prefixTitle;
         dd.suffixTitle = args[j][1].suffixTitle;
         arg.push(dd);
@@ -634,10 +646,21 @@ Blockly.ComputerCraft.buildVarArgsBlock = function(prefix, colour, info) {
 
 
 Blockly.ComputerCraft.InputAddType = {
-  NONE: 0,  // Later code assumes that NONE is 0, so do not change.
+  NEVER: 0,  // Later code assumes that NEVER is 0, so do not change.
   FIRST: 1,
   ALL: 2
 };
+
+Blockly.ComputerCraft.ControllingInputCodeGenType = {
+  // Never generate code for the controlling input.
+  // This is the default value for BlockWithDependentInput.
+  NEVER: 0,
+  // Always generate code for the controlling input.
+  ALWAYS: 1,
+  // Only generate code if the dependent input is not shown.
+  ONLY_IF_DEP_HIDDEN: 2
+};
+
 
 /**
  * Class for ComputerCraft blocks that have an input that only appears if
@@ -664,19 +687,34 @@ Blockly.ComputerCraft.InputAddType = {
  *     <li>addChild {?Blockly.ComputerCraft.InputAddTypes} Whether to
  *         automatically add and attach an input block when the dependent input
  *         is added.  This can only be done if depType is 'String' or 'Number'.
+ *     <li>codeGenType {?Blockly.ComputerCraft.ControllingInputCodeGenType}
+ *         Whether to generate argument code for the controlling dropdown input.
+ *         If not defined, this defaults to NEVER.
  *     </ul>
  * @return {Blockly.ComputerCraft.BlockWithDependentInput} The new block.
  */
 Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
   // Initially, all of the inputs will appear.
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
+
+  // Unless otherwise specified, only create a child string the first time the
+  // dependent input is shown.
+  if (typeof info.addChild == 'undefined') {
+    info.addChild = Blockly.ComputerCraft.InputAddType.FIRST;
+  }
+
+  // Make sure that codeGenType is set.
+  if (typeof(info.codeGenType) == 'undefined') {
+    info.codeGenType =
+        Blockly.ComputerCraft.ControllingInputCodeGenType.NEVER;
+  }
 }
 
 Blockly.ComputerCraft.BlockWithDependentInput.DD_MARKER = '*';
 Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER = '^';
 
 /**
- * Sets the following attributes on the argument:
+ * Sets the following attributes on the argument if not already set:
  * - ddName: The name of the dropdown that controls the dependent input.
  *   This is determined by finding which input name ends with the character
  *   DD_MARKER.
@@ -691,21 +729,30 @@ Blockly.ComputerCraft.BlockWithDependentInput.DEP_MARKER = '^';
  * This method has no effect if info.ddName or info.depName is already defined
  * (besides asserting that, if one is set, both are).
  *
- * This mutates info.args, so be careful not to share this field (unless
- * info.ddName and info.depName are already defined).
- *
  * @param {!object} info An object with an args attribute whose value is an
- *   array of two-element tuples.  Each tuple represents an input.  The first
- *   element of each tuple is a string giving the input name.  The second
- *   element is either a string describing a type (such as 'String' or 'Number')
- *   or an array of dropdown choices: two-element tuples where the first element
- *   is the displayed string and the second element the language-independent
- *   value. The name of one dropdown menu input should end with DD_MARKER, as
- *   should the name of whichever of the dropdown menu's values enables the
- *   dependent input.  Similarly, the name of the dependent input should end
- *   with DEP_MARKER.  These markers are stripped off.  It is an error for
- *   more than one input to have a DD_MARKER or for more than one to have a
- *   DEP_MARKER.  It is acceptable to have neither.
+ *   array of two-element tuples, each of which represents an input.
+ *
+ *   The first element of each tuple is a string giving the input name.
+ *
+ *   The second element is either:
+ *   - the string name of a type (such as 'String' or 'Number'), or
+ *   - an array of dropdown choices: two-element tuples where the first element
+ *     is the displayed string and the second element the language-independent
+ *     value. The name of one dropdown menu input should end with DD_MARKER, as
+ *     should the name of whichever of the dropdown menu's values enables the
+ *     dependent input.  Similarly, the name of the dependent input should end
+ *     with DEP_MARKER.  These markers are stripped off.  It is an error for
+ *     more than one input to have a DD_MARKER or for more than one to have a
+ *     DEP_MARKER.
+ *
+ *   A sample value for info.args is:
+ *     [['CHOICE*',
+ *      [['current time', 'current'],
+ *       ['time...', 'time*']]],
+ *      ['TIME^', 'Time']]
+ *   This indicates that there are two possible inputs.  The CHOICE dropdown
+ *   input will always be shown.  If it has the value "time", the second TIME
+ *   input will also be shown.
  */
 Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_ =
     function(info) {
@@ -768,7 +815,8 @@ Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_ =
  * The second, more compact, way is to mark the dropdown input, the choice
  * that controls the dependent input, and the dependent input, as described
  * in setDependenceInfo_() above.  Because that method mutates info, be
- * careful not to pass in shared data (specifically, dropdown menu descriptions).
+ * careful not to pass in shared data (specifically, dropdown menu
+ * descriptions).
  *
  * This method also creates a Lua code generator.
  *
@@ -776,8 +824,6 @@ Blockly.ComputerCraft.BlockWithDependentInput.setDependenceInfo_ =
  *     ComputerCraft API, such as "os".
  * @param {number} colour The block's colour.
  * @param {!Object} info Information about the block being defined.
- *     This adds no fields to the ones used by the constructor
- *     Blockly.ComputerCraft.BlockWithDependentInput.
  */
 Blockly.ComputerCraft.buildBlockWithDependentInput = function(
   prefix, colour, info) {
@@ -785,7 +831,10 @@ Blockly.ComputerCraft.buildBlockWithDependentInput = function(
   var newBlock = new Blockly.ComputerCraft.BlockWithDependentInput(
     prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
+
+  if (!info.suppressLua) {
+    Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
+  }
 };
 
 Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
@@ -886,7 +935,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
         childBlock.render();
         depInput.connection.connect(childBlock.outputConnection);
         if (block.info.addChild == Blockly.ComputerCraft.InputAddType.FIRST) {
-          block.info.addChild = Blockly.ComputerCraft.InputAddType.NONE;
+          block.info.addChild = Blockly.ComputerCraft.InputAddType.NEVER;
         }
       }
 
@@ -944,6 +993,8 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.domToMutation =
  * @return {Blockly.ComputerCraft.BlockWithSide} The new block.
  */
 Blockly.ComputerCraft.BlockWithSide = function(prefix, colour, info) {
+  info.codeGenType =
+      Blockly.ComputerCraft.ControllingInputCodeGenType.ONLY_IF_DEP_HIDDEN;
   Blockly.ComputerCraft.BlockWithDependentInput.call(this, prefix, colour, info);
 }
 
@@ -988,8 +1039,6 @@ Blockly.ComputerCraft.buildBlockWithSide = function(prefix, colour, info) {
   info.ddValue = 'cable';  // This is the value for showing the dependent input.
   info.depName = 'CABLE';  // This is the dependent input.
   info.depType = 'String';
-  // Only create a child string the first time the dependent input is shown.
-  info.addChild = Blockly.ComputerCraft.InputAddType.FIRST;
 
   // Add question mark at end of text if the block is a predicate.
   if (info.output == 'Boolean') {
