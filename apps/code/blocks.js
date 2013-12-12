@@ -51,9 +51,24 @@ Blockly.ComputerCraft.HelpUrlType = {
   PREFIX_DD: 2     // Used by ExpStmtBlock and ValueBlock.
 };
 
-// This is only used in Blockly.ComputerCraft.getBlockName_ but is declared
-// here to avoid recompilation.
-Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
+// This is only used in Blockly.ComputerCraft.convertFromCamelCase but is
+// declared here to avoid recompilation.
+Blockly.ComputerCraft.LOWER_TO_UPPER_REGEX_ = /([a-z])(?=[A-Z])/g;
+
+/**
+ * Convert a camelCase string (e.g., "lightGray") to all lower-case, with
+ * words separated by underscores.  Only one underscore occurs before
+ * runs of multiple adjacent capital letters.
+ *
+ * @param {!string} s A string consisting of only [A-Za-z].
+ * @return {string} A version of the input string in which all letters
+ *   are now lower-case and undescores appear at every transition from
+ *   a lower-case letter to an upper-case letter in the original.
+ */
+Blockly.ComputerCraft.convertFromCamelCase = function(s) {
+  return s.replace(Blockly.ComputerCraft.LOWER_TO_UPPER_REGEX_, '$1_').
+      toLowerCase();
+};
 
 /**
  * Generate a block name, such as 'peripheral_get_names'.  This is done by
@@ -74,22 +89,8 @@ Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_ = /[A-Z]/;
 Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
   var name = info.blockName;
   if (!name) {
-    var inCapital = false;
-    name = '';
     goog.asserts.assert(info.funcName, 'info.funcName not defined');
-    for (var i = 0; i < info.funcName.length; i++) {
-      var c = info.funcName[i];
-      if (Blockly.ComputerCraft.CAPITAL_LETTER_REGEX_.test(c)) {
-        // Only place one underscore for multiple adjacent capital letters.
-        if (!inCapital) {
-          inCapital = true;
-          name += '_';
-        }
-      } else {
-        inCapital = false;
-      }
-      name += c.toLowerCase();
-    }
+    name = Blockly.ComputerCraft.convertFromCamelCase(info.funcName);
   }
   return prefix + '_' + name;
 }
