@@ -258,6 +258,7 @@ Blockly.ComputerCraft.generateLua = function(block) {
   }
 };
 
+// TODO: Generalize this to hande os.startTimer().
 /**
  * Class for ComputerCraft blocks that can switch between being expressions
  * and statements.  These are all assumed to have a Boolean first output

@@ -204,11 +204,6 @@
               <block type="keys_get_name">
             </category>
             <category name="Operating System">
-              <block type="os_terminate"></block>
-                <value name="MSG">
-                  <block type="text"></block>
-                </value>
-              </block>
               <block type="os_sleep">
                 <value name="VALUE">
                   <block type="math_number">
@@ -216,6 +211,41 @@
                   </block>
                 </value>
               </block>
+              <block type="os_version"></block>
+              <block type="os_terminate"></block>
+                <value name="MSG">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="os_get_computer_id"></block>
+              <block type="os_get_computer_label"></block>
+              <block type="os_set_computer_label"></block>
+              <block type="os_run">
+                <value name="PATH">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="os_api"></block>
+              <block type="os_pull_event"></block>
+              <block type="os_queue_event">
+                <value name="EVENT">
+                  <block type="text"></block>
+                </value>
+              </block>
+              <block type="os_clock"></block>
+              <block type="os_time_day"></block>
+              <block type="os_start_timer">
+                <value name="TIME">
+                  <block type="math_number"></block>
+                </value>
+              </block>
+              <block type="os_set_alarm">
+                <value name="TIME">
+                  <block type="math_number"></block>
+                </value>
+              </block>
+              <block type="os_shutdown"></block>
+              <block type="os_reboot"></block>
             </category>
             <category name="Paint Utilities">
               <block type="paintutils_load_image">

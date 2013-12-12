@@ -36,12 +36,75 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
    'This should not be used for normal termination.'
   },
   {funcName: 'sleep',
-   stmtConns: Blockly.ComputerCraft.StmtConns.PREVIOUS |
-   Blockly.ComputerCraft.StmtConns.NEXT,
    text: 'sleep %1 seconds',
    args: [['VALUE', 'Number']],
    tooltip: 'Sleep for the specified number of seconds.'
-  }
+  },
+  {funcName: 'version',
+   text: 'get OS version',
+   output: 'String',
+   tooltip: 'Get the name of the version of CraftOS being used.'},
+  {funcName: 'getComputerID',
+   text: 'get computer ID',
+   output: 'Number',
+   tooltip: 'Get the unique numeric ID of this computer.'},
+  {funcName: 'getComputerLabel',
+   text: 'get computer label',
+   output: 'String',
+   tooltip:
+   'Get the label of this computer.\n' +
+   'The label can be set with "set computer label".'},
+  {funcName: 'setComputerLabel',
+   text: 'set computer label to %1',
+   args: [['LABEL', 'String']],
+   tooltip:
+   'Set the label of this computer.\n' +
+   'The label can be read with "get computer label".'},
+  {blockName: 'api',
+   text: '%1 API %2',
+   args: [['OPTION',
+           new Blockly.FieldDropdown([['load', 'loadAPI'],
+                                      ['unload', 'unloadAPI']])],
+          ['NAME', 'String']],
+   ddFuncName: 'OPTION',
+   tooltip: 'Load or unload a Lua script as an API in its own namespace.'},
+  {funcName: 'clock',
+   text: 'get running time',
+   output: 'Number',
+   tooltip: 'Get the amount of time this computer has been running, in seconds.'},
+  {funcName: 'startTimer',
+   text: 'start timer for %1 s',
+   args: [['TIME', 'Number']],
+   output: 'Number',
+   tooltip:
+   'Queue a timer event to occur after\n' +
+   'the specified number of seconds.\n' +
+   'The ID of the timer is returned.'},
+  {funcName: 'setAlarm',
+   text: 'set alarm for %1 s',
+   args: [['TIME', 'Number']],
+   output: 'Table',
+   tooltip:
+   'Queue an alarm event to occur after the specified number of seconds.\n' +
+   'The ID of the alarm, which is a table, is returned.'},
+  {funcName: 'time_day',
+   ddFuncName: 'OPTION',
+   text: 'get in-game %1',
+   args: [['OPTION',
+           new Blockly.FieldDropdown(
+             [['time', 'time'], ['day', 'day']])]],
+   output: 'Number',
+   tooltip:
+   'Get the current in-game time or day.\n' +
+   'Time can be converted into a string with\n' +
+   'the "format time" block in Text Utilities.\n' +
+   'Day is the number of days since the world creation.'},
+  {funcName: 'shutdown',
+   text: 'shut down computer',
+   tooltip: 'Turn off this computer.'},
+  {funcName: 'reboot',
+   text: 'reboot computer',
+   tooltip: 'Reboot this computer.'}
 ];
 
 for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
@@ -54,3 +117,61 @@ for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
 // Added in order to continue to support programs with the old block name.
 Blockly.Blocks['terminate'] = Blockly.Blocks['os_terminate'];
 Blockly.Lua['terminate'] = Blockly.Lua['os_terminate'];
+
+Blockly.ComputerCraft.buildVarArgsBlock(
+  'os',
+  Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
+  {funcName: 'queueEvent',
+   text: 'queue event %1 with parameters %v',
+   args: [['EVENT', 'String']],
+   varArgName: 'name',
+   // varArgType isn't listed because it can be any.
+   varArgCount: 1,
+   varArgField: new Blockly.FieldTextInput('x', Blockly.ComputerCraft.nameValidator),
+   varContainerName: 'parameters',
+   tooltip:
+   'Add an event to the event queue with the given name and parameters.'});
+
+Blockly.ComputerCraft.buildBlockWithDependentInput(
+  'os',
+  Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
+  {funcName: 'pullEvent',
+   text: 'pull %1 %2',
+   output: ['String', 'Number', 'Colour', 'Table', 'Vector', 'Function'],
+   multipleOutputs: Infinity,  // Not really infinite, but unbounded.
+   args: [['OPTION*',
+           [['any event', 'any'],
+            ['named event', 'named*'],
+            ['raw event', 'raw']]],
+          ['EVENT^', 'String']],
+   // pullEvent is used if OPTION is 'any' or 'named';
+   // pullEventRaw is used if OPTION is 'raw'.
+   suppressLua: true,
+   tooltip:
+     'Block until the computer receives an event,\n' +
+     'outputting the name of the event and its parameters.\n' +
+     'The "terminate" event is only caught in raw mode.'});
+
+Blockly.Lua['os_pull_event'] = function(block) {
+  var code = Blockly.ComputerCraft.generateLua(block);
+  if (block.getTitleValue('OPTION') == 'raw') {
+    code[0] = code[0].replace('pullEvent', 'pullEventRaw');
+  }
+  return code;
+};
+
+Blockly.ComputerCraft.buildVarArgsBlock(
+  'os',
+  Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
+  {funcName: 'run',
+   text: 'run program %2 with environment %1 and parameters %v',
+   args: [['ENV', 'Table'],
+          ['PATH', 'String']],
+   varArgName: 'parameter',
+   // varArgType isn't listed because it can be any.
+   varArgCount: 1,
+   varContainerName: 'parameters',
+   tooltip:
+   'Run the program at the specified path with the given\n' +
+   'environment table.  Providing parameters is optional.\n' +
+   'Parameters can be added or removed by clicking on the star.'});
