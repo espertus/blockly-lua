@@ -490,6 +490,15 @@ Blockly.ComputerCraft.nameValidator = function(newVar) {
   return newVar || null;
 };
 
+Blockly.ComputerCraft.disallowArgTitle_ = function(args, regex) {
+  if (args) {
+    args.forEach(function(arg) {
+      goog.asserts.assert(!regex.exec(arg[0]),
+        'Illegal argument name ' + arg[0]);
+    });
+  }
+}
+
 /**
  * Constructor for blocks with a var args input.
  *
@@ -517,14 +526,8 @@ Blockly.ComputerCraft.nameValidator = function(newVar) {
 // Version 1: mutator args do not have names that are mutable.
 // Version 2: mutator args have names that are mutable.
 Blockly.ComputerCraft.VarArgsBlock = function(prefix, colour, info) {
-  if (info.args) {
-    info.args.forEach(function(arg) {
-      goog.asserts.assert(
-        !Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_.exec(arg[0]),
-        'Non-vararg inputs in VarArgsBlock must not have names matching ' +
-            Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_);
-    });
-  }
+  Blockly.ComputerCraft.disallowArgTitle_(info.args,
+      Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_);
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
   goog.asserts.assert(this.info.varArgName,
     'this.info.varArgName should have name of the mutator arg.');
@@ -730,14 +733,13 @@ Blockly.ComputerCraft.ControllingInputCodeGenType = {
   ONLY_IF_DEP_HIDDEN: 2
 };
 
-
 /**
  * Class for ComputerCraft blocks that have an input that only appears if
- * a dropdown menu has a specific value.  This specific value must not be
- * the default first option.
+ * a dropdown menu has a specific value.
  *
- * While additional inputs not included in info.args or referenced in info.text
- * may be added, those fields musta not be modified after block construction.
+ * While additional unrelated inputs not included in info.args or referenced in
+ * info.text may be added, those fields must not be modified after block
+ * construction.
  *
  * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
  * @param {number} colour The block colour, an HSV hue value.
@@ -763,7 +765,6 @@ Blockly.ComputerCraft.ControllingInputCodeGenType = {
  * @return {Blockly.ComputerCraft.BlockWithDependentInput} The new block.
  */
 Blockly.ComputerCraft.BlockWithDependentInput = function(prefix, colour, info) {
-  // Initially, all of the inputs will appear.
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
 
   // Unless otherwise specified, only create a child string the first time the
@@ -917,8 +918,8 @@ Blockly.ComputerCraft.BlockWithDependentInput.prototype.init = function() {
       if (tuple[0] == this.info.depName &&
           this.info.text.indexOf('%0') == -1) {
         // This mutates this.info.text if it has not yet been mutated
-        // to add a dummy input and the dependent input's title before the
-        // dependent input.
+        // to add a dummy input (on which preceding titles can be hung)
+        // and the dependent input's title before the dependent input.
         var re = new RegExp('%' + (i + 1) + '(?=(\\D|$))');
         var sub = '%0 ' + (this.info.depTitle || '') + ' %' + (i + 1);
         this.info.text = this.info.text.replace(re, sub);
@@ -987,9 +988,7 @@ Blockly.ComputerCraft.BlockWithDependentInput.showDependentInput_ =
       if (block.info.depTitle) {
         depInput.appendTitle(block.info.depTitle);
       }
-      if (block.depPos != block.inputList.length - 1) {
-        block.moveNumberedInputBefore(block.inputList.length - 1, block.depPos);
-      }
+      block.moveNumberedInputBefore(block.inputList.length - 1, block.depPos);
 
       // Check if we should create a child block.
       if (permitChild && block.info.addChild) {
