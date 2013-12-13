@@ -41,22 +41,20 @@ Blockly.ComputerCraft.PAINTUTILS_FUNCS_ = [
    'Draw an image at the specified (x, y) coordinates.\n' +
    'An image can be obtained with the "load image" block.'},
   {funcName: 'drawPixel',
-   text: 'draw %1 pixel at (%2, %3)',
-   args: [['COLOUR', 'Colour'],
-          ['X', 'Number'],
-          ['Y', 'Number']],
-   parameterOrder: ['X', 'Y', 'COLOUR'],
+   text: 'draw %3 pixel at (%1, %2)',
+   args: [['X', 'Number'],
+          ['Y', 'Number'],
+          ['COLOUR', 'Colour']],
    tooltip:
    'Draw a pixel (dot) at the specified (x, y) coordinates\n' +
    'in the specified colour.'},
   {funcName: 'drawLine',
-   text: 'draw %1 line from (%2, %3) to (%4, %5)',
-   args: [['COLOUR', 'Colour'],
-          ['X1', 'Number'],
+   text: 'draw %5 line from (%1, %2) to (%3, %4)',
+   args: [['X1', 'Number'],
           ['Y1', 'Number'],
           ['X2', 'Number'],
-          ['Y2', 'Number']],
-   parameterOrder: ['X1', 'Y1', 'X2', 'Y2', 'COLOUR'],
+          ['Y2', 'Number'],
+          ['COLOUR', 'Colour']],
    tooltip:
    'Draw a line in the specified colour from the first pair\n' +
    'of (x, y) coordinates to the second pair of (x, y) coordinates.'}];

@@ -121,9 +121,6 @@ Blockly.ComputerCraft.getBlockName_ = function(prefix, info) {
  *         If absent and if there is no output, it will be assumed
  *         that there are previous and next statement connections
  *     <li>multipleOutputs {?number} The number of outputs, if greater than 1.
- *     <li>parameterOrder {?Array.<string>} An ordered list of the names of
- *         inputs to use as parameters.  If not provided, all value and
- *         dropdown inputs will be used in order.
  *     <li>quoteDropdownValues {?boolean} Indicates whether dropdown values
  *         should be quoted when used as parameters.  This defaults to true.
  *     <li>tooltip {?string} Tooltip text.
@@ -178,12 +175,14 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
   // Subclass must set up inputs, including block title.
 };
 
-// This is a static method that must be called explicitly.
-// It generates Lua without worrying about whether it will be an expression
-// or statement.
-// To avoid code duplication, it violates abstraction by supporting all of the
+// This generates Lua without worrying about whether it will be an expression
+// or statement.  That is handled in Blockly.ComputerCraft.generateLua
+// To avoid code duplication, it violates abstraction by supporting the
 // direct subclasses of Blockly.ComputerCraft.Block.
-Blockly.ComputerCraft.generateLuaInner_ = function(block) {
+// If inputs is supplied, it gives an ordered list of inputs to be used in
+// code generation.
+// Otherwise, parameters will be generated with the order in block.inputList.
+Blockly.ComputerCraft.generateLuaInner_ = function(block, inputs) {
   var code = block.prefix + '.';
 
   // Determine the function name.
@@ -194,14 +193,7 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block) {
   }
 
   // If the client provided an ordered list of parameters, use it.
-  if (block.info.parameterOrder) {
-    var inputs = block.info.parameterOrder.map(
-      function(name) {
-        return Blockly.Block.prototype.getInput.call(block, name);
-      });
-  } else {
-    var inputs = block.inputList;
-  }
+  inputs = inputs || block.inputList;
 
   var inputsCode = [];
   inputs.forEach(function(i) {
@@ -249,9 +241,8 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block) {
   return code;
 };
 
-// This is a static method that must be called explicitly.
-Blockly.ComputerCraft.generateLua = function(block) {
-  var code = Blockly.ComputerCraft.generateLuaInner_(block);
+Blockly.ComputerCraft.generateLua = function(block, order) {
+  var code = Blockly.ComputerCraft.generateLuaInner_(block, order);
   if (block.outputConnection) {
     return [code, Blockly.Lua.ORDER_HIGH];
   } else {
@@ -458,9 +449,22 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
   Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
 }
 
+Blockly.ComputerCraft.ValueBlock.generateLua = function(block) {
+  // Use the order in the args list.
+  var order = block.info.args.map(
+    function(pair) {
+      return block.getInput(pair[0]);
+    }
+  );
+  return Blockly.ComputerCraft.generateLua(block, order);
+};
+
 /**
- * Create a block whose inputs, if any, are all value inputs.  This
- * also creates a Lua code generator.
+ * Create a block whose inputs, if any, are all value inputs.
+ *
+ * This also creates a Lua code generator.  It outputs code for the
+ * inputs in the order in which they appear in info.args, not their
+ * order in blocks.inputList.
  *
  * @param {!string} prefix A lower-case prefix corresponding to a
  *     ComputerCraft API, such as "os".
@@ -475,7 +479,8 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
   }
   var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
+  Blockly.Lua[newBlock.blockName] =
+      Blockly.ComputerCraft.ValueBlock.generateLua;
 };
 
 Blockly.ComputerCraft.nameValidator = function(newVar) {
@@ -487,6 +492,8 @@ Blockly.ComputerCraft.nameValidator = function(newVar) {
 
 /**
  * Constructor for blocks with a var args input.
+ *
+ * None of the non-variable arguments should have names matching ARG%d+.
  *
  * @param {!string} prefix A lower-case prefix corresponding to a
  *     ComputerCraft API, such as "os".
@@ -508,10 +515,21 @@ Blockly.ComputerCraft.nameValidator = function(newVar) {
 // Version 1: mutator args do not have names that are mutable.
 // Version 2: mutator args have names that are mutable.
 Blockly.ComputerCraft.VarArgsBlock = function(prefix, colour, info) {
+  if (info.args) {
+    info.args.forEach(function(arg) {
+      goog.asserts.assert(
+        !Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_.exec(arg[0]),
+        'Non-vararg inputs in VarArgsBlock must not have names matching ' +
+            Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_);
+    });
+  }
   Blockly.ComputerCraft.ValueBlock.call(this, prefix, colour, info);
   goog.asserts.assert(this.info.varArgName,
     'this.info.varArgName should have name of the mutator arg.');
 }
+
+// Regular expression matching the name of var args inputs.
+Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_ = /^ARG\d+$/;
 
 Blockly.ComputerCraft.VarArgsBlock.prototype.init = function() {
   // Replace %v in info.text with dummy input, if it hasn't yet been replaced.
@@ -651,10 +669,43 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.domToMutation =
       }
 };
 
+Blockly.ComputerCraft.VarArgsBlock.generateLua = function(block) {
+  // For non-varargs inputs, use the order in block.info.args.
+  var orderedInputs = [];
+  block.info.args.forEach(function(pair) {
+    orderedInputs.push(block.getInput(pair[0]));
+  });
+
+  // Add varargs inputs to the end.
+  block.inputList.forEach(function(input) {
+    if (Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_.exec(input.name)) {
+      orderedInputs.push(input);
+    }
+  });
+
+  // Generate code.
+  return Blockly.ComputerCraft.generateLua(block, orderedInputs);
+};
+
+/**
+ * Create a block with a var arg input.  The other inputs must be
+ * value inputs.  (This inherits from ValueBlock.)
+ *
+ * This also creates a Lua code generator.  It outputs code for the
+ * inputs in the order in which they appear in info.args (not their
+ * order in blocks.inputList), followed by the var args.
+ *
+ * @param {!string} prefix A lower-case prefix corresponding to a
+ *     ComputerCraft API, such as "os".
+ * @param {number} colour The block's colour.
+ * @param {!Object} info Information about the block being defined.
+ *     This adds no fields to the ones used by the constructor
+ *     Blockly.ComputerCraft.VarArgsBlock.
+ */
 Blockly.ComputerCraft.buildVarArgsBlock = function(prefix, colour, info) {
   var newBlock = new Blockly.ComputerCraft.VarArgsBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.generateLua;
+  Blockly.Lua[newBlock.blockName] = Blockly.ComputerCraft.VarArgsBlock.generateLua;
 };
 
 

@@ -1,5 +1,5 @@
 /**
- * Blockly Lua: ComputerCraft Colour API
+ * Blockly Lua: ComputerCraft Colours API
  *
  * Copyright 2013 Google Inc.
  * http://blockly.googlecode.com/
@@ -18,12 +18,12 @@
  */
 
 /**
- * @fileoverview Colour blocks for ComputerCraft.
+ * @fileoverview Colours blocks for ComputerCraft.
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
 
-Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_ = 80;
+Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_ = 80;
 
 /**
  * An array of colours for the palette.  The rgb attributes may be tweaked,
@@ -67,11 +67,11 @@ Blockly.FieldColour.COLOURS = Object.keys(COLOURS_).map(
  */
 Blockly.FieldColour.COLUMNS = 4;
 
-Blockly.Blocks['colour_picker'] = {
+Blockly.Blocks['colours_picker'] = {
   // Colour picker.
   init: function() {
     this.setHelpUrl('http://computercraft.info/wiki/Colors_%28API%29');
-    this.setColour(Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_);
+    this.setColour(Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#cc4c4c'), 'COLOUR');
     this.setOutput(true, 'Number');
@@ -86,8 +86,8 @@ Blockly.Blocks['colour_picker'] = {
 
 // TODO: Change block colour to match chosen colour, if not too hard.
 Blockly.ComputerCraft.buildValueBlock(
-  'colour',
-  Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_,
+  'colours',
+  Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_,
   {blockName: 'list',
    text: '%1',
    args: [['COLOUR',
@@ -100,12 +100,12 @@ Blockly.ComputerCraft.buildValueBlock(
    output: 'Number',
    tooltip: 'Choose among colours by name.'});
 
-Blockly.Lua['colour_list'] = function(block) {
-  var code = 'colour.' + block.getTitleValue('COLOUR');
+Blockly.Lua['colours_list'] = function(block) {
+  var code = 'colours.' + block.getTitleValue('COLOUR');
   return [code, Blockly.Lua.ORDER_HIGH];
 };
 
-Blockly.Lua['colour_picker'] = function(block) {
+Blockly.Lua['colours_picker'] = function(block) {
   // Generate Lua code for the selected ComputerCraft colour.
   var colour = block.inputList[0].titleRow[0].colour_;
   var keys = Object.keys(COLOURS_);
@@ -113,15 +113,15 @@ Blockly.Lua['colour_picker'] = function(block) {
     var key = keys[x];
     var entry = COLOURS_[key];
     if (entry.rgb == colour) {
-      return ['colour.' + key, Blockly.Lua.ORDER_HIGH];
+      return ['colours.' + key, Blockly.Lua.ORDER_HIGH];
     }
   }
   goog.asserts.fail('Error in colour_picker');
 };
 
 Blockly.ComputerCraft.buildVarArgsBlock(
-  'colour',
-  Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_,
+  'colours',
+  Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_,
   {funcName: 'combine',
    text: 'combine colours %v into set',
    varArgName: 'colour',
@@ -134,10 +134,10 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    'To change the number of colours, click on the star.'});
 
 Blockly.ComputerCraft.buildVarArgsBlock(
-  'colour',
-  Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_,
+  'colours',
+  Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_,
   {funcName: 'subtract',
-   text: 'remove colours %v from set %1',
+   text: 'subtract colours %v from set %1',
    args: [['Set', 'Number']],
    varArgName: 'colour',
    varArgType: 'Number',
@@ -150,10 +150,10 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    'A set can be built with the "combine" block.'});
 
 Blockly.ComputerCraft.buildValueBlock(
-  'colour',
-  Blockly.ComputerCraft.COLOUR_BLOCK_COLOUR_,
+  'colours',
+  Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_,
   {funcName: 'test',
-   text: 'does set %1 contain colour %2?',
+   text: 'is colour %2 in set %1?',
    args: [['Set', 'Number'],
           ['Colour', 'Number']],
    output: 'Boolean',

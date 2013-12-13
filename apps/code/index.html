@@ -24,7 +24,7 @@
 
   <!-- API categories. -->
   <script type="text/javascript" src="blocks-bit.js"></script>
-  <script type="text/javascript" src="blocks-colour.js"></script>
+  <script type="text/javascript" src="blocks-colours.js"></script>
   <script type="text/javascript" src="blocks-disk.js"></script>
   <script type="text/javascript" src="blocks-fs.js"></script>
   <script type="text/javascript" src="blocks-help.js"></script>
@@ -101,12 +101,12 @@
               <block type="bit_bitwise"></block>
               <block type="bit_bnot"></block>
             </category>
-            <category name="Colour">
-              <block type="colour_picker"></block>
-              <block type="colour_list"></block>
-              <block type="colour_combine"></block>
-              <block type="colour_subtract"></block>
-              <block type="colour_test"></block>
+            <category name="Colours">
+              <block type="colours_picker"></block>
+              <block type="colours_list"></block>
+              <block type="colours_combine"></block>
+              <block type="colours_subtract"></block>
+              <block type="colours_test"></block>
             </category>
             <category name="Disk">
               <block type="disk_is_present"></block>
@@ -265,7 +265,7 @@
               </block>
               <block type="paintutils_draw_pixel">
                 <value name='COLOUR'>
-                  <block type="colour_picker"></block>
+                  <block type="colours_picker"></block>
                 </value>
                 <value name="X">
                   <block type="math_number"></block>
@@ -276,7 +276,7 @@
               </block>
               <block type="paintutils_draw_line">
                 <value name='COLOUR'>
-                  <block type="colour_picker"></block>
+                  <block type="colours_picker"></block>
                 </value>
                 <value name="X1">
                   <block type="math_number"></block>
@@ -327,12 +327,12 @@
               <block type="term_is_color"></block>
               <block type="term_set_text_color">
                 <value name='COLOUR'>
-                  <block type="colour_picker"></block>
+                  <block type="colours_picker"></block>
                 </value>
               </block>
               <block type="term_set_background_color">
                 <value name='COLOUR'>
-                  <block type="colour_picker"></block>
+                  <block type="colours_picker"></block>
                 </value>
               </block>
               <block type="term_set_text_scale">
