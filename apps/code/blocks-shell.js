@@ -100,3 +100,20 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
           ['VALUE^', 'String']],
    depTitle: 'to',
    ddFuncName: 'OPTION'});
+
+Blockly.ComputerCraft.buildVarArgsBlock(
+  'shell',
+  Blockly.ComputerCraft.SHELL_BLOCK_COLOUR_,
+  {funcName: 'run',
+   text: 'run program %1 %v',
+   args: [['PATH', 'String']],
+   varArgName: 'argument',
+   varArgType: 'String',
+   varArgTitle: 'with arguments',
+   varArgTooltip: 'Argument to the program.',
+   varArgCount: 1,
+   varContainerName: 'arguments',
+   varContainerTooltip: 'Add, delete, or reorder arguments to the program.',
+   tooltip:
+   'Run the specified program with the provided arguments.\n' +
+   'Increase or decrease the number of arguments by clicking the star.'});

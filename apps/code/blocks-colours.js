@@ -126,8 +126,10 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    text: 'combine colours %v into set',
    varArgName: 'colour',
    varArgType: 'Number',
+   varArgTooltip: 'A colour to add to the set.',
    varArgCount: 2,
    varContainerName: 'colours',
+   varContainerTooltip: 'Add or remove colours.',
    output: 'Number',
    tooltip:
    'Combine one or more colours (or sets of colours) into a set.\n' +
@@ -141,8 +143,10 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    args: [['Set', 'Number']],
    varArgName: 'colour',
    varArgType: 'Number',
+   varArgTooltip: 'A colour to subtract.',
    varArgCount: 1,
    varContainerName: 'colours to remove',
+   varContainerTooltip: 'Add or remove colours.',
    output: 'Number',
    tooltip:
    'Remove one or more colours from the specified set of colours.\n' +

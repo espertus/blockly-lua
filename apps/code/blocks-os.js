@@ -122,13 +122,15 @@ Blockly.ComputerCraft.buildVarArgsBlock(
   'os',
   Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
   {funcName: 'queueEvent',
-   text: 'queue event %1 with parameters %v',
+   text: 'queue event %1 %v',
    args: [['EVENT', 'String']],
    varArgName: 'name',
-   // varArgType isn't listed because it can be any.
+   varArgType: true,
+   varArgTooltip: 'A parameter to pass to the event.',
+   varArgTitle: 'with parameters',
    varArgCount: 1,
-   varArgField: new Blockly.FieldTextInput('x', Blockly.ComputerCraft.nameValidator),
    varContainerName: 'parameters',
+   varContainerTitle: 'Add, remove, or reorder parameters to pass to the event.',
    tooltip:
    'Add an event to the event queue with the given name and parameters.'});
 
@@ -164,13 +166,16 @@ Blockly.ComputerCraft.buildVarArgsBlock(
   'os',
   Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
   {funcName: 'run',
-   text: 'run program %2 with environment %1 and parameters %v',
+   text: 'run program %2 with environment %1 %v',
    args: [['ENV', 'Table'],
           ['PATH', 'String']],
    varArgName: 'parameter',
-   // varArgType isn't listed because it can be any.
+   varArgType: true,
+   varArgTooltip: 'A parameter to pass to the program.',
+   varArgTitle: 'and parameters',
    varArgCount: 1,
    varContainerName: 'parameters',
+   varContainerTooltip: 'Add, remove, or reorder parameters.',
    tooltip:
    'Run the program at the specified path with the given\n' +
    'environment table.  Providing parameters is optional.\n' +

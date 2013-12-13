@@ -101,7 +101,7 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
    args: [['CHOICE*',
            [['current time', 'current'],
             ['time...', 'time*']]],
-          ['TIME^', 'Time']],
+          ['TIME^', 'Number']],
    addChild: Blockly.ComputerCraft.InputAddType.NEVER,
    tooltip: 'Format the current or given time as a printable string.'});
 
@@ -116,8 +116,10 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    ddFuncName: 'MODE',
    varArgName: 'table',
    varArgType: ['Table', 'List'],
+   varArgTooltip: 'A table to display.',
    varArgCount: 1,
    varContainerName: 'tables',
+   varContainerTooltip: 'Add, remove, or reorder the tables to display.',
    tooltip:
    'Print tables to the screen in an ordered form.\n' +
    'If pagination is used, this pauses for confirmation before scrolling.\n' +

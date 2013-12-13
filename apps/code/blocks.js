@@ -504,13 +504,15 @@ Blockly.ComputerCraft.nameValidator = function(newVar) {
  * - The var args input should appear as "%v" in info.text.
  * - The var args parameter should not appear in info.args.
  * There are these new info fields, only the first of which is required:
- * - !varArgName (e.g., "argument")
- * - ?varArgType (e.g., "String")
+ * - !varArgName (e.g., "argument"), which appears in the mutator args.
+ * - ?varArgType (e.g., "String"), which is used for type checking.
+ * - ?varArgTitle (e.g., "with parameters"), which appears before the
+ *   first parameter, if present.
  * - ?varArgField, an optional Field to appear in the mutator args.
  * - ?varArgCount (# of var args present)
- * - ?varContainerName (e.g., "arguments")
- * - ?varContainerTooltip
- * - ?varArgTooltip
+ * - ?varContainerName (e.g., "arguments"), which appears in the mutator.
+ * - ?varArgTooltip, which appears in the mutator.
+ * - ?varContainerTooltip, which appears in the mutator.
  */
 // Version 1: mutator args do not have names that are mutable.
 // Version 2: mutator args have names that are mutable.
@@ -531,6 +533,18 @@ Blockly.ComputerCraft.VarArgsBlock = function(prefix, colour, info) {
 // Regular expression matching the name of var args inputs.
 Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_ = /^ARG\d+$/;
 
+Blockly.ComputerCraft.VarArgsBlock.prototype.addVarArg = function(x) {
+  var input = this.appendValueInput('ARG' + x)
+      .setCheck(this.info.varArgType);
+  if (x == 1 && this.info.varArgTitle) {
+    input.appendTitle(this.info.varArgTitle);
+  }
+  this.moveNumberedInputBefore(
+    this.inputList.length - 1,
+    this.info.varArgPos + x - 1);
+  return input;
+};
+
 Blockly.ComputerCraft.VarArgsBlock.prototype.init = function() {
   // Replace %v in info.text with dummy input, if it hasn't yet been replaced.
   this.info.text = this.info.text.replace('%v', '%0');
@@ -547,11 +561,7 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.init = function() {
   // Add initial var args if not already present.
   this.info.varArgCount = this.info.varArgCount || 0;
   for (var x = 1; x <= this.info.varArgCount; x++) {
-    var input = this.appendValueInput('ARG' + x)
-        .setCheck(this.info.varArgType);
-    this.moveNumberedInputBefore(
-      this.inputList.length - 1,
-      this.info.varArgPos + x - 1);
+    this.addVarArg(x);
   }
 
   // Setup mutator.
@@ -611,12 +621,7 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.compose = function(containerBlock) 
   var x = 1;
   while (clauseBlock) {
     // Create an input in the program block.
-    var input = this.appendValueInput('ARG' + x)
-        .setCheck(this.info.varArgType);
-    // Move the block into the proper position.
-    this.moveNumberedInputBefore(
-      this.inputList.length - 1,
-      this.info.varArgPos + x - 1);
+    var input = this.addVarArg(x);
     // Reconnect any child block.
     if (clauseBlock.valueConnection_) {
       input.connection.connect(clauseBlock.valueConnection_);
