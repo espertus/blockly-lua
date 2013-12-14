@@ -183,6 +183,37 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
   // Subclass must set up inputs, including block title.
 };
 
+Blockly.ComputerCraft.generateDropdownCode_ = function(block, field) {
+  if (field.name == block.info.ddName) {
+    // If this is a controlling dropdown, we need to check to see
+    // whether we should generate code for it.
+    // Define convenience alias.
+    var Type = Blockly.ComputerCraft.ControllingInputCodeGenType;
+    if (block.info.codeGenType == Type.NEVER) {
+      return;
+    } else if (block.info.codeGenType == Type.ONLY_IF_DEP_HIDDEN) {
+      if (field.value_ == block.info.ddValue) {
+        return null;
+      }
+    } else {
+      goog.asserts.assert(
+        block.info.codeGenType == Type.ALWAYS,
+        'Illegal value for info.codeGenType: ', block.info.codeGenType);
+    }
+  } else if (field.name == block.info.ddFuncName) {
+    // Don't generate code if the this dropdown determined the name
+    // of the function call.
+    return null;
+  }
+  // If we made it here, we should generate code.
+  if (block.info.quoteDropdownValues ||
+      typeof block.info.quoteDropdownValues == 'undefined') {
+    return "'" + field.value_ + "'";
+  } else {
+    return field.value;
+  }
+};
+
 // This generates Lua without worrying about whether it will be an expression
 // or statement.  That is handled in Blockly.ComputerCraft.generateLua
 // To avoid code duplication, it violates abstraction by supporting the
@@ -190,7 +221,7 @@ Blockly.ComputerCraft.Block.prototype.init = function() {
 // If inputs is supplied, it gives an ordered list of inputs to be used in
 // code generation.
 // Otherwise, parameters will be generated with the order in block.inputList.
-Blockly.ComputerCraft.generateLuaInner_ = function(block, inputs) {
+Blockly.ComputerCraft.generateLuaInner_ = function(block, parameterOrder) {
   var code = block.prefix + '.';
 
   // Determine the function name.
@@ -200,51 +231,50 @@ Blockly.ComputerCraft.generateLuaInner_ = function(block, inputs) {
     code += block.info.funcName + '(';
   }
 
-  // If the client provided an ordered list of parameters, use it.
-  inputs = inputs || block.inputList;
-
+  // Generate parameters from block's inputs.
   var inputsCode = [];
-  inputs.forEach(function(i) {
-    if (i.type == Blockly.INPUT_VALUE) {
-      inputsCode.push(Blockly.Lua.valueToCode(
-        block, i.name, Blockly.Lua.ORDER_NONE));
-    } else if (i.type == Blockly.DUMMY_INPUT) {
-      i.titleRow.forEach(function(field) {
-        if (field instanceof Blockly.FieldDropdown) {
-          if (field.name == block.info.ddName) {
-            // If this is a controlling dropdown, we need to check to see
-            // whether we should generate code for it.
-            // Define convenience alias.
-            var Type = Blockly.ComputerCraft.ControllingInputCodeGenType;
-            if (block.info.codeGenType == Type.NEVER) {
-              return;
-            } else if (block.info.codeGenType == Type.ONLY_IF_DEP_HIDDEN) {
-              if (field.value_ == block.info.ddValue) {
-                return false;
-              }
-            } else {
-              goog.asserts.assert(
-                block.info.codeGenType == Type.ALWAYS,
-                'Illegal value for info.codeGenType: ', block.info.codeGenType);
-            }
-          } else if (field.name == block.info.ddFuncName) {
-            // Don't generate code if the this dropdown determined the name
-            // of the function call.
-            return;
-          }
-          // If we made it here, we should generate code.
-          if (block.info.quoteDropdownValues ||
-              typeof block.info.quoteDropdownValues == 'undefined') {
-            inputsCode.push("'" + field.value_ + "'");
-          } else {
-            inputsCode.push(field.value);
-          }
+  if (parameterOrder) {
+    // If the client provided an ordered list of parameters, use it.
+    parameterOrder.forEach(function(name) {
+      var input = block.getInput(name);
+      if (input) {
+        goog.asserts.assert(input.type == Blockly.INPUT_VALUE);
+        inputsCode.push(Blockly.Lua.valueToCode(
+          block, input.name, Blockly.Lua.ORDER_NONE));
+      } else {
+        var title = block.getTitle_(name);
+        goog.asserts.assert(title,
+          'Unable to find input or title named ' + name);
+        goog.asserts(field instanceof Blockly.FieldDropdown);
+        var result =
+            Blockly.ComputerCraft.generateDropdownCode_(block, field);
+        if (result) {
+          inputsCode.push(result);
         }
-      });
-    } else {
-      goog.asserts.fail('Unrecognized input type in generateLua: ' + i.type);
-    }
-  });
+      }
+    });
+  } else {
+    // Generate the parameters in their order within the input list.
+    block.inputList.forEach(function(input) {
+      if (input.type == Blockly.INPUT_VALUE) {
+        inputsCode.push(Blockly.Lua.valueToCode(
+          block, input.name, Blockly.Lua.ORDER_NONE));
+      } else if (input.type == Blockly.DUMMY_INPUT) {
+        input.titleRow.forEach(function(field) {
+          if (field instanceof Blockly.FieldDropdown) {
+            var result =
+                Blockly.ComputerCraft.generateDropdownCode_(block, field);
+            if (result) {
+              inputsCode.push(result);
+            }
+          }
+        });
+      } else {
+        goog.asserts.fail('Unrecognized input type in generateLua: ' +
+            input.type);
+      }
+    });
+  }
   code += inputsCode.join(', ') + ')';
   return code;
 };
@@ -258,7 +288,7 @@ Blockly.ComputerCraft.generateLua = function(block, order) {
   }
 };
 
-// TODO: Generalize this to hande os.startTimer().
+// TODO: Generalize this to handle os.startTimer().
 /**
  * Class for ComputerCraft blocks that can switch between being expressions
  * and statements.  These are all assumed to have a Boolean first output
@@ -395,13 +425,16 @@ Blockly.ComputerCraft.ExpStmtBlock.prototype.adjustCode = function(code) {
  *     <li>text {!string} Block text, suitable for passing to
  *         Blockly.Block.prototype.interpolateMsg.apply(this, interpArgs);
  *     <li>args {?Array.<Array.<string>>} A series of tuples describing
- *         the value inputs.  The first element of each tuple it its name,
+ *         the value inputs.  The first element of each tuple is its name,
  *         the second its type (which may be null, a String, or a
- *         FieldDropdown).
+ *         FieldDropdown).  If there are no arguments, this may be omitted.
  *     </ul>
  * @return {Blockly.ComputerCraft.ValueBlock} The new block.
  */
 Blockly.ComputerCraft.ValueBlock = function(prefix, colour, info) {
+  if (!info.args) {
+    info.args = [];
+  }
   Blockly.ComputerCraft.Block.call(this, prefix, colour, info);
   this.info.text = info.text.trim();
 }
@@ -432,7 +465,7 @@ Blockly.ComputerCraft.ValueBlock.prototype.init = function(opt_args) {
   Blockly.ComputerCraft.Block.prototype.init.call(this);
 
   // Build up arguments to the format expected by interpolateMsg.
-  var interpArgs = []
+  var interpArgs = [];
   interpArgs.push(this.info.text);
   var args = opt_args || this.info.args;
   if (args) {
@@ -461,7 +494,7 @@ Blockly.ComputerCraft.ValueBlock.generateLua = function(block) {
   // Use the order in the args list.
   var order = block.info.args.map(
     function(pair) {
-      return block.getInput(pair[0]);
+      return pair[0];
     }
   );
   return Blockly.ComputerCraft.generateLua(block, order);
@@ -487,8 +520,10 @@ Blockly.ComputerCraft.buildValueBlock = function(prefix, colour, info) {
   }
   var newBlock = new Blockly.ComputerCraft.ValueBlock(prefix, colour, info);
   Blockly.Blocks[newBlock.blockName] = newBlock;
-  Blockly.Lua[newBlock.blockName] =
-      Blockly.ComputerCraft.ValueBlock.generateLua;
+  if (!info.suppressLua) {
+    Blockly.Lua[newBlock.blockName] =
+        Blockly.ComputerCraft.ValueBlock.generateLua;
+  }
 };
 
 Blockly.ComputerCraft.nameValidator = function(newVar) {
@@ -686,21 +721,18 @@ Blockly.ComputerCraft.VarArgsBlock.prototype.domToMutation =
 };
 
 Blockly.ComputerCraft.VarArgsBlock.generateLua = function(block) {
-  // For non-varargs inputs, use the order in block.info.args.
-  var orderedInputs = [];
-  block.info.args.forEach(function(pair) {
-    orderedInputs.push(block.getInput(pair[0]));
+  // Add regular arguments in order.
+  var parameterOrder = block.info.args.map(function(pair) {
+    return pair[0];
   });
 
   // Add varargs inputs to the end.
-  block.inputList.forEach(function(input) {
-    if (Blockly.ComputerCraft.VarArgsBlock.INPUT_NAME_REGEX_.exec(input.name)) {
-      orderedInputs.push(input);
-    }
-  });
+  for (var i = 1; i <= block.info.varArgCount; i++) {
+    parameterOrder.push('ARG' + i);
+  }
 
   // Generate code.
-  return Blockly.ComputerCraft.generateLua(block, orderedInputs);
+  return Blockly.ComputerCraft.generateLua(block, parameterOrder);
 };
 
 /**
