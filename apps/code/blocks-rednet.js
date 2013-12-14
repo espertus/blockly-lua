@@ -25,27 +25,20 @@
 
 Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_ = 290;
 
-var SIDES_ = [['left', 'left'],
-              ['right', 'right'],
-              ['front', 'front'],
-              ['back', 'back'],
-              ['top', 'top'],
-              ['bottom', 'bottom']];
-
 Blockly.ComputerCraft.REDNET_FUNCS_ = [
   {funcName: 'open',
    text: 'open rednet on %1',
-   args: [['SIDE', new Blockly.FieldDropdown(SIDES_)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
    tooltip:
    'Tell the computer that the side can be used for networking.'},
   {funcName: 'close',
    text: 'close rednet on %1',
-   args: [['SIDE', new Blockly.FieldDropdown(SIDES_)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
    tooltip:
    'Tell the computer that the side can no longer be used for networking.'},
   {funcName: 'isOpen',
    text: 'is rednet open on %1?',
-   args: [['SIDE', new Blockly.FieldDropdown(SIDES_)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
    output: 'Boolean',
    tooltip:
    'Check if rednet is open on the specified side.'},

@@ -27,6 +27,14 @@ Blockly.ComputerCraft = {};
 
 Blockly.ComputerCraft.BASE_HELP_URL = 'http://computercraft.info/wiki/';
 
+// Used in blocks-rednet.js and blocks-redstone.js.
+Blockly.ComputerCraft.SIDES = [['left', 'left'],
+                               ['right', 'right'],
+                               ['front', 'front'],
+                               ['back', 'back'],
+                               ['top', 'top'],
+                               ['bottom', 'bottom']];
+
 /**
  * Whether the described block should have previous and next statement
  * connections.
