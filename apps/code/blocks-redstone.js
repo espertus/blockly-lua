@@ -40,12 +40,12 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
              [['digital', 'getInput'],
               ['analog', 'getAnalogInput']],
              function(value) {
-               this.sourceBlock_.setOutput(
+               this.sourceBlock_.changeOutput(
                    value == 'getInput' ? 'Boolean' : 'Number');
              })],
           ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
    ddFuncName: 'OPTION',
-   output: 'boolean',
+   output: 'Boolean',
    tooltip:
    'Get the redstone signal from the cable on the specified side.\n' +
    'Digital signals are either of the boolean values "true" or "false".\n' +
@@ -57,7 +57,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
              [['digital', 'setOutput'],
               ['analog', 'setAnalogOutput']],
              function(value) {
-               this.inputList[2].setCheck(
+               this.sourceBlock_.getInput('SIGNAL').setCheck(
                  value == 'setOutput' ? 'Boolean' : 'Number');
              })],
           ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)],
