@@ -29,8 +29,8 @@ Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_ = 120;
 
 Blockly.ComputerCraft.Turtle.QUANTITY_ALL_ = 'QUANTITY_ALL';
 
-// Blocks that switch between statement and expression and contain a direction,
-// such as turn right/left.
+// Blocks that switch between statement and expression.
+// Some contain a direction, such as turn right/left.
 Blockly.ComputerCraft.TURTLE_DIR_FUNCS_ = [
   {blockName: 'turn',
    directions:
@@ -145,7 +145,8 @@ Blockly.ComputerCraft.TURTLE_DIR_FUNCS_.forEach(function(info) {
   }
   info.output = 'Boolean';  // first output
   info.multipleOutputs = 2;
-  var newBlock = Blockly.ComputerCraft.buildExpStmtBlock(
+  info.expStmt = true;
+  var newBlock = Blockly.ComputerCraft.buildValueBlock(
     'turtle', Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_, info);
   if (info.args.some(
     function(arg) {
@@ -211,91 +212,35 @@ Blockly.Lua['turtle_all'] = function(block) {
   return ['', Blockly.Lua.ORDER_NONE];
 };
 
-
-/*
-
-// Block for placing an item from the selected slot in front of, above,
-// or below the turtle.  There is special code to handle placing text on a sign.
-Blockly.ComputerCraft.Turtle.buildExpStmtBlock(
+Blockly.ComputerCraft.buildBlockWithDependentInput(
+  'turtle',
+  Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_,
   {blockName: 'place',
-   suppressLua: true});
-
-Blockly.Blocks['turtle_place'].init = function() {
-  Blockly.ComputerCraft.ExpStmtBlock.prototype.init.call(this);
-  var TYPES =
-      [['item', 'item'],
-       ['sign', 'sign']];
-  var DIRECTIONS =
-      [['in front', 'place'],
-       ['up', 'placeUp'],
-       ['below', 'placeDown']];
-  this.appendDummyInput()
-      .appendTitle('place');
-  var thisBlock = this;
-  this.appendDummyInput('TYPE')
-      .appendTitle(
-        new Blockly.FieldDropdown(
-          TYPES,
-          function(value) {
-            if (value == 'item') {
-              thisBlock.enterItemMode();
-            } else {
-              thisBlock.enterSignMode();
-            }
-          }),
-        'TYPE');
-  this.appendDummyInput('DIRECTION')
-      .appendTitle(new Blockly.FieldDropdown(DIRECTIONS), 'DIR');
-  this.setTooltip(function() {
-    if (thisBlock.getTitleValue('TYPE') == 'item') {
+   text: 'place %1 %2 %3',
+   args:
+   [['TYPE*', [['item', 'item'],
+              ['sign', 'sign*']]],
+    ['DIRECTION', [['in front', 'place'],
+                   ['up', 'placeUp'],
+                   ['below', 'placeDown']]],
+    ['TEXT^', 'String']],
+   ddFuncName: 'DIRECTION',
+   depTitle: 'with text',
+   output: 'Boolean',
+   multipleOutputs: true,
+   expStmt: true,
+   tooltip: function(block) {
+    if (block.getTitleValue('TYPE') == 'item') {
       return 'Place a block or item from the selected slot.\n' +
           'The result is true if successful, false otherwise.';
     } else {
       return 'Place a block or item from the selected slot.\n' +
           'If it is a sign, it will have the specified text.\n' +
           'The result is true if an item could be placed, false otherwise.';
-    }});
-  this.setHelpUrl(function() {
-    return Blockly.ComputerCraft.Turtle.BASE_HELP_URL_ +
-        thisBlock.getTitleValue('DIR');
-  });
-};
-
-Blockly.Blocks['turtle_place'].enterSignMode = function() {
-  this.appendValueInput('TEXT')
-      .setCheck('String')
-      .appendTitle('with text');
-  this.moveInputBefore('TEXT', 'DIRECTION');
-};
-
-Blockly.Blocks['turtle_place'].enterItemMode = function() {
-  this.removeInput('TEXT', true);
-};
-
-Blockly.Blocks['turtle_place'].mutationToDom = function() {
-  var container =
-      Blockly.ComputerCraft.ExpStmtBlock.prototype.mutationToDom.call(this);
-  container.setAttribute('mode', this.getTitleValue('TYPE'));
-  return container;
-};
-
-Blockly.Blocks['turtle_place'].domToMutation = function(xmlElement) {
-  Blockly.ComputerCraft.ExpStmtBlock.prototype.domToMutation.call(
-    this, xmlElement);
-  if (xmlElement.getAttribute('mode') == 'sign') {
-    this.enterSignMode();
-  } else {
-    this.enterItemMode();
+    }
+   }
   }
-};
-
-Blockly.Lua['turtle_place'] = function(block) {
-  var code = 'turtle.' + block.getTitleValue('DIR') + '(' +
-      Blockly.Lua.valueToCode(block, 'TEXT', Blockly.Lua.ORDER_NONE) +
-      ')';
-  return block.adjustCode(code);
-};
-*/
+);
 
 // Ordinary value blocks.
 Blockly.ComputerCraft.TURTLE_VALUE_FUNCS_ = [

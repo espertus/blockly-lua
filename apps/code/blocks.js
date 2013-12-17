@@ -314,6 +314,9 @@ Blockly.ComputerCraft.generateLua = function(block, order) {
  *         the value inputs.  The first element of each tuple is its name,
  *         the second its type (which may be null, a String, or a
  *         FieldDropdown).  If there are no arguments, this may be omitted.
+ *     <li>expStmt {?boolean} Whether the block can switch between being an
+ *         expression and statement.  Such blocks always start in expression
+ *         mode.
  *     </ul>
  * @return {Blockly.ComputerCraft.ValueBlock} The new block.
  */
@@ -323,6 +326,10 @@ Blockly.ComputerCraft.ValueBlock = function(prefix, colour, info) {
   }
   if (info.text) {
     info.text = info.text.trim();
+  }
+  if (info.expStmt) {
+    goog.asserts.assert(info.output,
+      'If info.expStmt is true, info.output must be set.');
   }
   Blockly.ComputerCraft.ValueBlock.superClass_.constructor.call(
     this, prefix, colour, info);
@@ -434,50 +441,11 @@ Blockly.ComputerCraft.disallowArgTitle_ = function(args, regex) {
   }
 }
 
-/**
- * Class for ComputerCraft blocks that can switch between being expressions
- * and statements.
- *
- * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
- * @param {number} colour The block colour, an HSV hue value.
- * @param {Object} info Information about the block being defined.
- *     None in addition to the fields used for the parent class
- *     Blockly.ComputerCraft.ValueBlock.  The output field should be set.
- * @return {Blockly.ComputerCraft.ExpStmtBlock} The new block.
- */
-Blockly.ComputerCraft.ExpStmtBlock = function(prefix, colour, info) {
-  Blockly.ComputerCraft.ExpStmtBlock.superClass_.constructor.call(
-    this, prefix, colour, info);
-};
-goog.inherits(Blockly.ComputerCraft.ExpStmtBlock,
-              Blockly.ComputerCraft.ValueBlock);
-
-/**
- * Static factory method for Blockly.ComputerCraft.ExpStmtBlock.  This
- * creates and adds to the namespace the block definition and, optionally,
- * a Lua code generator.
- * @param {string} prefix A ComputerCraft API name, such as 'turtle'.
- * @param {number} colour The block colour, an HSV hue value.
- * @param {Object} info Information about the block being defined.
- *     In addition to the fields used by the Blockly.ComputerCraft.ExpStmtBlock
- *     constructor, this has:
- *     <ul>
- *     <li>suppressLua {boolean} If true, no Lua code generator is created.
- *     </ul>
- * @return {Blockly.ComputerCraft.ExpStmtBlock} The new block.
- */
-Blockly.ComputerCraft.buildExpStmtBlock = function(prefix, colour, info) {
-  var newBlock = new Blockly.ComputerCraft.ExpStmtBlock(prefix, colour, info);
-  Blockly.Blocks[newBlock.blockName] = newBlock;
-  if (!info.suppressLua) {
-    Blockly.Lua[newBlock.blockName] =
-        Blockly.ComputerCraft.ValueBlock.generateLua;
-  }
-  return newBlock;
-};
-
-Blockly.ComputerCraft.ExpStmtBlock.prototype.changeModes =
+// ExpStmtBlock
+Blockly.ComputerCraft.ValueBlock.prototype.changeModes =
     function(shouldBeStatement) {
+  goog.asserts.assert(this.info.expStmt,
+    'changeModes() should only be called if this.info.expStmt.');
   this.unplug(true, true);
   if (shouldBeStatement) {
     this.setOutput(false);
@@ -492,27 +460,33 @@ Blockly.ComputerCraft.ExpStmtBlock.prototype.changeModes =
   }
 };
 
-Blockly.ComputerCraft.ExpStmtBlock.prototype.customContextMenu =
+Blockly.ComputerCraft.ValueBlock.prototype.customContextMenu =
     function(options) {
-  var option = {enabled: true};
-  option.text = this.isStatement ? 'Add Output' : 'Remove Output';
-  var thisBlock = this;
-  option.callback = function() {
-    thisBlock.changeModes(!thisBlock.isStatement);
-  };
-  options.push(option);
+      if (this.info.expStmt) {
+        var option = {enabled: true};
+        option.text = this.isStatement ? 'Add Output' : 'Remove Output';
+        var thisBlock = this;
+        option.callback = function() {
+          thisBlock.changeModes(!thisBlock.isStatement);
+        };
+        options.push(option);
+      }
 };
 
-Blockly.ComputerCraft.ExpStmtBlock.prototype.mutationToDom = function() {
-  // Save whether it is a statement.
-  var container = document.createElement('mutation');
-  container.setAttribute('is_statement', this['isStatement'] || false);
-  return container;
+Blockly.ComputerCraft.ValueBlock.prototype.mutationToDom = function() {
+  if (this.info.expStmt) {
+    // Save whether it is a statement.
+    var container = document.createElement('mutation');
+    container.setAttribute('is_statement', this['isStatement'] || false);
+    return container;
+  }
 };
 
-Blockly.ComputerCraft.ExpStmtBlock.prototype.domToMutation
+Blockly.ComputerCraft.ValueBlock.prototype.domToMutation
     = function(xmlElement) {
-  this.changeModes(xmlElement.getAttribute('is_statement') == 'true');
+      if (this.info.expStmt) {
+        this.changeModes(xmlElement.getAttribute('is_statement') == 'true');
+      }
 };
 
 /**
