@@ -35,7 +35,8 @@ goog.require('Blockly.Field');
  * @param {(!Array.<string>|!Function)} menuGenerator An array of options
  *     for a dropdown list, or a function which generates these options.
  * @param {Function} opt_changeHandler A function that is executed when a new
- *     option is selected.
+ *     option is selected.  If it returns a value (besides undefined), this
+ *     replaces the newly selected option.
  * @extends {Blockly.Field}
  * @constructor
  */
