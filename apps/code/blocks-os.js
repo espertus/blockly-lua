@@ -72,14 +72,6 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
    text: 'get running time',
    output: 'Number',
    tooltip: 'Get the amount of time this computer has been running, in seconds.'},
-  {funcName: 'startTimer',
-   text: 'start timer for %1 s',
-   args: [['TIME', 'Number']],
-   output: 'Number',
-   tooltip:
-   'Queue a timer event to occur after\n' +
-   'the specified number of seconds.\n' +
-   'The ID of the timer is returned.'},
   {funcName: 'setAlarm',
    text: 'set alarm for %1 s',
    args: [['TIME', 'Number']],
@@ -117,6 +109,18 @@ for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
 // Added in order to continue to support programs with the old block name.
 Blockly.Blocks['terminate'] = Blockly.Blocks['os_terminate'];
 Blockly.Lua['terminate'] = Blockly.Lua['os_terminate'];
+
+Blockly.ComputerCraft.buildExpStmtBlock(
+  'os',
+  Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
+  {funcName: 'startTimer',
+   text: 'start timer for %1 s',
+   args: [['TIME', 'Number']],
+   output: 'Number',
+   tooltip:
+   'Queue a timer event to occur after\n' +
+   'the specified number of seconds.\n' +
+   'The ID of the timer is returned.'});
 
 Blockly.ComputerCraft.buildVarArgsBlock(
   'os',
