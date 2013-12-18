@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.HELP_BLOCK_COLOUR_ = 290;
 
@@ -49,9 +50,6 @@ Blockly.ComputerCraft.HELP_FUNCS_ = [
    tooltip: 'Get a list of all available help topics.',
    output: 'List'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.HELP_FUNCS_.length; i++) {
+Blockly.ComputerCraft.HELP_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'help',
-    Blockly.ComputerCraft.HELP_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.HELP_FUNCS_[i]);
-}
+    'help', Blockly.ComputerCraft.HELP_BLOCK_COLOUR_, info);});

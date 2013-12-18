@@ -53,8 +53,17 @@ Blockly.ComputerCraft.BIT_FUNCS_ = [
            ['Y', 'Number']],
    output: 'Number',
    ddFuncName: 'FUNCTION',
-   // Tooltip will be set below.
-   helpUrlType: Blockly.ComputerCraft.HelpUrlType.PREFIX_DD
+   tooltip: function(block) {
+     var HELP = {'bxor': {name: 'exclusive OR', description: 'exactly one'},
+                 'bor': {name: 'inclusive OR', description: 'at least one'},
+                 'band': {name: 'AND', description: 'both'}};
+     var help = HELP[block.getTitleValue('FUNCTION')];
+     return 'Compute the bitwise ' + help.name.toUpperCase()
+        + ' of the two numeric inputs.\n' +
+        'For each of the 32 bit positions, the value is 1 if and only if\n' +
+        help.description.toUpperCase()
+        + ' of the corresponding bits in the inputs are 1.';
+   }
   },
   {funcName: 'bnot',
    text: 'bitwise not %1',
@@ -65,27 +74,6 @@ Blockly.ComputerCraft.BIT_FUNCS_ = [
    'the domain and range of 32-bit unsigned integers.'}
 ];
 
-for (var i = 0; i < Blockly.ComputerCraft.BIT_FUNCS_.length; i++) {
+Blockly.ComputerCraft.BIT_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'bit',
-    Blockly.ComputerCraft.BIT_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.BIT_FUNCS_[i]);
-}
-
-Blockly.Blocks['bit_bitwise'].HELP = {
-  'bxor': {name: 'exclusive OR', description: 'exactly one'},
-  'bor': {name: 'inclusive OR', description: 'at least one'},
-  'band': {name: 'AND', description: 'both'}};
-
-Blockly.Blocks['bit_bitwise'].init = function() {
-  Blockly.ComputerCraft.ValueBlock.prototype.init.call(this);
-  var thisBlock = this;
-  this.setTooltip(function() {
-    var help = thisBlock.HELP[thisBlock.getTitleValue('FUNCTION')];
-    return 'Compute the bitwise ' + help.name.toUpperCase()
-        + ' of the two numeric inputs.\n' +
-        'For each of the 32 bit positions, the value is 1 if and only if\n' +
-        help.description.toUpperCase()
-        + ' of the corresponding bits in the inputs are 1.';
-    });
-};
+    'bit', Blockly.ComputerCraft.BIT_BLOCK_COLOUR_, info)});

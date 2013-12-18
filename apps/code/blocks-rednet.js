@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.DependentInputBlock');
 goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_ = 290;
@@ -47,12 +48,9 @@ Blockly.ComputerCraft.REDNET_FUNCS_ = [
    text: 'run rednet',
    tooltip: 'Run rednet.'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.REDNET_FUNCS_.length; i++) {
+Blockly.ComputerCraft.REDNET_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'rednet',
-    Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.REDNET_FUNCS_[i]);
-}
+    'rednet', Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_, info);});
 
 Blockly.ComputerCraft.buildDependentInputBlock(
   'rednet',

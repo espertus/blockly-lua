@@ -22,6 +22,9 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.DependentInputBlock');
+goog.require('ComputerCraft.ValueBlock');
+goog.require('ComputerCraft.VarArgsBlock');
 
 Blockly.ComputerCraft.SHELL_BLOCK_COLOUR_ = 290;
 
@@ -79,14 +82,9 @@ Blockly.ComputerCraft.SHELL_FUNCS_ = [
    tooltip: 'Get the path of the currently running shell or program.',
    output: 'String'}];
 
-// TODO: Add shell.run.
-
-for (var i = 0; i < Blockly.ComputerCraft.SHELL_FUNCS_.length; i++) {
+Blockly.ComputerCraft.SHELL_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'shell',
-    Blockly.ComputerCraft.SHELL_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.SHELL_FUNCS_[i]);
-}
+    'shell', Blockly.ComputerCraft.SHELL_BLOCK_COLOUR_, info);});
 
 Blockly.ComputerCraft.buildDependentInputBlock(
   'shell',

@@ -22,7 +22,6 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
-
 goog.require('ComputerCraft.SideInputBlock');
 
 Blockly.ComputerCraft.DISK_BLOCK_COLOUR_ = 290;
@@ -81,5 +80,4 @@ Blockly.ComputerCraft.DISK_FUNCS_ = [
 
 Blockly.ComputerCraft.DISK_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildSideInputBlock(
-    'disk', Blockly.ComputerCraft.DISK_BLOCK_COLOUR_, info);
-};
+    'disk', Blockly.ComputerCraft.DISK_BLOCK_COLOUR_, info);});

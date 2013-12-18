@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.PAINTUTILS_BLOCK_COLOUR_ = 310;
 
@@ -59,9 +60,6 @@ Blockly.ComputerCraft.PAINTUTILS_FUNCS_ = [
    'Draw a line in the specified colour from the first pair\n' +
    'of (x, y) coordinates to the second pair of (x, y) coordinates.'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.PAINTUTILS_FUNCS_.length; i++) {
+Blockly.ComputerCraft.PAINTUTILS_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'paintutils',
-    Blockly.ComputerCraft.PAINTUTILS_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.PAINTUTILS_FUNCS_[i]);
-}
+    'paintutils', Blockly.ComputerCraft.PAINTUTILS_BLOCK_COLOUR_, info);});

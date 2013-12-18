@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.TERM_BLOCK_COLOUR_ = 160;
 
@@ -113,13 +114,12 @@ Blockly.ComputerCraft.TERM_FUNCS_ = [
   }
 ];
 
-for (var i = 0; i < Blockly.ComputerCraft.TERM_FUNCS_.length; i++) {
+Blockly.ComputerCraft.TERM_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'term',
-    Blockly.ComputerCraft.TERM_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.TERM_FUNCS_[i]);
-}
+    'term', Blockly.ComputerCraft.TERM_BLOCK_COLOUR_, info);});
 
+// Make sure that a numeric literal argument is in the range [.5, 5],
+// and divisible by .5.
 Blockly.Blocks['term_set_text_scale'].onchange = function() {
   if (!this.workspace) {
     // Block has been deleted.
@@ -153,6 +153,7 @@ Blockly.Blocks['term_set_text_scale'].onchange = function() {
   this.setWarningText(null);
 };
 
+// TODO: Convert to ValueBlock.
 Blockly.Blocks['term_set_cursor_blink'] = new Blockly.ComputerCraft.Block(
   'term', Blockly.ComputerCraft.TERM_BLOCK_COLOUR_, {
     funcName: 'setCursorBlink',

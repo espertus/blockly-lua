@@ -22,6 +22,8 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.SideInputBlock');
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_ = 65;
 
@@ -49,12 +51,9 @@ Blockly.ComputerCraft.PERIPHERAL_FUNCS_ = [
    'Return the connected peripheral\'s methods so they can be called,\n' +
    'or nil if no peripheral is connected.'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.PERIPHERAL_FUNCS_.length; i++) {
+Blockly.ComputerCraft.PERIPHERAL_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildSideInputBlock(
-    'peripheral',
-    Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.PERIPHERAL_FUNCS_[i]);
-}
+    'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_, info);};
 
 // The next block is unlike the rest in this file because it doesn't
 // have a "side" argument.  It is a simple value block.

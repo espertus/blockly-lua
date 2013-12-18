@@ -22,6 +22,8 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
+goog.require('ComputerCraft.VarArgsBlock');
 
 Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_ = 80;
 
@@ -84,7 +86,7 @@ Blockly.Blocks['colours_picker'] = {
   }
 };
 
-// TODO: Change block colour to match chosen colour, if not too hard.
+// TODO: Change block colour to match chosen colour, if not too hard.  Neil?
 Blockly.ComputerCraft.buildValueBlock(
   'colours',
   Blockly.ComputerCraft.COLOURS_BLOCK_COLOUR_,

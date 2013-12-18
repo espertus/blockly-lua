@@ -23,7 +23,7 @@
  */
 'use strict';
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'test',
   200, {
     funcName: 'vote',
@@ -36,7 +36,7 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
            ['WRITE_IN^', 'String']]
 });
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'test',
   200, {
     funcName: 'count',
@@ -46,11 +46,12 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
            ['AMOUNT^', 'Number']],
     addChild: Blockly.ComputerCraft.InputAddType.FIRST});
 
-Blockly.Blocks['test_varargs'] = new Blockly.ComputerCraft.VarArgsBlock(
+Blockly.ComputerCraft.buildVarArgsBlock(
   'test',
   200,
   {blockName: 'varargs',
-   text: 'give me more',
+   funcName: 'giveMeMore',
+   text: 'give me more %v',
    varArgName: 'argument',
    varArgType: 'String',
    varContainerName: 'arguments'});

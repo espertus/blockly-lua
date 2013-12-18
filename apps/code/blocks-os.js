@@ -22,6 +22,9 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.DependentInputBlock');
+goog.require('ComputerCraft.ValueBlock');
+goog.require('ComputerCraft.VarArgsBlock');
 
 Blockly.ComputerCraft.OS_BLOCK_COLOUR_ = 30;
 
@@ -108,12 +111,10 @@ Blockly.ComputerCraft.OS_FUNCS_ = [
    'The ID of the timer is returned.'}
 ];
 
-for (var i = 0; i < Blockly.ComputerCraft.OS_FUNCS_.length; i++) {
+Blockly.ComputerCraft.OS_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'os',
-    Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.OS_FUNCS_[i]);
-}
+    'os', Blockly.ComputerCraft.OS_BLOCK_COLOUR_, info);});
+
 
 // Added in order to continue to support programs with the old block name.
 Blockly.Blocks['terminate'] = Blockly.Blocks['os_terminate'];

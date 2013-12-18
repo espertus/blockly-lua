@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.FS_BLOCK_COLOUR_ = 410;
 
@@ -114,8 +115,6 @@ Blockly.ComputerCraft.FS_FUNCS_ = [
    'Neither path needs to exist; this function only manipulates strings.'}
 ];
 
-for (var i = 0; i < Blockly.ComputerCraft.FS_FUNCS_.length; i++) {
+Blockly.ComputerCraft.FS_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'fs', Blockly.ComputerCraft.FS_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.FS_FUNCS_[i]);
-};
+    'fs', Blockly.ComputerCraft.FS_BLOCK_COLOUR_, info);});

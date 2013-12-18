@@ -96,9 +96,6 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
    'Has the value "true" if the specified colour is\n' +
    'active in the attached bundled cable; otherwise, false.'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.REDSTONE_FUNCS_.length; i++) {
+Blockly.ComputerCraft.REDSTONE_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'redstone',
-    Blockly.ComputerCraft.REDSTONE_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.REDSTONE_FUNCS_[i]);
-}
+    'redstone', Blockly.ComputerCraft.REDSTONE_BLOCK_COLOUR_, info);});
