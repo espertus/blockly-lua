@@ -88,7 +88,7 @@ for (var i = 0; i < Blockly.ComputerCraft.SHELL_FUNCS_.length; i++) {
     Blockly.ComputerCraft.SHELL_FUNCS_[i]);
 }
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'shell',
   Blockly.ComputerCraft.SHELL_BLOCK_COLOUR_,
   {blockName: 'change_alias',

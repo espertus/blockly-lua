@@ -93,7 +93,7 @@ for (var i = 0; i < Blockly.ComputerCraft.TEXTUTILS_FUNCS_.length; i++) {
     Blockly.ComputerCraft.TEXTUTILS_FUNCS_[i]);
 }
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'textutils',
   Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
   {funcName: 'formatTime',

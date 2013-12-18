@@ -50,7 +50,7 @@ Blockly.ComputerCraft.PERIPHERAL_FUNCS_ = [
    'or nil if no peripheral is connected.'}];
 
 for (var i = 0; i < Blockly.ComputerCraft.PERIPHERAL_FUNCS_.length; i++) {
-  Blockly.ComputerCraft.buildBlockWithSide(
+  Blockly.ComputerCraft.buildSideInputBlock(
     'peripheral',
     Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
     Blockly.ComputerCraft.PERIPHERAL_FUNCS_[i]);
@@ -77,7 +77,7 @@ Blockly.ComputerCraft.buildValueBlock(
 // This will override (and explicitly call) most of the prototype's methods.
 // I had to do this the hard way (instead of using VarArgsBlock) because
 // this also has a dependent input.
-Blockly.ComputerCraft.buildBlockWithSide(
+Blockly.ComputerCraft.buildSideInputBlock(
   'peripheral',
   Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_,
   {funcName: 'call',
@@ -89,7 +89,7 @@ Blockly.ComputerCraft.buildBlockWithSide(
 
 Blockly.Blocks['peripheral_call'].init = function() {
   // Call prototype's init method to set up basics, including side.
-  Blockly.ComputerCraft.BlockWithSide.prototype.init.call(this);
+  Blockly.ComputerCraft.SideInputBlock.prototype.init.call(this);
   // Add mutator.
   this.setMutator(new Blockly.Mutator(['peripheral_mutatorarg']));
   this.arguments_ = [];
@@ -212,7 +212,7 @@ Blockly.Blocks['peripheral_call'].saveConnections = function(containerBlock) {
 Blockly.Blocks['peripheral_call'].mutationToDom = function() {
   // Save cable state.
   var container =
-      Blockly.ComputerCraft.BlockWithSide.prototype.mutationToDom.call(this);
+      Blockly.ComputerCraft.SideInputBlock.prototype.mutationToDom.call(this);
   // Save argument names.
   for (var x = 0; x < this.arguments_.length; x++) {
     var parameter = document.createElement('arg');
@@ -224,7 +224,7 @@ Blockly.Blocks['peripheral_call'].mutationToDom = function() {
 
 Blockly.Blocks['peripheral_call'].domToMutation = function(xmlElement) {
   // Restore cable state.
-  Blockly.ComputerCraft.BlockWithSide.prototype.domToMutation.call(
+  Blockly.ComputerCraft.SideInputBlock.prototype.domToMutation.call(
     this, xmlElement);
   // Restore argument inputs.
   this.arguments_ = [];

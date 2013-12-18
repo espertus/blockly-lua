@@ -22,6 +22,7 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.REDSTONE_BLOCK_COLOUR_ = 290;
 
@@ -43,7 +44,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
                this.sourceBlock_.changeOutput(
                    value == 'getInput' ? 'Boolean' : 'Number');
              })],
-          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
+          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)]],
    ddFuncName: 'OPTION',
    output: 'Boolean',
    tooltip:
@@ -60,7 +61,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
                this.sourceBlock_.getInput('SIGNAL').setCheck(
                  value == 'setOutput' ? 'Boolean' : 'Number');
              })],
-          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)],
+          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)],
           ['SIGNAL', 'Boolean']],
    ddFuncName: 'OPTION',
    tooltip:
@@ -72,7 +73,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
    args: [['OPTION',
            new Blockly.FieldDropdown([['all', 'getBundledInput'],
                                       ['activated', 'getBundledOutput']])],
-          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
+          ['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)]],
    ddFuncName: 'OPTION',
    output: 'Number',
    tooltip:
@@ -80,7 +81,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
    'on a RedPower bundled cable connected on the specified side.'},
   {funcName: 'setBundledOutput',
    text: 'activate colours %2 on bundled cable on %1',
-   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)],
           ['COLOURS', 'Number']],
    tooltip:
    'Activate the specified coloured wires in the attached bundled cable.\n' +
@@ -88,7 +89,7 @@ Blockly.ComputerCraft.REDSTONE_FUNCS_ = [
    'a set of colours, created with the "combine" block in the "Colours" drawer.'},
   {funcName: 'testBundledInput',
    text: 'is colour %2 active on bundled cable on %1?',
-   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)],
           ['COLOURS', 'Number']],
    output: 'Boolean',
    tooltip:

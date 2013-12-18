@@ -212,7 +212,7 @@ Blockly.Lua['turtle_all'] = function(block) {
   return ['', Blockly.Lua.ORDER_NONE];
 };
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'turtle',
   Blockly.ComputerCraft.TURTLE_BLOCK_COLOUR_,
   {blockName: 'place',

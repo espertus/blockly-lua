@@ -135,7 +135,7 @@ Blockly.ComputerCraft.buildVarArgsBlock(
    tooltip:
    'Add an event to the event queue with the given name and parameters.'});
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'os',
   Blockly.ComputerCraft.OS_BLOCK_COLOUR_,
   {funcName: 'pullEvent',
@@ -156,7 +156,7 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
      'The "terminate" event is only caught in raw mode.'});
 
 Blockly.Lua['os_pull_event'] = function(block) {
-  var code = Blockly.ComputerCraft.generateLua(block);
+  var code = block.generateLua();
   if (block.getTitleValue('OPTION') == 'raw') {
     code[0] = code[0].replace('pullEvent', 'pullEventRaw');
   }

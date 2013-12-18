@@ -22,23 +22,24 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_ = 290;
 
 Blockly.ComputerCraft.REDNET_FUNCS_ = [
   {funcName: 'open',
    text: 'open rednet on %1',
-   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)]],
    tooltip:
    'Tell the computer that the side can be used for networking.'},
   {funcName: 'close',
    text: 'close rednet on %1',
-   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)]],
    tooltip:
    'Tell the computer that the side can no longer be used for networking.'},
   {funcName: 'isOpen',
    text: 'is rednet open on %1?',
-   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.SIDES)]],
+   args: [['SIDE', new Blockly.FieldDropdown(Blockly.ComputerCraft.ValueBlock.SIDES)]],
    output: 'Boolean',
    tooltip:
    'Check if rednet is open on the specified side.'},
@@ -53,7 +54,7 @@ for (var i = 0; i < Blockly.ComputerCraft.REDNET_FUNCS_.length; i++) {
     Blockly.ComputerCraft.REDNET_FUNCS_[i]);
 }
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'rednet',
   Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_,
   {blockName: 'broadcast',
@@ -64,7 +65,7 @@ Blockly.ComputerCraft.buildBlockWithDependentInput(
           ['MESSAGE^', 'String']],
    ddFuncName: 'OPTION'});
 
-Blockly.ComputerCraft.buildBlockWithDependentInput(
+Blockly.ComputerCraft.buildDependentInputBlock(
   'rednet',
   Blockly.ComputerCraft.REDNET_BLOCK_COLOUR_,
   {funcName: 'receive',
