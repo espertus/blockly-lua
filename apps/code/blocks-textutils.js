@@ -22,6 +22,9 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.DependentInputBlock');
+goog.require('ComputerCraft.ValueBlock');
+goog.require('ComputerCraft.VarArgsBlock');
 
 Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_ = 190;
 
@@ -86,12 +89,9 @@ Blockly.ComputerCraft.TEXTUTILS_FUNCS_ = [
   }
 ];
 
-for (var i = 0; i < Blockly.ComputerCraft.TEXTUTILS_FUNCS_.length; i++) {
+Blockly.ComputerCraft.TEXTUTILS_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'textutils',
-    Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.TEXTUTILS_FUNCS_[i]);
-}
+    'textutils', Blockly.ComputerCraft.TEXTUTILS_BLOCK_COLOUR_, info);});
 
 Blockly.ComputerCraft.buildDependentInputBlock(
   'textutils',

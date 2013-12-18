@@ -22,6 +22,8 @@
  * @author ellen.spertus@gmail.com (Ellen Spertus)
  */
 'use strict';
+goog.require('ComputerCraft.DependentInputBlock');
+goog.require('ComputerCraft.ValueBlock');
 
 Blockly.ComputerCraft.Turtle = {};
 

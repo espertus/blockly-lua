@@ -99,12 +99,9 @@ Blockly.ComputerCraft.VECTOR_FUNCS_ = [
    tooltip:
    'Get the specified co-ordinate from the vector.'}];
 
-for (var i = 0; i < Blockly.ComputerCraft.VECTOR_FUNCS_.length; i++) {
+Blockly.ComputerCraft.VECTOR_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildValueBlock(
-    'vector',
-    Blockly.ComputerCraft.VECTOR_BLOCK_COLOUR_,
-    Blockly.ComputerCraft.VECTOR_FUNCS_[i]);
-}
+    'vector', Blockly.ComputerCraft.VECTOR_BLOCK_COLOUR_, info);});
 
 Blockly.Lua['vector_get_coord'] = function(block) {
   var code = Blockly.Lua.valueToCode(block, 'X', Blockly.Lua.ORDER_NONE) +

@@ -53,7 +53,7 @@ Blockly.ComputerCraft.PERIPHERAL_FUNCS_ = [
 
 Blockly.ComputerCraft.PERIPHERAL_FUNCS_.forEach(function(info) {
   Blockly.ComputerCraft.buildSideInputBlock(
-    'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_, info);};
+    'peripheral', Blockly.ComputerCraft.PERIPHERAL_BLOCK_COLOUR_, info);});
 
 // The next block is unlike the rest in this file because it doesn't
 // have a "side" argument.  It is a simple value block.
